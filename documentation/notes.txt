@@ -1,0 +1,7 @@
+Set up on a new farm computer - need to figure out how to set these parameters (and where the user can look this up on their computer so that they can find out):
+
+conn <- odbcDriverConnect('driver={SQL Server};server=svasql16;database=WP_Test1;trusted_connection=true')
+server
+database
+
+language - find th list of languages and add to the documentation
