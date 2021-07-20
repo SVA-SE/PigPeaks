@@ -11,4 +11,5 @@
 
 ##only need to do once and then indicators will be saved for all the retrospective phase:
 #source("R/2-create raw data arrays.r")
+#source("R/3-tabulate indicators.r")
 
