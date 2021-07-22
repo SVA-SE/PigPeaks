@@ -1,3 +1,5 @@
+# packages ----
+
 packages <- c("ISOweek","lubridate","abind")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
@@ -8,6 +10,7 @@ require(abind)
 source("Definitions.r")
 source("Settings.r")
 source("R/Functions.r")
+
 
 load("individual.sows.RData")
 load("animal.RData")

@@ -5,6 +5,9 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 
 library(RODBC)
 
+source("Settings.r")
+
+
 # read data in ----
 conn <- odbcDriverConnect(paste0('driver={SQL Server};server=',server,';database=',database,';trusted_connection=true'))
 
