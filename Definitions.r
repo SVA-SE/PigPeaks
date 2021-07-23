@@ -9,6 +9,8 @@ reservice.perc.window <- 4 #(weeks)
 empty.days.target <- 4
 opendays.target <- 4
 
+weekly.window <- 271        #weeks to see
+continuous.window <- 5500   #observations to see
 
 # events ----
 sow.events <- c("birth","service","pregnancyTest","abortion","farrowing","weaning","exit","death")
@@ -28,7 +30,7 @@ exit.type <- data.frame(Slaughtered=1,
                         Missing=6,
                         Exported=7)
 
-animal.category <- data.frame(Farm.animal=0,
+animal.type <- data.frame(Farm.animal=0,
                               Parent=1,
                               Insemination.donor=2,
                               Gylts.produced=3)

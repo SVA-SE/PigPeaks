@@ -41,13 +41,122 @@ dates_df <- function (min.date, max.date,
 }
 
 
+# RETRO indicators functions ----
+
+## count functions
+
+create.counts.days <- function(rows.index=index.dates.days[,1],
+                               cols.index=parity,
+                               data.matrix=individual.sows$indicator,
+                               parity.matrix=individual.sows$parity){
+  
+  matrix.days <- matrix(NA,nrow=length(rows.index),ncol=length(cols.index))
+  colnames(matrix.days)<- cols.index
+  
+  for (r in 1:length(rows.index)){
+    for (c in 1:length(cols.index)){
+      matrix.days[r,c] <- sum(data.matrix[r,which(parity.matrix[r,]==cols.index[c])],na.rm=TRUE)
+    }}
+  
+  return(matrix.days)
+  
+}
+
+
+create.counts.week <- function(rows.index.days=index.dates.days[,1],
+                               rows.index.week=index.dates.week[,1],
+                               cols.index=parity,
+                               data.matrix=individual.sows$indicator,
+                               parity.matrix=individual.sows$parity){
+  
+  matrix.days <- matrix(NA,nrow=length(rows.index.days),ncol=length(cols.index))
+  for (r in 1:length(rows.index.days)){
+    for (c in 1:length(cols.index)){
+      matrix.days[r,c] <- sum(data.matrix[r,which(parity.matrix[r,]==cols.index[c])],na.rm=TRUE)
+    }}
+  
+  
+  matrix.week <- matrix(NA,nrow=length(rows.index.week),ncol=length(cols.index))
+  colnames(matrix.week)<- cols.index
+  
+  for (r in 1:length(rows.index.week)){
+    for (c in 1:length(cols.index)){
+      matrix.week[r,c] <- sum(matrix.days[((((r-1)*7)+1):min(c((r*7),length(rows.index.days)))),c],na.rm=TRUE)
+    }}
+  
+  return(matrix.week)
+  
+}
+
+
+# NON-TIME series
+
+create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
+                                index.dates=index.dates.days[,1],
+                                col1="indicator",
+                                col2="parity",
+                                col3="date",
+                                event1.matrix=individual.sows$indicator,
+                                event1.value=1,
+                                event2.matrix=individual.sows$indicator,
+                                event2.value=2,
+                                condition=NULL){
+  
+  matrix.timeto <- matrix(NA,nrow=1,ncol=4)
+  colnames(matrix.timeto)<- c(col1,col2,col3,"sowINDEX")
+  
+  for (r in 2:length(index.dates)){
+    for (s in 1:dim(parity.matrix)[2]){
+      
+      if (!is.na(event2.matrix[r,s])&
+          event2.matrix[r,s]==event2.value){
+        
+        if(length(condition)>0){
+          if(condition=="first"){
+            if(r>min(which(event2.matrix[,s]==event2.value))){
+              next
+            }
+          }
+        }
+        
+        matrix.timeto.c1 <- 0
+        if(length(which(event1.matrix[1:(r-1),s]%in%event1.value))>0){
+          matrix.timeto.c1 <- (r - max(which(event1.matrix[1:(r-1),s]%in%event1.value)))
+        }
+        
+        matrix.timeto.c2 <- parity.matrix[r,s]
+        
+        matrix.timeto.c3 <- as.numeric(index.dates[r])
+        
+        matrix.timeto.c4 <- s
+        matrix.timeto <- rbind(matrix.timeto,
+                               c(matrix.timeto.c1,
+                                 matrix.timeto.c2,
+                                 matrix.timeto.c3,
+                                 matrix.timeto.c4))
+        
+        
+      }
+    }
+  }
+  
+  if (all(is.na(matrix.timeto[1,]))){
+    matrix.timeto<- matrix.timeto[-1,]
+  }
+  
+  return(matrix.timeto)
+  
+}
+
+
+
 # structure indicators ----
 
 ## for weekly indicators taking parity into account
 
 weekly.indicators.parity <- function(indicators.data=list(reservices.week=reservices.week, 
                                                           number.deaths.week=number.deaths.week),
-                                     weekly.window=271
+                                     weekly.window=weekly.window
                                  
 )
 {
@@ -71,23 +180,23 @@ weekly.indicators.parity <- function(indicators.data=list(reservices.week=reserv
   alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
   
   
-  indicators.count = 0
+  #indicators.count = 0
   
-  for (i in indicators.data) {        #i=reservices.week
+  for (i in 1:length(indicators.data)) {        #i=reservices.week i=1  indicators.data[[i]]
 
-    indicators.count = indicators.count+1
+    #indicators.count = indicators.count+1
     
       
-    observed.gilt <- i[,1][range]
+    observed.gilt <- indicators.data[[i]][,1][range]
     parity.gilt <- c(rep("gilt", length(range)))
     
-    observed.young <- i[,2][range]
+    observed.young <- indicators.data[[i]][,2][range]
     parity.young <- c(rep("young", length(range)))
   
-    observed.prime <- rowSums(i[,c(3:5)])[range]
+    observed.prime <- rowSums(indicators.data[[i]][,c(3:5)])[range]
     parity.prime <- c(rep("prime", length(range)))
     
-    observed.mature <- rowSums(i[,c(6:15)])[range]
+    observed.mature <- rowSums(indicators.data[[i]][,c(6:15)])[range]
     parity.mature <- c(rep("mature", length(range)))
     
     
@@ -127,12 +236,14 @@ weekly.indicators.parity <- function(indicators.data=list(reservices.week=reserv
   
   outputs <- list(gilt=table.gilt, young=table.young, prime=table.prime, mature=table.mature)
   
-  if(indicators.count==1){
+  if(i==1){
     outputs.final <- outputs
   }else{
     outputs.final <- list(outputs.final, outputs)
   }
-    }
+  }
+  
+  names(outputs.final) <- names(indicators.data)
   
   return(outputs.final)
   }
@@ -141,7 +252,7 @@ weekly.indicators.parity <- function(indicators.data=list(reservices.week=reserv
 ## for weekly indicators without parity
 
 weekly.indicators.nonparity <- function(indicators.data=list(piglets.deaths.week),
-                                        weekly.window=271
+                                        weekly.window=weekly.window
 )
   
 {
@@ -195,10 +306,158 @@ weekly.indicators.nonparity <- function(indicators.data=list(piglets.deaths.week
 }
 
 
+## trying to join indicators weekly with parity with weekly without parity into one function
+
+weekly.indicators <- function(indicators.data=list(reservices.week=reservices.week, 
+                                                   number.deaths.week=number.deaths.week,
+                                                   piglets.deaths.week),
+                              weekly.window=weekly.window
+                              
+)
+{
+  
+  #indicators.count = 0
+  
+  for (i in 1:length(indicators.data)) {        #i=reservices.week i=1  indicators.data[[i]]
+    
+    if(is.numeric(i)==FALSE) {
+      
+      #indicators.count = indicators.count+1
+      
+      range <- max(1,(dim(indicators.data[[i]])[1]-weekly.window+1)):dim(indicators.data[[i]])[1]
+      
+      date <- index.dates.week$start[range]
+      week <- index.dates.week$week[range]
+      year <- index.dates.week$ISOweekYear[range]
+      week.quarter <- week-(floor((week-1)/13)*13)
+      quarter <- c(rep(NA, length(range)))
+      quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
+      quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
+      quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
+      quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
+      
+      baseline <- c(rep(NA, length(range)))
+      UCL <- c(rep(NA, length(range)))
+      LCL <- c(rep(NA, length(range)))
+      alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+      alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+      
+      #observed.gilt <- indicators.data[[i]][match(parity.group2$parity,colnames(indicators.data[[i]])),(parity.group2$group.name)=="gilt"][range]
+      #observed.gilt <- i[match(parity.group2$parity[(parity.group2$group.name)=="gilt"], colnames(i))][range]
+      
+      observed.gilt <- indicators.data[[i]][,1][range]
+      parity.gilt <- c(rep("gilt", length(range)))
+      
+      observed.young <- indicators.data[[i]][,2][range]
+      parity.young <- c(rep("young", length(range)))
+      
+      observed.prime <- rowSums(indicators.data[[i]][,c(3:5)])[range]
+      parity.prime <- c(rep("prime", length(range)))
+      
+      observed.mature <- rowSums(indicators.data[[i]][,c(6:15)])[range]
+      parity.mature <- c(rep("mature", length(range)))
+      
+      
+      table.gilt <- data.frame(date, week, year, week.quarter, quarter,
+                               observed.gilt, baseline, UCL, LCL,
+                               alarms.ewma, alarms.shew, parity.gilt)
+      
+      table.young <- data.frame(date, week, year, week.quarter, quarter,
+                                observed.young, baseline, UCL, LCL,
+                                alarms.ewma, alarms.shew, parity.young)
+      
+      table.prime <- data.frame(date, week, year, week.quarter, quarter,
+                                observed.prime, baseline, UCL, LCL,
+                                alarms.ewma, alarms.shew, parity.prime)
+      
+      table.mature <- data.frame(date, week, year, week.quarter, quarter,
+                                 observed.mature, baseline, UCL, LCL,
+                                 alarms.ewma, alarms.shew, parity.mature)
+      
+      
+      colnames(table.gilt) <- c("date", "week", "year", "week quarter", "quarter",
+                                "observed", "baseline", "UCL", "LCL", 
+                                "alarms EWMA", "alarms Shewhart", "parity")
+      
+      colnames(table.young) <- c("date", "week", "year", "week quarter", "quarter",
+                                 "observed", "baseline", "UCL", "LCL", 
+                                 "alarms EWMA", "alarms Shewhart", "parity")
+      
+      colnames(table.prime) <- c("date", "week", "year", "week quarter", "quarter",
+                                 "observed", "baseline", "UCL", "LCL", 
+                                 "alarms EWMA", "alarms Shewhart", "parity")
+      
+      colnames(table.mature) <- c("date", "week", "year", "week quarter", "quarter",
+                                  "observed", "baseline", "UCL", "LCL", 
+                                  "alarms EWMA", "alarms Shewhart", "parity")
+      
+      
+      outputs.parity <- list(gilt=table.gilt, young=table.young, prime=table.prime, mature=table.mature)
+      
+      if(i==1){
+        outputs.final.parity <- outputs.parity
+      }else{
+        outputs.final.parity <- list(outputs.final.parity, outputs.parity)
+      }
+    }
+    
+    # names(outputs.final.parity) <- names(indicators.data)
+    
+    
+    if(is.numeric(i)==TRUE) {   #i=piglets.deaths.week
+      
+      range <- max(1,(length(indicators.data[[i]])-weekly.window+1)):length(indicators.data[[1]])
+      
+      date <- index.dates.week$start[range]
+      week <- index.dates.week$week[range]
+      year <- index.dates.week$ISOweekYear[range]
+      week.quarter <- week-(floor((week-1)/13)*13)
+      quarter <- c(rep(NA, length(range)))
+      quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
+      quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
+      quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
+      quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
+      
+      baseline <- c(rep(NA, length(range)))
+      UCL <- c(rep(NA, length(range)))
+      LCL <- c(rep(NA, length(range)))
+      alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+      alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+      
+      #indicators.count = 0
+      
+      #indicators.count = indicators.count+1
+      
+      observed <- indicators.data[[i]][range]
+      
+      table <- data.frame(date, week, year, week.quarter, quarter,
+                          observed, baseline, UCL, LCL, 
+                          alarms.ewma, alarms.shew)
+      
+      colnames(table) <- c("date", "week", "year", "week quarter", "quarter", 
+                           "observed", "baseline", "UCL", "LCL",
+                           "alarms EWMA", "alarms Shewhart")
+      
+      outputs.nonparity <- list(table=table)
+      
+      if(i==1){
+        outputs.final.nonparity <- outputs.nonparity
+      }else{
+        outputs.final.nonparity <- list(outputs.final.nonparity, outputs.nonparity)
+      }
+    }
+    
+    # names(outputs.final.nonparity) <- names(indicators.data)
+    
+    return(outputs.final.parity,outputs.final.nonparity)
+  }
+}
+
+
 ## for continuous indicators taking parity into account
 
 continuous.indicators <- function(indicators.data=list(days.between.farrowings),
-                                  continuous.window=5500
+                                  continuous.window=continuous.window
                                   
 )
 {
@@ -226,7 +485,7 @@ continuous.indicators <- function(indicators.data=list(days.between.farrowings),
       
       range <- max(1,(dim(m)[1]-continuous.window+1)):dim(m)[1]
       
-      date <- m[,"date"][range]
+      date <- as.Date(m[,"date"],origin="1970-01-01")[range]
       week <- isoweek(as.Date(date,origin="1970-01-01"))[range]
       year <- isoyear(as.Date(date,origin="1970-01-01"))[range]
       week.quarter <- week-(floor((week-1)/13)*13)
