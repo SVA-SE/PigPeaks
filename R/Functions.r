@@ -152,179 +152,24 @@ create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
 
 # structure indicators ----
 
-## for weekly indicators taking parity into account
-
-weekly.indicators.parity <- function(indicators.data=list(reservices.week=reservices.week, 
-                                                          number.deaths.week=number.deaths.week),
-                                     weekly.window=weekly.window
-                                 
-)
-{
-  ##all indicators in indicators.data list have the same dimensions
-  range <- max(1,(dim(indicators.data[[1]])[1]-weekly.window+1)):dim(indicators.data[[1]])[1]
-  
-  date <- index.dates.week$start[range]
-  week <- index.dates.week$week[range]
-  year <- index.dates.week$ISOweekYear[range]
-  week.quarter <- week-(floor((week-1)/13)*13)
-  quarter <- c(rep(NA, length(range)))
-  quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-  quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-  quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-  quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
-  
-  baseline <- c(rep(NA, length(range)))
-  UCL <- c(rep(NA, length(range)))
-  LCL <- c(rep(NA, length(range)))
-  alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  
-  
-  #indicators.count = 0
-  
-  for (i in 1:length(indicators.data)) {        #i=reservices.week i=1  indicators.data[[i]]
-
-    #indicators.count = indicators.count+1
-    
-      
-    observed.gilt <- indicators.data[[i]][,1][range]
-    parity.gilt <- c(rep("gilt", length(range)))
-    
-    observed.young <- indicators.data[[i]][,2][range]
-    parity.young <- c(rep("young", length(range)))
-  
-    observed.prime <- rowSums(indicators.data[[i]][,c(3:5)])[range]
-    parity.prime <- c(rep("prime", length(range)))
-    
-    observed.mature <- rowSums(indicators.data[[i]][,c(6:15)])[range]
-    parity.mature <- c(rep("mature", length(range)))
-    
-    
-  table.gilt <- data.frame(date, week, year, week.quarter, quarter,
-                           observed.gilt, baseline, UCL, LCL,
-                           alarms.ewma, alarms.shew, parity.gilt)
-  
-  table.young <- data.frame(date, week, year, week.quarter, quarter,
-                            observed.young, baseline, UCL, LCL,
-                            alarms.ewma, alarms.shew, parity.young)
-  
-  table.prime <- data.frame(date, week, year, week.quarter, quarter,
-                            observed.prime, baseline, UCL, LCL,
-                            alarms.ewma, alarms.shew, parity.prime)
-  
-  table.mature <- data.frame(date, week, year, week.quarter, quarter,
-                             observed.mature, baseline, UCL, LCL,
-                             alarms.ewma, alarms.shew, parity.mature)
-  
-  
-  colnames(table.gilt) <- c("date", "week", "year", "week quarter", "quarter",
-                            "observed", "baseline", "UCL", "LCL", 
-                            "alarms EWMA", "alarms Shewhart", "parity")
-  
-  colnames(table.young) <- c("date", "week", "year", "week quarter", "quarter",
-                             "observed", "baseline", "UCL", "LCL", 
-                             "alarms EWMA", "alarms Shewhart", "parity")
-  
-  colnames(table.prime) <- c("date", "week", "year", "week quarter", "quarter",
-                             "observed", "baseline", "UCL", "LCL", 
-                             "alarms EWMA", "alarms Shewhart", "parity")
-  
-  colnames(table.mature) <- c("date", "week", "year", "week quarter", "quarter",
-                             "observed", "baseline", "UCL", "LCL", 
-                             "alarms EWMA", "alarms Shewhart", "parity")
-  
-  
-  outputs <- list(gilt=table.gilt, young=table.young, prime=table.prime, mature=table.mature)
-  
-  if(i==1){
-    outputs.final <- outputs
-  }else{
-    outputs.final <- list(outputs.final, outputs)
-  }
-  }
-  
-  names(outputs.final) <- names(indicators.data)
-  
-  return(outputs.final)
-  }
-
-
-## for weekly indicators without parity
-
-weekly.indicators.nonparity <- function(indicators.data=list(piglets.deaths.week),
-                                        weekly.window=weekly.window
-)
-  
-{
-  
-  ##all indicators in indicators.data list have the same dimensions
-  range <- max(1,(length(indicators.data[[1]])[1]-weekly.window+1)):length(indicators.data[[1]])[1]
-  
-  date <- index.dates.week$start[range]
-  week <- index.dates.week$week[range]
-  year <- index.dates.week$ISOweekYear[range]
-  week.quarter <- week-(floor((week-1)/13)*13)
-  quarter <- c(rep(NA, length(range)))
-  quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-  quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-  quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-  quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
-  
-  baseline <- c(rep(NA, length(range)))
-  UCL <- c(rep(NA, length(range)))
-  LCL <- c(rep(NA, length(range)))
-  alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  
-  indicators.count = 0
-  
-  for (i in indicators.data) {
-    
-    indicators.count = indicators.count+1
-    
-    observed <- i[range]
-    
-    i <- data.frame(date, week, year, week.quarter, quarter,
-                    observed, baseline, UCL, LCL, 
-                    alarms.ewma, alarms.shew)
-    
-    colnames(i) <- c("date", "week", "year", "week quarter", "quarter", 
-                     "observed", "baseline", "UCL", "LCL",
-                     "alarms EWMA", "alarms Shewhart")
-    
-    outputs <- list(i=i)
-    
-    if(indicators.count==1){
-      outputs.final <- outputs
-    }else{
-      outputs.final <- list(outputs.final, outputs)
-    }
-    
-    
-    return(outputs.final)
-  }
-}
-
-
-## trying to join indicators weekly with parity with weekly without parity into one function
+## weekly indicators with and without parity into one function
 
 weekly.indicators <- function(indicators.data=list(reservices.week=reservices.week, 
                                                    number.deaths.week=number.deaths.week,
-                                                   piglets.deaths.week),
+                                                   piglets.deaths.week=piglets.deaths.week),
                               weekly.window=weekly.window
                               
 )
 {
   
-  #indicators.count = 0
+  parity.count = 0
+  nonparity.count = 0
   
-  for (i in 1:length(indicators.data)) {        #i=reservices.week i=1  indicators.data[[i]]
+  for (i in indicators.data) {  #i=indicators.data[[1]]
     
-    if(is.numeric(i)==FALSE) {
+    if(is.matrix(i)==TRUE) {
       
-      #indicators.count = indicators.count+1
-      
-      range <- max(1,(dim(indicators.data[[i]])[1]-weekly.window+1)):dim(indicators.data[[i]])[1]
+      range <- max(1,(dim(i)[1]-weekly.window+1)):dim(i)[1]
       
       date <- index.dates.week$start[range]
       week <- index.dates.week$week[range]
@@ -342,71 +187,52 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
       alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
       alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
       
-      #observed.gilt <- indicators.data[[i]][match(parity.group2$parity,colnames(indicators.data[[i]])),(parity.group2$group.name)=="gilt"][range]
-      #observed.gilt <- i[match(parity.group2$parity[(parity.group2$group.name)=="gilt"], colnames(i))][range]
       
-      observed.gilt <- indicators.data[[i]][,1][range]
-      parity.gilt <- c(rep("gilt", length(range)))
-      
-      observed.young <- indicators.data[[i]][,2][range]
-      parity.young <- c(rep("young", length(range)))
-      
-      observed.prime <- rowSums(indicators.data[[i]][,c(3:5)])[range]
-      parity.prime <- c(rep("prime", length(range)))
-      
-      observed.mature <- rowSums(indicators.data[[i]][,c(6:15)])[range]
-      parity.mature <- c(rep("mature", length(range)))
-      
-      
-      table.gilt <- data.frame(date, week, year, week.quarter, quarter,
-                               observed.gilt, baseline, UCL, LCL,
-                               alarms.ewma, alarms.shew, parity.gilt)
-      
-      table.young <- data.frame(date, week, year, week.quarter, quarter,
-                                observed.young, baseline, UCL, LCL,
-                                alarms.ewma, alarms.shew, parity.young)
-      
-      table.prime <- data.frame(date, week, year, week.quarter, quarter,
-                                observed.prime, baseline, UCL, LCL,
-                                alarms.ewma, alarms.shew, parity.prime)
-      
-      table.mature <- data.frame(date, week, year, week.quarter, quarter,
-                                 observed.mature, baseline, UCL, LCL,
-                                 alarms.ewma, alarms.shew, parity.mature)
-      
-      
-      colnames(table.gilt) <- c("date", "week", "year", "week quarter", "quarter",
-                                "observed", "baseline", "UCL", "LCL", 
-                                "alarms EWMA", "alarms Shewhart", "parity")
-      
-      colnames(table.young) <- c("date", "week", "year", "week quarter", "quarter",
-                                 "observed", "baseline", "UCL", "LCL", 
-                                 "alarms EWMA", "alarms Shewhart", "parity")
-      
-      colnames(table.prime) <- c("date", "week", "year", "week quarter", "quarter",
-                                 "observed", "baseline", "UCL", "LCL", 
-                                 "alarms EWMA", "alarms Shewhart", "parity")
-      
-      colnames(table.mature) <- c("date", "week", "year", "week quarter", "quarter",
-                                  "observed", "baseline", "UCL", "LCL", 
-                                  "alarms EWMA", "alarms Shewhart", "parity")
-      
-      
-      outputs.parity <- list(gilt=table.gilt, young=table.young, prime=table.prime, mature=table.mature)
-      
-      if(i==1){
-        outputs.final.parity <- outputs.parity
-      }else{
-        outputs.final.parity <- list(outputs.final.parity, outputs.parity)
+      for (l in levels(parity.group2$group.name)) { #l="gilt"   l="prime"
+        
+        parity.count = parity.count+1
+        
+        
+        if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
+          
+          observed <- i[,(parity.group2$parity[parity.group2$group.name==l])][range]
+          
+        }
+          
+        if (length(parity.group2$parity[parity.group2$group.name==l]) > 1) {
+          
+          observed <- rowSums(i[,(parity.group2$parity[parity.group2$group.name==l])])[range]
+          
+        }
+
+        parity.name <- c(rep(l, length(range)))
+        
+        table <- data.frame(date, week, year, week.quarter, quarter,
+                            observed, baseline, UCL, LCL,
+                            alarms.ewma, alarms.shew, parity.name)
+        
+        
+        colnames(table) <- c("date", "week", "year", "week quarter", "quarter",
+                             "observed", "baseline", "UCL", "LCL", 
+                             "alarms EWMA", "alarms Shewhart", "parity")
+       
+        
+        if(parity.count==1){
+          outputs.parity <- table
+        }else{
+          outputs.parity <- list(outputs.parity, table)
+        } 
       }
-    }
+     }
     
-    # names(outputs.final.parity) <- names(indicators.data)
+     #names(outputs.parity.matrix) <- names(indicators.data)
     
     
-    if(is.numeric(i)==TRUE) {   #i=piglets.deaths.week
+    if(is.matrix(i)==FALSE) {   #i=indicators.data[[3]]
       
-      range <- max(1,(length(indicators.data[[i]])-weekly.window+1)):length(indicators.data[[1]])
+      nonparity.count = nonparity.count+1
+      
+      range <- max(1,(length(i)-weekly.window+1)):length(i)
       
       date <- index.dates.week$start[range]
       week <- index.dates.week$week[range]
@@ -424,11 +250,8 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
       alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
       alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
       
-      #indicators.count = 0
-      
-      #indicators.count = indicators.count+1
-      
-      observed <- indicators.data[[i]][range]
+
+      observed <- i[range]
       
       table <- data.frame(date, week, year, week.quarter, quarter,
                           observed, baseline, UCL, LCL, 
@@ -438,72 +261,62 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
                            "observed", "baseline", "UCL", "LCL",
                            "alarms EWMA", "alarms Shewhart")
       
-      outputs.nonparity <- list(table=table)
-      
-      if(i==1){
-        outputs.final.nonparity <- outputs.nonparity
+
+      if(nonparity.count==1){
+        outputs.nonparity <- table
       }else{
-        outputs.final.nonparity <- list(outputs.final.nonparity, outputs.nonparity)
+        outputs.nonparity <- list(outputs.nonparity, table)
       }
     }
     
     # names(outputs.final.nonparity) <- names(indicators.data)
-    
-    return(outputs.final.parity,outputs.final.nonparity)
   }
+  outputs <- list(outputs.parity, outputs.nonparity)
+  return(outputs)
 }
 
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicators.data=list(days.between.farrowings),
+continuous.indicators <- function(indicators.data=list(days.between.farrowings=days.between.farrowings),
                                   continuous.window=continuous.window
                                   
 )
 {
-  indicators.count = 0
+ 
   matrices.count = 0
   
   
-  for (i in indicators.data) {        #i=days.between.farrowings
+  for (i in indicators.data) {        #i=indicators.data[[1]]
     
-    
-    indicators.count = indicators.count+1
-    
-    matrix.gilt <- i[i[, "parity"] <= 2,]
-    matrix.young <- i[i[, "parity"] == 3,]
-    matrix.prime <- i[i[, "parity"] >= 4 & i[, "parity"] <= 6,]
-    matrix.mature <- i[i[, "parity"] >= 7,]
-    
-    matrices <- list(matrix.gilt=matrix.gilt, matrix.young=matrix.young, 
-                     matrix.prime=matrix.prime, matrix.mature=matrix.mature)
-    
-    
-    for (m in matrices) {    #m=matrix.gilt
+    for (l in levels(parity.group2$group.name)) { #l="gilt"   l="mature"
       
       matrices.count = matrices.count+1
       
-      range <- max(1,(dim(m)[1]-continuous.window+1)):dim(m)[1]
-      
-      date <- as.Date(m[,"date"],origin="1970-01-01")[range]
-      week <- isoweek(as.Date(date,origin="1970-01-01"))[range]
-      year <- isoyear(as.Date(date,origin="1970-01-01"))[range]
-      week.quarter <- week-(floor((week-1)/13)*13)
-      quarter <- c(rep(NA, length(range)))
-      quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-      quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-      quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-      quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
-      sowINDEX <- m[,"sowINDEX"][range]
-      observed <- m[,"indicator"][range]
-      baseline <- c(rep(NA, length(range)))
-      UCL <- c(rep(NA, length(range)))
-      LCL <- c(rep(NA, length(range)))
-      alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-      alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-      parity <- m[,"parity"][range]
-      
-      
+      matrix <- i[i[, "parity"] %in% c(parity.group2$parity[parity.group2$group.name==l]),]
+    
+    #last "continuous.window" observations for each parity
+    range <- max(1,(dim(matrix)[1]-continuous.window+1)):dim(matrix)[1]
+    
+    date <- as.Date(matrix[,"date"],origin="1970-01-01")[range]
+    week <- isoweek(as.Date(date,origin="1970-01-01"))[range]
+    year <- isoyear(as.Date(date,origin="1970-01-01"))[range]
+    week.quarter <- week-(floor((week-1)/13)*13)
+    quarter <- c(rep(NA, length(range)))
+    quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
+    quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
+    quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
+    quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
+    sowINDEX <- matrix[,"sowINDEX"][range]
+    observed <- matrix[,"indicator"][range]
+    baseline <- c(rep(NA, length(range)))
+    UCL <- c(rep(NA, length(range)))
+    LCL <- c(rep(NA, length(range)))
+    alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+    alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+    parity <- matrix[,"parity"][range]
+    
+    
       table <- data.frame(date, week, year, week.quarter, quarter,
                           sowINDEX, observed, baseline, UCL, LCL,
                           alarms.ewma, alarms.shew, parity)
@@ -513,23 +326,15 @@ continuous.indicators <- function(indicators.data=list(days.between.farrowings),
                            "sowINDEX", "observed", "baseline", "UCL", "LCL", 
                            "alarms EWMA", "alarms Shewhart", "parity")
       
-      outputs <- list(i=table)
-      
+
       if(matrices.count==1){           ##confirmar se quando se adicionar mais indicadores resulta
-        outputs.final <- outputs       ##e melhorar posição nas listas
+        outputs <- table               ##e melhorar posição nas listas
       }else{
-        outputs.final <- list(outputs.final, outputs)
+        outputs <- list(outputs, table)
       }
     }
-    
-    # if(indicators.count==1){          
-    #   outputs.final <- table
-    # }else{
-    #   outputs.final <- list(outputs.final, table)
-    # }
   }
-  
-  return(outputs.final)
+  return(outputs)
 }
 
 
