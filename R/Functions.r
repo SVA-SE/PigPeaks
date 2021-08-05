@@ -1,9 +1,12 @@
-packages <- c("RColorBrewer", "lubridate")
+packages <- c("ISOweek","RColorBrewer", "lubridate", "abind", "qcc")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
+require(ISOweek)
 require(RColorBrewer)
 require(lubridate)
-
+require(caTools)
+require(abind)
+require(qcc)
 
 # background functions ----
 
@@ -161,13 +164,15 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
                               
 )
 {
-  
   parity.count = 0
   nonparity.count = 0
+
   
   for (i in indicators.data) {  #i=indicators.data[[1]]
     
-    if(is.matrix(i)==TRUE) {
+    if(is.matrix(i)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
+      
+      matrix.count = matrix.count +1
       
       range <- max(1,(dim(i)[1]-weekly.window+1)):dim(i)[1]
       
@@ -215,20 +220,21 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
         colnames(table) <- c("date", "week", "year", "week quarter", "quarter",
                              "observed", "baseline", "UCL", "LCL", 
                              "alarms EWMA", "alarms Shewhart", "parity")
-       
+        
         
         if(parity.count==1){
           outputs.parity <- table
         }else{
           outputs.parity <- list(outputs.parity, table)
-        } 
+        }
       }
-     }
-    
+    }
+  
      #names(outputs.parity.matrix) <- names(indicators.data)
     
     
     if(is.matrix(i)==FALSE) {   #i=indicators.data[[3]]
+                                #for indicators that are not a matrix, and therefore they have no parity
       
       nonparity.count = nonparity.count+1
       
@@ -337,6 +343,474 @@ continuous.indicators <- function(indicators.data=list(days.between.farrowings=d
   return(outputs)
 }
 
+# clean baseline non-parametric ----
+
+##'The cleaning is non-parametric, based on moving
+##' percentiles. The user sets a window of time points, around each time point,
+##' which will be used to calculate the percentile set in the user in the argument
+##' limit. Any observations falling outside that percentile are removed
+##' and substituted by the percentile itself.
+
+clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.window = weekly.window),
+                                                   continuous.indicators(continuous.window = continuous.window)),
+                                 limit.upp=limit.upp,
+                                 limit.lw=limit.lw,
+                                 run.window.weekly=run.window.weekly,
+                                 run.window.continuous=run.window.continuous
+)
+{
+  
+  
+  
+  #only for the indicators to be worked out here,
+  #adding data form observed which is only modified if an
+  #aberration is detected
+  
+  for (i in list.indicators) {  #i=list.indicators[[1]][[1]][[2]]       i=list.indicators[[4]]
+    
+    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators
+    
+      i[,"baseline"] <- i[,"observed"]
+
+  #require(caTools)
+  
+  #pulling data form the object to work out of the object          
+  observed.matrix=i[,"observed"]
+  
+  #if both upper and lower limits are not NULL
+  
+  if(!is.null(limit.upp) & !is.null(limit.lw)){
+    
+    days = observed.matrix
+    
+    limitV.upp <- runquantile(days, run.window.continuous, 
+                              probs=limit.upp, endrule="quantile")
+    
+    
+    peaks.upp <- which(days > round(limitV.upp))
+    x.smooth <- days
+    x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+    
+    
+    i[,"baseline"] <- x.smooth
+    
+    
+    
+    limitV.lw <- runquantile(days, run.window.continuous, 
+                             probs=limit.lw, endrule="quantile")
+    
+    
+    
+    peaks.lw <- which(days < round(limitV.lw))
+    x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+    
+    
+    i[,"baseline"] <- x.smooth
+  }
+  
+  
+  #if only upper limit is not NULL  
+  
+  if(!is.null(limit.upp) & is.null(limit.lw)){
+    
+    days = observed.matrix
+    
+    limitV.upp <- runquantile(days, run.window.continuous, 
+                              probs=limit.upp, endrule="quantile")
+    
+    
+    
+    peaks.upp <- which(days > round(limitV.upp))
+    x.smooth <- days
+    x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+    
+    
+    
+    i[,"baseline"] <- x.smooth
+  }
+  
+  
+  #if only lower limit is not NULL      
+  
+  if(!is.null(limit.lw) & is.null(limit.upp)){
+    
+    days = observed.matrix
+    
+    limitV.lw <- runquantile(days, run.window.continuous, 
+                             probs=limit.lw, endrule="quantile")
+    
+    
+    
+    peaks.lw <- which(days < round(limitV.lw))
+    x.smooth <- days
+    x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+    
+    
+    
+    i[,"baseline"] <- x.smooth
+    
+  }
+    }else{                   # for weekly indicators
+      
+      i[,"baseline"] <- i[,"observed"]
+      
+      #require(caTools)
+      
+      #pulling data form the object to work out of the object          
+      observed.matrix=i[,"observed"]
+      
+      #if both upper and lower limits are not NULL
+      
+      if(!is.null(limit.upp) & !is.null(limit.lw)){
+        
+        days = observed.matrix
+        
+        limitV.upp <- runquantile(days, run.window.weekly, 
+                                  probs=limit.upp, endrule="quantile")
+        
+        
+        peaks.upp <- which(days > round(limitV.upp))
+        x.smooth <- days
+        x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+        
+        
+        i[,"baseline"] <- x.smooth
+        
+        
+        
+        limitV.lw <- runquantile(days, run.window.weekly, 
+                                 probs=limit.lw, endrule="quantile")
+        
+        
+        
+        peaks.lw <- which(days < round(limitV.lw))
+        x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+        
+        
+        i[,"baseline"] <- x.smooth
+      }
+      
+      
+      #if only upper limit is not NULL  
+      
+      if(!is.null(limit.upp) & is.null(limit.lw)){
+        
+        days = observed.matrix
+        
+        limitV.upp <- runquantile(days, run.window.weekly, 
+                                  probs=limit.upp, endrule="quantile")
+        
+        
+        
+        peaks.upp <- which(days > round(limitV.upp))
+        x.smooth <- days
+        x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+        
+        
+        
+        i[,"baseline"] <- x.smooth
+      }
+      
+      
+      #if only lower limit is not NULL      
+      
+      if(!is.null(limit.lw) & is.null(limit.upp)){
+        
+        days = observed.matrix
+        
+        limitV.lw <- runquantile(days, run.window.weekly, 
+                                 probs=limit.lw, endrule="quantile")
+        
+        
+        
+        peaks.lw <- which(days < round(limitV.lw))
+        x.smooth <- days
+        x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+        
+        
+        
+        i[,"baseline"] <- x.smooth
+      }
+    }
+  }
+  
+  return(list.indicators)
+}
+
+# apply EWMA control chart ----
+
+apply_ewma <- function(list.indicators=clean_baseline_perc(),
+                       evaluate.weekly.window=evaluate.weekly.window,
+                       baseline.weekly.window=baseline.weekly.window,
+                       lambda=lambda,
+                       limit.sd=limit.sd,
+                       guard.band.weekly=guard.band.weekly,
+                       correct.baseline.UCL=correct.baseline.UCL,
+                       correct.baseline.LCL=correct.baseline.LCL,
+                       UCL=UCL,
+                       LCL=LCL,
+                       continuous.window=continuous.window,
+)
+{
+  
+  if(guard.band.weekly<1)(guard.band.weekly<-1)
+  
+  for (i in list.indicators) {  #i=list.indicators[[1]][[2]]       i=list.indicators[[4]]
+    
+    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators, retrospective framework 
+  
+  data <- tail(i[,"observed"], continuous.window)
+  
+  ewma1 <- ewma(data, lambda = 0.2, nsigmas = 2.5)
+  ewma2 <- ewma(data, lambda = 0.2, nsigmas = 3)
+  ewma3 <- ewma(data, lambda = 0.2, nsigmas = 3.5)
+  
+  ##ADD one if the result of this loop was a detection
+  
+  i[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<- 
+    i[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
+  
+  i[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"]<- 
+    i[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"] +1
+  
+  i[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"]<- 
+    i[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"] +1
+  
+  
+  i[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <- 
+    i[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
+  
+  
+  i[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] <- 
+    i[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] -1
+  
+  
+  i[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] <- 
+    i[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] -1
+  
+  
+  
+  #choose UCL and LCL
+  i[,"UCL"] <- ewma2$limits[,"UCL"]
+  
+  i[,"LCL"] <- ewma2$limits[,"LCL"]
+
+
+      }else{        # for weekly indicators, prospective framework 
+        
+        #require(abind)
+        
+        #number of time points to iterate           
+        range <- (dim(i)[1]-evaluate.weekly.window+1):dim(i)[1]  
+        
+        for (tpoint in range){ #tpoint=155
+          
+          start = tpoint-baseline.weekly.window-guard.band.weekly
+          end   = tpoint-1
+          
+          to.cc <- c(i[start:end,"baseline"],i[tpoint,"observed"])
+          correct <- 0
+          
+          
+          for (l in 1:length(limit.sd)){ #l=2
+            #require(qcc)
+            ewma1 = ewma(to.cc,
+                         center=mean(to.cc[1:(length(to.cc)-guard.band.weekly)],na.rm=TRUE),
+                         std.dev=sd(to.cc[1:(length(to.cc)-guard.band.weekly)],na.rm=TRUE),
+                         lambda=lambda,nsigmas=limit.sd[l],plot=FALSE)
+            
+            
+            last <- length(to.cc) 
+            upr.alarm.detected <- 0
+            lwr.alarm.detected <- 0
+            
+            if(length(ewma1$violations)>0){
+              if(ewma1$violations[length(ewma1$violations)]==last&
+                 ewma1$y[last]>ewma1$limits[last,2]){
+                upr.alarm.detected <- 1
+              }}
+            
+            if(length(ewma1$violations)>0){
+              if(ewma1$violations[length(ewma1$violations)]==last&
+                 ewma1$y[last]<ewma1$limits[last,1]){
+                lwr.alarm.detected <- 1
+              }}
+            
+            UCL.value= ceiling(correct  +  ewma1$limits[[length(ewma1$limits[,2]),2]])
+            LCL.value= floor(correct    +  ewma1$limits[[length(ewma1$limits[,1]),1]])
+            
+            #before deciding if an alarm exists, a zero is automatically added to the
+            #time point if this is the first loop for two reasons:
+            #1-because if the data were never analysed, the slot had a NA before,
+            #and adding 0 will signal that it has now been processed
+            #2-because if the data HAS been analyzed before, we want the results of these
+            #analyses to OVERRIDE, not to SUM to the previous analyses.
+            if(l==1){
+              i[tpoint,"alarms EWMA"]<-0
+            }
+            
+            if (l==UCL){
+              i[tpoint,"UCL"]<-UCL.value
+            }
+            
+            if (l==LCL){
+              i[tpoint,"LCL"]<-LCL.value
+            }
+            
+            #ADD a one if the result of this loop was a detection
+            if (upr.alarm.detected){
+              i[tpoint,"alarms EWMA"]<-i[tpoint,"alarms EWMA"]+1
+            }
+            
+            if (lwr.alarm.detected){
+              i[tpoint,"alarms EWMA"]<-i[tpoint,"alarms EWMA"]-1
+            }
+            
+            
+            #Correct baseline IF the user indicated so
+            if (isTRUE(correct.baseline.UCL)){
+              if (i[tpoint,"observed"] > max(0,UCL.value)){
+                i[tpoint,"baseline"] <- max(0,round(UCL.value))
+              }
+            }
+            if (isTRUE(correct.baseline.LCL)){
+              if (i[tpoint,"observed"] < max(0,LCL.value)){
+                i[tpoint,"baseline"] <- max(0,round(LCL.value))
+              }
+            }
+          }
+        }
+      }
+  }
+  return(list.indicators)
+}
+  
+# apply Shewhart control chart ----
+
+shew_apply <- function (list.indicators=ewma_apply(),
+                        evaluate.weekly.window=evaluate.weekly.window,
+                        baseline.weekly.window=baseline.weekly.window,
+                        limit.sd=limit.sd,
+                        guard.band.weekly=guard.band.weekly,
+                        #correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
+                        #correct.baseline.LCL=correct.baseline.LCL,
+                        #UCL=UCL,                 #should be possible to choose if they want to put the values of ewma or shew in the columns?
+                        #LCL=LCL,
+                        continuous.window=continuous.window
+)
+{
+  
+  if(guard.band.weekly<1)(guard.band.weekly<-1)
+  
+  for (i in list.indicators) {  #i=list.indicators[[1]][[2]]       i=list.indicators[[4]]
+    
+    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators, retrospective framework 
+        
+        data <- tail(i[,"observed"], continuous.window)
+        
+        stats <- stats.xbar.one(data)
+        sd.xbar <- sd.xbar.one(data, 
+                               std.dev = "SD", k=2)
+        shew1 <- limits.xbar.one(center=stats$center, 
+                                 std.dev=as.double(sd.xbar), 
+                                 conf=2.5)
+        shew2 <- limits.xbar.one(center=stats$center, 
+                                 std.dev=as.double(sd.xbar), 
+                                 conf=3)
+        shew3 <- limits.xbar.one(center=stats$center, 
+                                 std.dev=as.double(sd.xbar), 
+                                 conf=3.5)
+        
+        
+        ##ADD or SUBTRACT one if the result of this loop was a detection
+        
+        i[data>shew1[,"UCL"], "alarms Shewhart"] <- i[data>shew1[,"UCL"], "alarms Shewhart"] +1
+        
+        i[data>shew2[,"UCL"], "alarms Shewhart"] <- i[data>shew2[,"UCL"], "alarms Shewhart"] +1
+        
+        i[data>shew3[,"UCL"], "alarms Shewhart"] <- i[data>shew3[,"UCL"], "alarms Shewhart"] +1
+        
+        
+        i[data<max(0,shew1[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew1[,"LCL"]), "alarms Shewhart"] -1
+        
+        i[data<max(0,shew2[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew2[,"LCL"]), "alarms Shewhart"] -1
+        
+        i[data<max(0,shew3[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew3[,"LCL"]), "alarms Shewhart"] -1
+        
+        }else{        # for weekly indicators, prospective framework 
+          
+          #require(abind)
+          
+          #number of time points to iterate           
+          range <- (dim(i)[1]-evaluate.weekly.window+1):dim(i)[1]                
+          
+          for (tpoint in range){
+            
+            start = tpoint-baseline.weekly.window-guard.band.weekly
+            end   = tpoint-1
+            
+            to.cc <- c(i[start:end,"baseline"],i[tpoint,"observed"]) 
+            correct <- 0
+            
+            
+            for (l in 1:length(limit.sd)){
+              #require(qcc)
+              average.series = to.cc[1:(length(to.cc)-guard.band.weekly)]
+              average.series = average.series[which(!is.na(average.series))]
+              stats <- stats.xbar.one(average.series)
+              sd.xbar <- sd.xbar.one(average.series, 
+                                     std.dev = "SD", k=2)
+              shew <- limits.xbar.one(center=stats$center, 
+                                      std.dev=as.double(sd.xbar), 
+                                      conf=limit.sd[l])
+              
+              UCL.value= ceiling(correct  +  shew[2])
+              LCL.value= floor(correct  + shew[1])
+              #before deciding if an alarm exists, a zero is automatically added to the
+              #time point if this is the first loop for two reasons:
+              #1-because if the data were never analysed, the slot had a NA before,
+              #and adding 0 will signal that it has now been processed
+              #2-because if the data HAS been analyzed before, we want the results of these
+              #analyses to OVERRIDE, not to SUM to the previous analyses.
+              if(l==1){
+                i[tpoint,"alarms Shewhart"]<-0
+              }
+              
+              # if (l==UCL){
+              #   i[tpoint,"UCL"]<-UCL.value
+              # }
+              # 
+              # if (l==LCL){
+              #   i[tpoint,"LCL"]<-LCL.value
+              # }
+              
+              #ADD a one if the result of this loop was a detection
+              if (i[tpoint,"observed"]>max(0,UCL.value)){
+                i[tpoint,"alarms Shewhart"]<-i[tpoint,"alarms Shewhart"]+1  
+              }
+              
+              if (i[tpoint,"observed"]<max(0,LCL.value)){
+                i[tpoint,"alarms Shewhart"]<-i[tpoint,"alarms Shewhart"]-1
+              }
+              
+              
+              #   #Correct baseline IF the user indicated so
+              #   if (correct.baseline==l){
+              #     i[tpoint,"baseline"] <- i[tpoint,"observed"]
+              #     if (i[tpoint,"observed"]>max(0,UCL.value)){
+              #       i[tpoint,"baseline"] <- max(0,round(UCL.value))
+              #     }
+              #     if (i[tpoint,"observed"]<max(0,LCL.value)){
+              #       i[tpoint,"baseline"] <- max(0,round(LCL.value))
+              #     }
+              # }
+            }
+          }
+        }
+  }
+          return(list.indicators)          
+        }
+          
 
 # plotting functions ----
 
