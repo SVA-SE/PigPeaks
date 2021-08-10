@@ -812,9 +812,9 @@ shew_apply <- function (list.indicators=ewma_apply(),
 # evaluation: PRRS outbreaks injection ----
 ##NOT WORKING YET
 
-add.outbreaks.reservices <- function(list.indicators=c(weekly.indicators(weekly.window = weekly.window),
-                                                       continuous.indicators(continuous.window = continuous.window)),
-                                     quarter = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",
+evaluate_system <- function(list.indicators=c(weekly.indicators(weekly.window = weekly.window),
+                                              continuous.indicators(continuous.window = continuous.window)),
+                            quarter = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",
                                                  "2017.1", "2017.2", "2017.3", "2017.4", "2018.1")
                                      
 )
