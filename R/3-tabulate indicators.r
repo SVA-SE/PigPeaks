@@ -12,8 +12,8 @@ source("Settings.r")
 source("R/Functions.r")
 
 
-load("individual.sows.RData")
-load("animal.RData")
+load("data/individual.sows.RData")
+load("data/animal.RData")
 
 
 index.dates.days$ISOweekYear <- as.numeric(substr(as.character(index.dates.days[,"ISOweek"]),1,4))
@@ -131,6 +131,6 @@ save(individual.sows,
 
      active.sows.displayID,
 
-     file="indicators.RData")
+     file="data/indicators.RData")
 
 #load("indicators.RData")

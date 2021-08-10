@@ -12,9 +12,10 @@ source("Settings.r")
 source("R/Functions.r")
 
 
-load("individual.sows.RData")
-load("animal.RData")
-load("indicators.RData")
+load("data/individual.sows.RData")
+load("data/animal.RData")
+load("data/indicators.RData")
+
 
 
 # Gilts ----
@@ -32,6 +33,18 @@ load("indicators.RData")
 # Services ----
 
 ## Reservices per week
+
+matrix1 <- weekly.indicators(indicator1)
+matrix2 <- weekly.indicators(indicator2)
+
+
+weekly.indicators(indicators.data=list(reservices.week=reservices.week,
+                                                   number.deaths.week=number.deaths.week,
+                                                   piglets.deaths.week=piglets.deaths.week),
+                              weekly.window=weekly.window)
+
+weekly.indicators(weekly.window = 300)
+
 
 weekly.indicators.parity(weekly.window=271)
 weekly.indicators.parity(weekly.window=271)[[1]]
