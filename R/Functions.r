@@ -155,184 +155,117 @@ create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
 
 # structure indicators ----
 
+# farm range for weekly indicators
+
+range.weekly <- function(indicator=indicator,        #indicator=reservices.week    indicator=piglets.deaths.week
+                         weekly.window=weekly.window
+)
+
+{      
+  if(is.matrix(indicator)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
+    
+    range <- max(1,(dim(indicator)[1]-weekly.window+1)):dim(indicator)[1]
+
+  } 
+  
+  if(is.matrix(indicator)==FALSE) {   #for indicators that are not matrix, and therefore they have no parity
+    
+    range <- max(1,(length(indicator)-weekly.window+1)):length(indicator)
+    
+  }
+  
+  return(range)
+}
+
+
 ## weekly indicators with and without parity into one function
 
-weekly.indicators <- function(indicators.data=list(reservices.week=reservices.week,
-                                                   number.deaths.week=number.deaths.week,
-                                                   piglets.deaths.week=piglets.deaths.week),
-                              weekly.window=weekly.window
+weekly.indicators <- function(indicator=indicator,
+                              range=range_weekly
 
 )
 {
-  parity.count = 0
-  nonparity.count = 0
-  
   date <- index.dates.week$start[range]
   week <- index.dates.week$week[range]
   year <- index.dates.week$ISOweekYear[range]
+  
+  baseline <- c(rep(NA, length(range)))
+  UCL <- c(rep(NA, length(range)))
+  LCL <- c(rep(NA, length(range)))
+  alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+  
 
-  for (i in indicators.data) {  #i=indicators.data[[1]]
-    #for (i in 1:length(indicators.data)) { #indicators.data[[i]]
-
-    if(is.matrix(i)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
-
-      range <- max(1,(dim(i)[1]-weekly.window+1)):dim(i)[1]
-
-      baseline <- c(rep(NA, length(range)))
-      UCL <- c(rep(NA, length(range)))
-      LCL <- c(rep(NA, length(range)))
-      alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-      alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-
-
-      for (l in levels(parity.group2$group.name)) { #l="gilt"   l="prime"
-
-        parity.count = parity.count+1
-
-
-        if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-
-          observed <- i[,(parity.group2$parity[parity.group2$group.name==l])][range]
-
-        }
-
-        if (length(parity.group2$parity[parity.group2$group.name==l]) > 1) {
-
-          observed <- rowSums(i[,(parity.group2$parity[parity.group2$group.name==l])])[range]
-
-        }
-
-        parity.name <- c(rep(l, length(range)))
-
-        table <- data.frame(date, week, year, week.quarter, quarter,
+    if(is.matrix(indicator)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
+                                        #indicator=reservices.week
+      
+      observed <- rowSums(indicator)[range]
+      
+        table <- data.frame(date, week, year,
                             observed, baseline, UCL, LCL,
-                            alarms.ewma, alarms.shew, parity.name)
+                            alarms.ewma, alarms.shew)
 
 
-        colnames(table) <- c("date", "week", "year", "week quarter", "quarter",
+        colnames(table) <- c("date", "week", "year",
                              "observed", "baseline", "UCL", "LCL",
-                             "alarms EWMA", "alarms Shewhart", "parity")
-
-
-        if(parity.count==1){
-          outputs.parity <- table
-        }else{
-          outputs.parity <- list(outputs.parity, table)
-      }
+                             "alarms EWMA", "alarms Shewhart")
+        
+     #names(table) <- indicator
     }
-  }
-     #names(outputs.parity.matrix) <- names(indicators.data)
 
 
-    if(is.matrix(i)==FALSE) {   #i=indicators.data[[3]]
-                                #for indicators that are not a matrix, and therefore they have no parity
+    if(is.matrix(indicator)==FALSE) {   #for indicators that are not a matrix, and therefore they have no parity
+                                        #indicator=piglets.deaths.week
+      
+      observed <- indicator[range]
 
-      nonparity.count = nonparity.count+1
-
-      range <- max(1,(length(i)-weekly.window+1)):length(i)
-
-      date <- index.dates.week$start[range]
-      week <- index.dates.week$week[range]
-      year <- index.dates.week$ISOweekYear[range]
-      week.quarter <- week-(floor((week-1)/13)*13)
-      quarter <- c(rep(NA, length(range)))
-      quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-      quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-      quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-      quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
-
-      baseline <- c(rep(NA, length(range)))
-      UCL <- c(rep(NA, length(range)))
-      LCL <- c(rep(NA, length(range)))
-      alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-      alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-
-
-      observed <- i[range]
-
-      table <- data.frame(date, week, year, week.quarter, quarter,
+      table <- data.frame(date, week, year,
                           observed, baseline, UCL, LCL,
                           alarms.ewma, alarms.shew)
 
-      colnames(table) <- c("date", "week", "year", "week quarter", "quarter",
+      colnames(table) <- c("date", "week", "year",
                            "observed", "baseline", "UCL", "LCL",
                            "alarms EWMA", "alarms Shewhart")
 
-
-      if(nonparity.count==1){
-        outputs.nonparity <- table
-      }else{
-        outputs.nonparity <- list(outputs.nonparity, table)
-      }
+    #names(table) <- indicator
     }
-
-    # names(outputs.final.nonparity) <- names(indicators.data)
-  }
-
-  outputs <- list(outputs.parity, outputs.nonparity)
-  return(outputs)
+  
+  return(table)
 }
 
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicators.data=list(days.between.farrowings=days.between.farrowings),
+continuous.indicators <- function(indicator=indicator,       #indicator=days.between.farrowings
                                   continuous.window=continuous.window
 
 )
 {
+    range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
 
-  matrices.count = 0
-
-
-  for (i in indicators.data) {        #i=indicators.data[[1]]
-
-    for (l in levels(parity.group2$group.name)) { #l="gilt"   l="mature"
-
-      matrices.count = matrices.count+1
-
-      matrix <- i[i[, "parity"] %in% c(parity.group2$parity[parity.group2$group.name==l]),]
-
-    #last "continuous.window" observations for each parity
-    range <- max(1,(dim(matrix)[1]-continuous.window+1)):dim(matrix)[1]
-
-    date <- as.Date(matrix[,"date"],origin="1970-01-01")[range]
+    date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
     week <- isoweek(as.Date(date,origin="1970-01-01"))[range]
     year <- isoyear(as.Date(date,origin="1970-01-01"))[range]
-    week.quarter <- week-(floor((week-1)/13)*13)
-    quarter <- c(rep(NA, length(range)))
-    quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-    quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-    quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-    quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
-    sowINDEX <- matrix[,"sowINDEX"][range]
-    observed <- matrix[,"indicator"][range]
+    sowINDEX <- indicator[,"sowINDEX"][range]
+    observed <- indicator[,"indicator"][range]
     baseline <- c(rep(NA, length(range)))
     UCL <- c(rep(NA, length(range)))
     LCL <- c(rep(NA, length(range)))
     alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
     alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-    parity <- matrix[,"parity"][range]
+    
+    observed <- indicator[, "indicator"][range]
+    
+      table <- data.frame(date, week, year,
+                          sowINDEX, observed, baseline, 
+                          UCL, LCL, alarms.ewma, alarms.shew)
 
 
-      table <- data.frame(date, week, year, week.quarter, quarter,
-                          sowINDEX, observed, baseline, UCL, LCL,
-                          alarms.ewma, alarms.shew, parity)
+      colnames(table) <- c("date", "week", "year",
+                           "sowINDEX", "observed", "baseline",
+                           "UCL", "LCL", "alarms EWMA", "alarms Shewhart")
 
-
-      colnames(table) <- c("date", "week", "year", "week quarter", "quarter",
-                           "sowINDEX", "observed", "baseline", "UCL", "LCL",
-                           "alarms EWMA", "alarms Shewhart", "parity")
-
-
-      if(matrices.count==1){           ##confirmar se quando se adicionar mais indicadores resulta
-        outputs <- table               ##e melhorar posição nas listas
-      }else{
-        outputs <- list(outputs, table)
-      }
-    }
-  }
-  return(outputs)
+  return(table)
 }
 
 # clean baseline non-parametric ----
@@ -343,8 +276,7 @@ continuous.indicators <- function(indicators.data=list(days.between.farrowings=d
 ##' limit. Any observations falling outside that percentile are removed
 ##' and substituted by the percentile itself.
 
-clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.window = weekly.window),
-                                                   continuous.indicators(continuous.window = continuous.window)),
+clean_baseline_perc <- function (df.indicator=df.indicator,
                                  limit.upp=limit.upp,
                                  limit.lw=limit.lw,
                                  run.window.weekly=run.window.weekly,
@@ -352,22 +284,15 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
 )
 {
 
+    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {       # for continuous indicators
+                                                                #df.indicator=df.reservices.week
 
-
-  #only for the indicators to be worked out here,
-  #adding data form observed which is only modified if an
-  #aberration is detected
-
-  for (i in list.indicators) {  #i=list.indicators[[1]][[1]][[2]]       i=list.indicators[[4]]
-
-    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators
-
-      i[,"baseline"] <- i[,"observed"]
+      df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
   #require(caTools)
 
   #pulling data form the object to work out of the object
-  observed.matrix=i[,"observed"]
+  observed.matrix=df.indicator[,"observed"]
 
   #if both upper and lower limits are not NULL
 
@@ -384,7 +309,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
     x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
 
-    i[,"baseline"] <- x.smooth
+    df.indicator[,"baseline"] <- x.smooth
 
 
 
@@ -397,7 +322,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
     x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
 
-    i[,"baseline"] <- x.smooth
+    df.indicator[,"baseline"] <- x.smooth
   }
 
 
@@ -418,7 +343,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
 
 
 
-    i[,"baseline"] <- x.smooth
+    df.indicator[,"baseline"] <- x.smooth
   }
 
 
@@ -439,17 +364,17 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
 
 
 
-    i[,"baseline"] <- x.smooth
+    df.indicator[,"baseline"] <- x.smooth
 
   }
     }else{                   # for weekly indicators
 
-      i[,"baseline"] <- i[,"observed"]
+      df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
       #require(caTools)
 
       #pulling data form the object to work out of the object
-      observed.matrix=i[,"observed"]
+      observed.matrix=df.indicator[,"observed"]
 
       #if both upper and lower limits are not NULL
 
@@ -466,7 +391,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
 
-        i[,"baseline"] <- x.smooth
+        df.indicator[,"baseline"] <- x.smooth
 
 
 
@@ -479,7 +404,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
 
-        i[,"baseline"] <- x.smooth
+        df.indicator[,"baseline"] <- x.smooth
       }
 
 
@@ -500,7 +425,7 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
 
 
 
-        i[,"baseline"] <- x.smooth
+        df.indicator[,"baseline"] <- x.smooth
       }
 
 
@@ -521,17 +446,16 @@ clean_baseline_perc <- function (list.indicators=c(weekly.indicators(weekly.wind
 
 
 
-        i[,"baseline"] <- x.smooth
+        df.indicator[,"baseline"] <- x.smooth
       }
     }
-  }
 
-  return(list.indicators)
+  return(df.indicator)
 }
 
 # apply EWMA control chart ----
 
-apply_ewma <- function(list.indicators=clean_baseline_perc(),
+apply_ewma <- function(df.indicator=df.indicator,
                        evaluate.weekly.window=evaluate.weekly.window,
                        baseline.weekly.window=baseline.weekly.window,
                        lambda=lambda,
@@ -540,18 +464,12 @@ apply_ewma <- function(list.indicators=clean_baseline_perc(),
                        correct.baseline.UCL=correct.baseline.UCL,
                        correct.baseline.LCL=correct.baseline.LCL,
                        UCL=UCL,
-                       LCL=LCL,
-                       continuous.window=continuous.window
+                       LCL=LCL
 )
 {
+    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {   # for continuous indicators, retrospective framework
 
-  if(guard.band.weekly<1)(guard.band.weekly<-1)
-
-  for (i in list.indicators) {  #i=list.indicators[[1]][[2]]       i=list.indicators[[4]]
-
-    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators, retrospective framework
-
-  data <- tail(i[,"observed"], continuous.window)
+  data <- df.indicator[,"observed"]
 
   ewma1 <- ewma(data, lambda = 0.2, nsigmas = 2.5)
   ewma2 <- ewma(data, lambda = 0.2, nsigmas = 3)
@@ -559,48 +477,48 @@ apply_ewma <- function(list.indicators=clean_baseline_perc(),
 
   ##ADD one if the result of this loop was a detection
 
-  i[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
-    i[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
+  df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
+    df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
 
-  i[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"]<-
-    i[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"] +1
+  df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"]<-
+    df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"] +1
 
-  i[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"]<-
-    i[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"] +1
-
-
-  i[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <-
-    i[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
+  df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"]<-
+    df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"] +1
 
 
-  i[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] <-
-    i[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] -1
+  df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <-
+    df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
 
+  df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] <-
+    df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] -1
 
-  i[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] <-
-    i[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] -1
-
+  df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] <-
+    df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] -1
 
 
   #choose UCL and LCL
-  i[,"UCL"] <- ewma2$limits[,"UCL"]
+  df.indicator[,"UCL"] <- ewma2$limits[,"UCL"]   #how to do it for user to choose
 
-  i[,"LCL"] <- ewma2$limits[,"LCL"]
+  df.indicator[,"LCL"] <- ewma2$limits[,"LCL"]
 
 
       }else{        # for weekly indicators, prospective framework
+                    #df.indicator=df.reservices.week
+        
+        if(guard.band.weekly<1)(guard.band.weekly<-1)
 
         #require(abind)
 
         #number of time points to iterate
-        range <- (dim(i)[1]-evaluate.weekly.window+1):dim(i)[1]
+        range <- (dim(df.indicator)[1]-evaluate.weekly.window+1):dim(df.indicator)[1]
 
         for (tpoint in range){ #tpoint=155
 
           start = tpoint-baseline.weekly.window-guard.band.weekly
           end   = tpoint-1
 
-          to.cc <- c(i[start:end,"baseline"],i[tpoint,"observed"])
+          to.cc <- c(df.indicator[start:end,"baseline"],df.indicator[tpoint,"observed"])
           correct <- 0
 
 
@@ -638,43 +556,42 @@ apply_ewma <- function(list.indicators=clean_baseline_perc(),
             #2-because if the data HAS been analyzed before, we want the results of these
             #analyses to OVERRIDE, not to SUM to the previous analyses.
             if(l==1){
-              i[tpoint,"alarms EWMA"]<-0
+              df.indicator[tpoint,"alarms EWMA"]<-0
             }
 
             if (l==UCL){
-              i[tpoint,"UCL"]<-UCL.value
+              df.indicator[tpoint,"UCL"]<-UCL.value
             }
 
             if (l==LCL){
-              i[tpoint,"LCL"]<-LCL.value
+              df.indicator[tpoint,"LCL"]<-LCL.value
             }
 
             #ADD a one if the result of this loop was a detection
             if (upr.alarm.detected){
-              i[tpoint,"alarms EWMA"]<-i[tpoint,"alarms EWMA"]+1
+              df.indicator[tpoint,"alarms EWMA"]<-df.indicator[tpoint,"alarms EWMA"]+1
             }
 
             if (lwr.alarm.detected){
-              i[tpoint,"alarms EWMA"]<-i[tpoint,"alarms EWMA"]-1
+              df.indicator[tpoint,"alarms EWMA"]<-df.indicator[tpoint,"alarms EWMA"]-1
             }
 
 
             #Correct baseline IF the user indicated so
             if (isTRUE(correct.baseline.UCL)){
-              if (i[tpoint,"observed"] > max(0,UCL.value)){
-                i[tpoint,"baseline"] <- max(0,round(UCL.value))
+              if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
+                df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
               }
             }
             if (isTRUE(correct.baseline.LCL)){
-              if (i[tpoint,"observed"] < max(0,LCL.value)){
-                i[tpoint,"baseline"] <- max(0,round(LCL.value))
+              if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
+                df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
               }
             }
           }
         }
       }
-  }
-  return(list.indicators)
+  return(df.indicator)
 }
 
 # apply Shewhart control chart ----
@@ -802,117 +719,6 @@ shew_apply <- function (list.indicators=ewma_apply(),
           return(list.indicators)
         }
 
-# evaluation: PRRS outbreaks injection ----
-##NOT WORKING YET
-
-evaluate_system <- function(list.indicators=c(weekly.indicators(weekly.window = weekly.window),
-                                              continuous.indicators(continuous.window = continuous.window)),
-                            quarter = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",
-                                                 "2017.1", "2017.2", "2017.3", "2017.4", "2018.1")
-
-)
-{
-  indicators.count = 0
-
-  for (i in list.indicators) {
-
-    indicators.count = indicators.count + 1
-
-    data = i[,"observed"]
-
-  for ( q in quarter){ #q="2015.2"
-
-    if(i==reservices.week){     #see if it works when the lists have name
-
-      start = first(which(i[, "quarter"] == q))
-      end = last(which(i[, "quarter"] == q))
-
-      y <- data[(start):(end)]
-
-    ## increased in week t3 with max value in t8, then decreased until t28 (36-8)
-    ## lets consider that reservices tripled (*2) in week t8
-
-    lgn.reservices <- 2* plnorm(c(1,1,(100/6),(100/6*2),(100/6*3),(100/6*4),(100/6*5),(100/6*6),
-                                  100-(100/28),100-(100/28*2),100-(100/28*3),100-(100/28*4),100-(100/28*5)),
-                                meanlog=4, sdlog=0.3, lower.tail=TRUE, log.p=FALSE)
-
-    #plot(lgn.reservices, type="l")
-
-    baseline.total <- sum(y)/length(y)  # Additive
-    simulated.outbreak <- c(y[c(1,2)], ceiling(lgn.reservices[c(3:13)]*baseline.total)+y[c(3:13)])
-
-    add.observed <-
-      data.frame(replace(i[,"observed"], which(i[, "quarter"] == q), simulated.outbreak))
-    }
-
-    if(i==number.deaths.week){
-
-      start = first(which(i[, "quarter"] == q))
-      end = last(which(i[, "quarter"] == q))
-
-      y <- data[(start):(end)]
-
-      ## increased 10% in week t3 and then decreased until t7 (during 4 weeks (7-3))
-
-      lgn.mortality.sows <- 0.1* (plnorm(c(100/3,(100/3*2),(100/3*3),
-                                           100-(100/4),100-(100/4*2),100-(100/4*3),100-(100/4*4),100-(100/4*4),
-                                           100-(100/4*4),100-(100/4*4),100-(100/4*4),100-(100/4*4),100-(100/4*4)),
-                                         meanlog=4, sdlog=0.3, lower.tail=TRUE, log.p=FALSE))
-
-      #plot(lgn.mortality.sows, type="l")
-
-      baseline.total <- sum(y)/length(y)  # Additive
-      simulated.outbreak <- ceiling(lgn.mortality.sows*baseline.total)+y
-
-      add.observed <-
-        data.frame(replace(i[,"observed"], which(i[, "quarter"] == q), simulated.outbreak))
-
-    }
-
-    ## Clean Baseline
-
-    table <- clean_baseline_perc(list.indicators=i,
-                                 limit.upp=limit.upp,
-                                 limit.lw=limit.lw,
-                                 run.window.weekly=run.window.weekly,
-                                 run.window.continuous=run.window.continuous)
-    ## Applying EWMA
-
-    table <- apply_ewma(list.indicators=i,
-                        evaluate.weekly.window=evaluate.weekly.window,
-                        baseline.weekly.window=baseline.weekly.window,
-                        lambda=lambda,
-                        limit.sd=limit.sd,
-                        guard.band.weekly=guard.band.weekly,
-                        correct.baseline.UCL=correct.baseline.UCL,
-                        correct.baseline.LCL=correct.baseline.LCL,
-                        UCL=UCL,
-                        LCL=LCL,
-                        continuous.window=continuous.window)
-
-    ## Applying Shewhart
-
-   table <- shew_apply(list.indicators=i,
-                       evaluate.weekly.window=evaluate.weekly.window,
-                       baseline.weekly.window=baseline.weekly.window,
-                       limit.sd=limit.sd,
-                       guard.band.weekly=guard.band.weekly,
-                       #correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
-                       #correct.baseline.LCL=correct.baseline.LCL,
-                       #UCL=UCL,                 #should be possible to choose if they want to put the values of ewma or shew in the columns?
-                       #LCL=LCL,
-                       continuous.window=continuous.window)
-
-   if(matrices.count==1){
-     add.indicators <- table
-   }else{
-     add.indicators <- list(add.indicators, table)
-   }
-  }
-  }
-  return(add.indicators)
-}
-
 # plotting functions ----
 
 
@@ -940,3 +746,31 @@ parity.group2$colors.custom<-colors.custom
 color.pg <- c("#4287f5","#28ab1f","#f5942c","#a15a4c")
 
 
+
+
+# for (l in levels(parity.group2$group.name)) { #l="gilt"   l="prime"
+#   
+#   parity.count = parity.count+1
+#   
+#   
+#   if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
+#     
+#     observed <- i[,(parity.group2$parity[parity.group2$group.name==l])][range]
+#     
+#   }
+#   
+#   if (length(parity.group2$parity[parity.group2$group.name==l]) > 1) {
+#     
+#     observed <- rowSums(i[,(parity.group2$parity[parity.group2$group.name==l])])[range]
+#     
+#   }
+#   
+#   parity.name <- c(rep(l, length(range)))
+#   
+
+
+# for (l in levels(parity.group2$group.name)) { #l="gilt"   l="mature"
+#   
+#   matrices.count = matrices.count+1
+#   
+#   matrix <- i[i[, "parity"] %in% c(parity.group2$parity[parity.group2$group.name==l]),]
