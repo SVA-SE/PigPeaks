@@ -1,0 +1,294 @@
+---
+title: "PigPeaks Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: simplex
+    vertical_layout: scroll
+    social: menu
+    orientation: rows
+    logo: SVA_logo.png
+---
+
+<style type="text/css">
+
+.chart-title {  /* chart_title  */
+   font-size: 15px;
+}
+    
+</style>
+
+
+
+```{r message=FALSE, warning=FALSE}
+library(flexdashboard)
+library(plotly)
+library(ggplot2)
+library(stringr)
+source('Definitions.r')
+load("Gilts.plots.Thesis.RData")
+load("EmptySows.plots.Thesis.RData")
+load("Service.plots.Thesis.RData")
+load("Pregnancy.plots.Thesis.RData")
+load("Farrowing.plots.Thesis.RData")
+load("Weaning.plots.Thesis.RData")
+load("Post-Weaning.plots.Thesis.RData")
+load("Exit.plots.Thesis.RData")
+```
+
+
+
+Management {data-navmenu="Gilts"}
+====================================
+
+#### Management
+
+Row
+-------------------------------------
+
+### Age at first service, last 200
+```{r}
+age.at.first.service.barplot
+```
+
+Row
+-------------------------------------
+
+### Age at first farrowing, last 200
+```{r}
+age.at.first.farrowing.barplot
+```
+
+
+
+Health {data-navmenu="Empty Sows"}
+====================================
+
+#### Health 
+
+Row
+-------------------------------------
+
+### Sows empty longer than 4 days
+```{r}
+sows.empty.longer.four.days.barplot
+```
+
+
+
+
+Health {data-navmenu="Services"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Reservices per week
+```{r}
+reservices.barplot
+```
+
+Row
+-------------------------------------
+
+### Time to reservice, last 100 
+```{r}
+time.between.service.reservice.barplot
+```
+
+
+Row
+-------------------------------------
+
+### Percentage of reservices after 4 weeks
+```{r}
+perc.reservice.week.barplot
+```
+
+### Percentage of failures after 4 weeks
+```{r}
+perc.failure.week.barplot
+```
+
+
+
+Health {data-navmenu="Pregnancy"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Pregnancy length, 200 last
+```{r}
+pregnancy.length.df.barplot
+```
+
+Row
+-------------------------------------
+
+### Time to abortion, 100 last
+```{r}
+time.to.abortion.df.barplot
+```
+
+Row
+-------------------------------------
+
+### Abortions per week
+```{r}
+abortions.per.week.barplot
+```
+
+
+
+Health {data-navmenu="Farrowing"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Days between farrowings, 200 last
+```{r}
+days.between.farrowings.df.barplot
+```
+
+
+Row
+-------------------------------------
+
+
+### Total piglets per farrowing, 200 last
+```{r}
+total.piglets.per.farrowing.barplot
+```
+
+### Live piglets per farrowing, 200 last
+```{r}
+live.piglets.per.farrowing.barplot
+```
+
+
+Row
+-------------------------------------
+
+### % dead piglets per farrowing, 200 last
+```{r}
+perc.dead.piglets.per.farrowing.barplot
+```
+
+### Mummified piglets per farrowing, 200 last
+```{r}
+mummi.piglets.per.farrowing.barplot
+```
+
+
+
+Management {data-navmenu="Weaning"}
+====================================
+
+#### Management
+
+Row
+-------------------------------------
+
+### Days to weaning, 200 last
+```{r}
+days.to.weaning.barplot
+```
+
+Row
+-------------------------------------
+
+### Litters weaned per week
+```{r}
+litters.weaned.per.week.barplot
+```
+
+
+Health {data-navmenu="Weaning"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Piglets weaned per week
+```{r}
+piglets.weaned.per.week.barplot
+```
+
+Row
+-------------------------------------
+
+### Piglets weaned per litter, 200 last
+```{r}
+piglets.weaned.per.litter.barplot
+```
+
+Row
+-------------------------------------
+
+### Weaning weight per litter (average per piglet), 200 last
+```{r}
+weaning.weight.per.litter.piglet.barplot
+```
+
+Row
+-------------------------------------
+
+### Deaths in weaning piglets per week
+```{r}
+negdiff.wean.week.barplot
+
+```
+
+
+Health {data-navmenu="Post-Weaning"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Deaths in weaners per week
+```{r}
+mortality.weaned.piglets.per.week.barplot
+```
+
+
+
+Management {data-navmenu="Exit"}
+====================================
+
+#### Management
+
+
+Row
+-------------------------------------
+
+### Last event before exiting, per week
+```{r}
+last.event.before.exit.barplot
+```
+
+
+Health {data-navmenu="Exit"}
+====================================
+
+#### Health
+
+Row
+-------------------------------------
+
+### Dead sows per week
+```{r}
+mortality.sows.barplot
+```
+

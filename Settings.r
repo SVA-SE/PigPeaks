@@ -44,6 +44,29 @@ c3 <- c(rep("gilt",2),
         rep("mature",10)
 )
 
+# functions arguments ----
+
+weekly.window <- 271           #weeks to see in each indicator
+continuous.window <- 5500      #observations to see in each indicator
+
+limit.upp <- 0.95              #upper limit (upper percentile) to clean baseline non-parametric
+limit.lw <- 0.05               #lower limit (lower percentile) to clean baseline non-parametric
+
+run.window.weekly <- 104       #window of time points which will be used to calculate the percentile set (weekly indicators)
+run.window.continuous <- 1300  #window of time points which will be used to calculate the percentile set (continuous indicators)
+
+evaluate.weekly.window=165     #number of time points to be evaluated by the algorithm for weekly indicators
+baseline.weekly.window=104     #baseline used to train the algorithm in order to provide a forecast for weekly indicators
+guard.band.weekly=2            #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
+
+lambda=0.2                     #EWMA parameter (lambda) 
+limit.sd=c(2.5,3,3.5)          #3 limits (standard deviations)
+
+correct.baseline.UCL=TRUE      #the algorithm can also be used to correct the data, correct for the UCL
+correct.baseline.LCL=TRUE      #the algorithm can also be used to correct the data, correct for the LCL
+UCL=2                          #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL.The user must provide the INDEX in the limit.sd vector for which the UCL values should be corrected 
+LCL=2                          #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL.The user must provide the INDEX in the limit.sd vector for which the LCL values should be corrected 
+
 
 # plotting and dashboard -----
 
