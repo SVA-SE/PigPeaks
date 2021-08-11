@@ -40,8 +40,11 @@ for (s in 1:dim(total.services)[2]){
 }
 
 
-services.days <- create.counts.days(data.matrix=services)
-services.week <- create.counts.week(data.matrix=services)
+services.week <- create.counts.week(rows.index.days=index.dates.days[,1],
+                                    rows.index.week=index.dates.week[,1],
+                                    cols.index=parity,
+                                    data.matrix=services, #<--
+                                    parity.matrix=individual.sows$parity)
 
 
 # number of REservices ---

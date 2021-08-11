@@ -48,22 +48,22 @@ dates_df <- function (min.date, max.date,
 
 ## count functions
 
-create.counts.days <- function(rows.index=index.dates.days[,1],
-                               cols.index=parity,
-                               data.matrix=individual.sows$indicator,
-                               parity.matrix=individual.sows$parity){
-
-  matrix.days <- matrix(NA,nrow=length(rows.index),ncol=length(cols.index))
-  colnames(matrix.days)<- cols.index
-
-  for (r in 1:length(rows.index)){
-    for (c in 1:length(cols.index)){
-      matrix.days[r,c] <- sum(data.matrix[r,which(parity.matrix[r,]==cols.index[c])],na.rm=TRUE)
-    }}
-
-  return(matrix.days)
-
-}
+# create.counts.days <- function(rows.index=index.dates.days[,1],
+#                                cols.index=parity,
+#                                data.matrix=individual.sows$indicator,
+#                                parity.matrix=individual.sows$parity){
+#
+#   matrix.days <- matrix(NA,nrow=length(rows.index),ncol=length(cols.index))
+#   colnames(matrix.days)<- cols.index
+#
+#   for (r in 1:length(rows.index)){
+#     for (c in 1:length(cols.index)){
+#       matrix.days[r,c] <- sum(data.matrix[r,which(parity.matrix[r,]==cols.index[c])],na.rm=TRUE)
+#     }}
+#
+#   return(matrix.days)
+#
+# }
 
 
 create.counts.week <- function(rows.index.days=index.dates.days[,1],
@@ -166,7 +166,7 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
 {
   parity.count = 0
   nonparity.count = 0
-  
+
   date <- index.dates.week$start[range]
   week <- index.dates.week$week[range]
   year <- index.dates.week$ISOweekYear[range]
