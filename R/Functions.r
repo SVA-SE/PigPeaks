@@ -166,26 +166,17 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
 {
   parity.count = 0
   nonparity.count = 0
-
+  
+  date <- index.dates.week$start[range]
+  week <- index.dates.week$week[range]
+  year <- index.dates.week$ISOweekYear[range]
 
   for (i in indicators.data) {  #i=indicators.data[[1]]
     #for (i in 1:length(indicators.data)) { #indicators.data[[i]]
 
     if(is.matrix(i)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
 
-      matrix.count = matrix.count +1
-
       range <- max(1,(dim(i)[1]-weekly.window+1)):dim(i)[1]
-
-      date <- index.dates.week$start[range]
-      week <- index.dates.week$week[range]
-      year <- index.dates.week$ISOweekYear[range]
-      week.quarter <- week-(floor((week-1)/13)*13)
-      quarter <- c(rep(NA, length(range)))
-      quarter <- ifelse(week<=13, paste(year,1, sep = "."), quarter)
-      quarter <- ifelse(week>13 & week<=26, paste(year,2, sep = "."), quarter)
-      quarter <- ifelse(week>26 & week<=39, paste(year,3, sep = "."), quarter)
-      quarter <- ifelse(week>39, paste(year,4, sep = "."), quarter)
 
       baseline <- c(rep(NA, length(range)))
       UCL <- c(rep(NA, length(range)))

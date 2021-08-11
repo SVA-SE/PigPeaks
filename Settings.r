@@ -42,9 +42,6 @@ correct.baseline.LCL=TRUE      #the algorithm can also be used to correct the da
 UCL=2                          #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL.The user must provide the INDEX in the limit.sd vector for which the UCL values should be corrected 
 LCL=2                          #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL.The user must provide the INDEX in the limit.sd vector for which the LCL values should be corrected 
 
-quarter = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",   #quarters inject outbreaks
-            "2017.1", "2017.2", "2017.3", "2017.4", "2018.1")                       #to evaluate the system
-
 
 # plotting and dashboard -----
 
