@@ -244,8 +244,8 @@ continuous.indicators <- function(indicator=indicator,       #indicator=days.bet
     range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
 
     date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
-    week <- isoweek(as.Date(date,origin="1970-01-01"))[range]
-    year <- isoyear(as.Date(date,origin="1970-01-01"))[range]
+    week <- isoweek(as.Date(date,origin="1970-01-01"))
+    year <- isoyear(as.Date(date,origin="1970-01-01"))
     sowINDEX <- indicator[,"sowINDEX"][range]
     observed <- indicator[,"indicator"][range]
     baseline <- c(rep(NA, length(range)))
@@ -470,39 +470,33 @@ apply_ewma <- function(df.indicator=df.indicator,
     if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {   # for continuous indicators, retrospective framework
 
   data <- df.indicator[,"observed"]
-
-  ewma1 <- ewma(data, lambda = 0.2, nsigmas = 2.5)
-  ewma2 <- ewma(data, lambda = 0.2, nsigmas = 3)
-  ewma3 <- ewma(data, lambda = 0.2, nsigmas = 3.5)
+  
+  for (l in 1:length(limit.sd)){ #l=2
+    
+  #require(qcc)
+  ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l])
+  
+  #choose UCL and LCL
+  
+  if (l==UCL){
+    df.indicator[,"UCL"] <- ewma1$limits[,"UCL"]
+    df.indicator[,"LCL"] <- ewma1$limits[,"LCL"]
+  }
 
   ##ADD one if the result of this loop was a detection
+  
+  if(l==1){
+    df.indicator[,"alarms EWMA"]<-0
+  }
 
   df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
     df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
-
-  df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"]<-
-    df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data>ewma2$center)], "alarms EWMA"] +1
-
-  df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"]<-
-    df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data>ewma3$center)], "alarms EWMA"] +1
 
 
   df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <-
     df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
 
-  df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] <-
-    df.indicator[ewma2$violations[ewma2$violations %in% which(ewma2$data<ewma2$center)], "alarms EWMA"] -1
-
-  df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] <-
-    df.indicator[ewma3$violations[ewma3$violations %in% which(ewma3$data<ewma3$center)], "alarms EWMA"] -1
-
-
-  #choose UCL and LCL
-  df.indicator[,"UCL"] <- ewma2$limits[,"UCL"]   #how to do it for user to choose
-
-  df.indicator[,"LCL"] <- ewma2$limits[,"LCL"]
-
-
+  }
       }else{        # for weekly indicators, prospective framework
                     #df.indicator=df.reservices.week
         
@@ -523,6 +517,7 @@ apply_ewma <- function(df.indicator=df.indicator,
 
 
           for (l in 1:length(limit.sd)){ #l=2
+            
             #require(qcc)
             ewma1 = ewma(to.cc,
                          center=mean(to.cc[1:(length(to.cc)-guard.band.weekly)],na.rm=TRUE),
@@ -576,7 +571,6 @@ apply_ewma <- function(df.indicator=df.indicator,
               df.indicator[tpoint,"alarms EWMA"]<-df.indicator[tpoint,"alarms EWMA"]-1
             }
 
-
             #Correct baseline IF the user indicated so
             if (isTRUE(correct.baseline.UCL)){
               if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
@@ -596,73 +590,73 @@ apply_ewma <- function(df.indicator=df.indicator,
 
 # apply Shewhart control chart ----
 
-shew_apply <- function (list.indicators=ewma_apply(),
+shew_apply <- function (df.indicator=df.indicator,
                         evaluate.weekly.window=evaluate.weekly.window,
                         baseline.weekly.window=baseline.weekly.window,
                         limit.sd=limit.sd,
                         guard.band.weekly=guard.band.weekly,
-                        #correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
-                        #correct.baseline.LCL=correct.baseline.LCL,
-                        #UCL=UCL,                 #should be possible to choose if they want to put the values of ewma or shew in the columns?
-                        #LCL=LCL,
-                        continuous.window=continuous.window
+                        correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
+                        correct.baseline.LCL=correct.baseline.LCL,
+                        UCL=UCL,                                   #should be possible to choose if they want 
+                        LCL=LCL                                    #to put the values of ewma or shew in the columns?
 )
 {
 
-  if(guard.band.weekly<1)(guard.band.weekly<-1)
-
-  for (i in list.indicators) {  #i=list.indicators[[1]][[2]]       i=list.indicators[[4]]
-
-    if (("sowINDEX" %in% colnames(i))==TRUE) {       # for continuous indicators, retrospective framework
-
-        data <- tail(i[,"observed"], continuous.window)
-
+    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {       # for continuous indicators, retrospective framework
+                                                                #df.indicator=df.days.between.farrowings
+        data <- df.indicator[,"observed"]
+        
+        for (l in 1:length(limit.sd)){ #l=2
+          
+        #require(qcc)
         stats <- stats.xbar.one(data)
         sd.xbar <- sd.xbar.one(data,
                                std.dev = "SD", k=2)
-        shew1 <- limits.xbar.one(center=stats$center,
+        shew <- limits.xbar.one(center=stats$center,
                                  std.dev=as.double(sd.xbar),
-                                 conf=2.5)
-        shew2 <- limits.xbar.one(center=stats$center,
-                                 std.dev=as.double(sd.xbar),
-                                 conf=3)
-        shew3 <- limits.xbar.one(center=stats$center,
-                                 std.dev=as.double(sd.xbar),
-                                 conf=3.5)
-
+                                 conf=limit.sd[l])
+        
+        UCL.value= ceiling(shew[2])
+        LCL.value= floor(shew[1])
+        
+        #choose UCL and LCL
+        
+        if (l==UCL){
+          df.indicator[,"UCL"] <- UCL.value
+          df.indicator[,"LCL"] <- LCL.value
+        }
 
         ##ADD or SUBTRACT one if the result of this loop was a detection
+        
+        if(l==1){
+          df.indicator[,"alarms Shewhart"]<-0
+        }
 
-        i[data>shew1[,"UCL"], "alarms Shewhart"] <- i[data>shew1[,"UCL"], "alarms Shewhart"] +1
+        df.indicator[data>shew[,"UCL"],"alarms Shewhart"] <- df.indicator[data>shew[,"UCL"],"alarms Shewhart"] +1
 
-        i[data>shew2[,"UCL"], "alarms Shewhart"] <- i[data>shew2[,"UCL"], "alarms Shewhart"] +1
+        df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] <- df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] -1
 
-        i[data>shew3[,"UCL"], "alarms Shewhart"] <- i[data>shew3[,"UCL"], "alarms Shewhart"] +1
-
-
-        i[data<max(0,shew1[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew1[,"LCL"]), "alarms Shewhart"] -1
-
-        i[data<max(0,shew2[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew2[,"LCL"]), "alarms Shewhart"] -1
-
-        i[data<max(0,shew3[,"LCL"]), "alarms Shewhart"] <- i[data<max(0,shew3[,"LCL"]), "alarms Shewhart"] -1
-
+     }
         }else{        # for weekly indicators, prospective framework
+                      #df.indicator=df.piglets.deaths.week
+          
+          if(guard.band.weekly<1)(guard.band.weekly<-1)
 
           #require(abind)
 
           #number of time points to iterate
-          range <- (dim(i)[1]-evaluate.weekly.window+1):dim(i)[1]
-
-          for (tpoint in range){
+          range <- (dim(df.indicator)[1]-evaluate.weekly.window+1):dim(df.indicator)[1]
+          
+          for (tpoint in range){  #tpoint=155
 
             start = tpoint-baseline.weekly.window-guard.band.weekly
             end   = tpoint-1
 
-            to.cc <- c(i[start:end,"baseline"],i[tpoint,"observed"])
+            to.cc <- c(df.indicator[start:end,"baseline"],df.indicator[tpoint,"observed"])
             correct <- 0
 
-
             for (l in 1:length(limit.sd)){
+              
               #require(qcc)
               average.series = to.cc[1:(length(to.cc)-guard.band.weekly)]
               average.series = average.series[which(!is.na(average.series))]
@@ -675,48 +669,50 @@ shew_apply <- function (list.indicators=ewma_apply(),
 
               UCL.value= ceiling(correct  +  shew[2])
               LCL.value= floor(correct  + shew[1])
+              
               #before deciding if an alarm exists, a zero is automatically added to the
               #time point if this is the first loop for two reasons:
               #1-because if the data were never analysed, the slot had a NA before,
               #and adding 0 will signal that it has now been processed
               #2-because if the data HAS been analyzed before, we want the results of these
               #analyses to OVERRIDE, not to SUM to the previous analyses.
+              
               if(l==1){
-                i[tpoint,"alarms Shewhart"]<-0
+                df.indicator[tpoint,"alarms Shewhart"]<-0
               }
 
-              # if (l==UCL){
-              #   i[tpoint,"UCL"]<-UCL.value
-              # }
-              #
-              # if (l==LCL){
-              #   i[tpoint,"LCL"]<-LCL.value
-              # }
+              if (l==UCL){
+                df.indicator[tpoint,"UCL"]<-UCL.value
+              }
+
+              if (l==LCL){
+                df.indicator[tpoint,"LCL"]<-LCL.value
+              }
 
               #ADD a one if the result of this loop was a detection
-              if (i[tpoint,"observed"]>max(0,UCL.value)){
-                i[tpoint,"alarms Shewhart"]<-i[tpoint,"alarms Shewhart"]+1
+              if (df.indicator[tpoint,"observed"]>max(0,UCL.value)){
+                df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]+1
               }
 
-              if (i[tpoint,"observed"]<max(0,LCL.value)){
-                i[tpoint,"alarms Shewhart"]<-i[tpoint,"alarms Shewhart"]-1
+              if (df.indicator[tpoint,"observed"]<max(0,LCL.value)){
+                df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]-1
               }
 
-              # if (isTRUE(correct.baseline.UCL)){
-              #   if (i[tpoint,"observed"] > max(0,UCL.value)){
-              #     i[tpoint,"baseline"] <- max(0,round(UCL.value))
-              #   }
-              # }
-              # if (isTRUE(correct.baseline.LCL)){
-              #   if (i[tpoint,"observed"] < max(0,LCL.value)){
-              #     i[tpoint,"baseline"] <- max(0,round(LCL.value))
-              #   }
-              # }
+              #Correct baseline IF the user indicated so
+              if (isTRUE(correct.baseline.UCL)){
+                if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
+                  df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
+                }
+              }
+              if (isTRUE(correct.baseline.LCL)){
+                if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
+                  df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
+                }
+              }
             }
           }
         }
-  }
-          return(list.indicators)
+          return(df.indicator)
         }
 
 # plotting functions ----

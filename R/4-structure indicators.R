@@ -56,6 +56,16 @@ df.reservices.week <- apply_ewma(df.indicator=df.reservices.week,
                                  UCL=2,
                                  LCL=2)
 
+df.reservices.week <- shew_apply(df.indicator=df.reservices.week,
+                                 evaluate.weekly.window=165,
+                                 baseline.weekly.window=104,
+                                 limit.sd=c(2.5,3,3.5),
+                                 guard.band.weekly=2,
+                                 correct.baseline.UCL=FALSE,
+                                 correct.baseline.LCL=FALSE,
+                                 UCL=FALSE,                     
+                                 LCL=FALSE)
+
 
 # Farrowings ----
 
@@ -73,13 +83,23 @@ df.days.between.farrowings <- clean_baseline_perc(df.indicator=df.days.between.f
 df.days.between.farrowings <- apply_ewma(df.indicator=df.days.between.farrowings,
                                          evaluate.weekly.window=NULL,
                                          baseline.weekly.window=NULL,
-                                         lambda=NULL,
+                                         lambda=0.2,
                                          limit.sd=c(2.5,3,3.5),
                                          guard.band.weekly=NULL,
                                          correct.baseline.UCL=TRUE,
                                          correct.baseline.LCL=TRUE,
                                          UCL=2,
                                          LCL=2)
+
+df.days.between.farrowings <- shew_apply(df.indicator=df.indicator,
+                                         evaluate.weekly.window=NULL,
+                                         baseline.weekly.window=NULL,
+                                         limit.sd=c(2.5,3,3.5),
+                                         guard.band.weekly=NULL,
+                                         correct.baseline.UCL=FALSE,
+                                         correct.baseline.LCL=FALSE,
+                                         UCL=FALSE,                     
+                                         LCL=FALSE)
 
 # Post-Weaning ----
 
@@ -107,6 +127,16 @@ df.piglets.deaths.week <- apply_ewma(df.indicator=df.piglets.deaths.week,
                                      UCL=2,
                                      LCL=2)
 
+df.piglets.deaths.week <- shew_apply(df.indicator=df.piglets.deaths.week,
+                                     evaluate.weekly.window=165,
+                                     baseline.weekly.window=104,
+                                     limit.sd=c(2.5,3,3.5),
+                                     guard.band.weekly=2,
+                                     correct.baseline.UCL=FALSE,
+                                     correct.baseline.LCL=FALSE,
+                                     UCL=FALSE,                     
+                                     LCL=FALSE)
+
 
 # Exit ----
 
@@ -133,3 +163,13 @@ df.number.deaths.week <- apply_ewma(df.indicator=df.number.deaths.week,
                                     correct.baseline.LCL=TRUE,
                                     UCL=2,
                                     LCL=2)
+
+df.number.deaths.week <- shew_apply(df.indicator=df.number.deaths.week,
+                                    evaluate.weekly.window=165,
+                                    baseline.weekly.window=104,
+                                    limit.sd=c(2.5,3,3.5),
+                                    guard.band.weekly=2,
+                                    correct.baseline.UCL=FALSE,
+                                    correct.baseline.LCL=FALSE,
+                                    UCL=FALSE,                     
+                                    LCL=FALSE)
