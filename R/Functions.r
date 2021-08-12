@@ -70,12 +70,12 @@ create.counts.week <- function(rows.index.days=index.dates.days[,1],
                                rows.index.week=index.dates.week[,1],
                                cols.index=parity,
                                data.matrix=individual.sows$indicator,
-                               parity.matrix=individual.sows$parity){
+                               group.matrix=individual.sows$parity){
 
   matrix.days <- matrix(NA,nrow=length(rows.index.days),ncol=length(cols.index))
   for (r in 1:length(rows.index.days)){
     for (c in 1:length(cols.index)){
-      matrix.days[r,c] <- sum(data.matrix[r,which(parity.matrix[r,]==cols.index[c])],na.rm=TRUE)
+      matrix.days[r,c] <- sum(data.matrix[r,which(group.matrix[r,]==cols.index[c])],na.rm=TRUE)
     }}
 
 
@@ -92,9 +92,10 @@ create.counts.week <- function(rows.index.days=index.dates.days[,1],
 }
 
 
+
 # NON-TIME series
 
-create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
+create.nonTS.timeto <- function(group.matrix=individual.sows$parity,
                                 index.dates=index.dates.days[,1],
                                 col1="indicator",
                                 col2="parity",
@@ -109,7 +110,7 @@ create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
   colnames(matrix.timeto)<- c(col1,col2,col3,"sowINDEX")
 
   for (r in 2:length(index.dates)){
-    for (s in 1:dim(parity.matrix)[2]){
+    for (s in 1:dim(group.matrix)[2]){
 
       if (!is.na(event2.matrix[r,s])&
           event2.matrix[r,s]==event2.value){
@@ -127,7 +128,7 @@ create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
           matrix.timeto.c1 <- (r - max(which(event1.matrix[1:(r-1),s]%in%event1.value)))
         }
 
-        matrix.timeto.c2 <- parity.matrix[r,s]
+        matrix.timeto.c2 <- group.matrix[r,s]
 
         matrix.timeto.c3 <- as.numeric(index.dates[r])
 
@@ -149,6 +150,150 @@ create.nonTS.timeto <- function(parity.matrix=individual.sows$parity,
 
   return(matrix.timeto)
 
+}
+
+
+
+create.nonTS.eventsto <- function(group.matrix=individual.sows$parity,
+                                  index.dates=index.dates.days[,1],
+                                  col1="indicator",
+                                  col2="parity",
+                                  col3="date",
+                                  event1.matrix=individual.sows$indicator,
+                                  event1.value=c(1,2),
+                                  event2.matrix=individual.sows$indicator,
+                                  event2.value=1){
+
+  matrix.eventsto <- matrix(NA,nrow=1,ncol=4)
+
+  colnames(matrix.eventsto)<- c(col1,col2,col3,"sowINDEX")
+
+
+  for (r in 2:length(index.dates)){
+    for (s in 1:dim(group.matrix)[2]){
+
+      if (!is.na(event2.matrix[r,s])&
+          event2.matrix[r,s]==event2.value){
+
+        rmin <- 1
+        if(length(which(event2.matrix[1:(r-1),s]==event2.value))>0){
+          rmin <- max(which(event2.matrix[1:(r-1),s]==event2.value))
+        }
+
+        matrix.eventsto.c1 <- length(which(event1.matrix[(rmin+1):r,s]%in%event1.value))
+        matrix.eventsto.c2 <- group.matrix[r,s]
+        matrix.eventsto.c3 <- as.numeric(index.dates[r])
+        matrix.eventsto.c4 <- s
+
+        matrix.eventsto <- rbind(matrix.eventsto,
+                               c(matrix.eventsto.c1,
+                                 matrix.eventsto.c2,
+                                 matrix.eventsto.c3,
+                                 matrix.eventsto.c4))
+
+      }
+    }
+  }
+
+  if (all(is.na(matrix.eventsto[1,]))){
+    matrix.eventsto<- matrix.eventsto[-1,]
+  }
+
+  return(matrix.eventsto)
+
+}
+
+
+create.nonTS.counts <- function(group.matrix=individual.sows$parity,
+                                index.dates=index.dates.days[,1],
+                                col1="indicator",
+                                col2="parity",
+                                col3="date",
+                                event.matrix=individual.sows$indicator,
+                                event.value=1,
+                                count.matrix=list(individual.sows$indicator),
+                                denominator.matrix=NULL){
+
+  matrix.counts <- matrix(NA,nrow=1,ncol=4)
+
+  colnames(matrix.counts)<- c(col1,col2,col3,"sowINDEX")
+
+
+  for (r in 2:length(index.dates)){
+    for (s in 1:dim(group.matrix)[2]){
+
+      if (!is.na(event.matrix[r,s])&
+          event.matrix[r,s]==event.value){
+
+        num <- sum(count.matrix[[1]][r,s],na.rm=T)
+        if(length(count.matrix)>1){
+          for(l in 2:length(count.matrix)){
+            num <-  num + sum(count.matrix[[l]][r,s],na.rm=T)
+          }
+        }
+
+        den <- sum(denominator.matrix[[1]][r,s],na.rm=T)
+        if(length(denominator.matrix)>1){
+          for(l in 2:length(denominator.matrix)){
+            den <- den+sum(denominator.matrix[[l]][r,s],na.rm=T)
+          }
+        }
+
+
+
+        if(is.null(denominator.matrix)){
+          matrix.counts.c1 <- num
+        }else{
+          matrix.counts.c1 <- num/den
+        }
+
+        matrix.counts.c2 <- group.matrix[r,s]
+        matrix.counts.c3 <- as.numeric(index.dates[r])
+        matrix.counts.c4 <- s
+
+        matrix.counts <- rbind(matrix.counts,
+                               c(matrix.counts.c1,
+                                 matrix.counts.c2,
+                                 matrix.counts.c3,
+                                 matrix.counts.c4))
+
+      }
+    }
+  }
+
+  if (all(is.na(matrix.counts[1,]))){
+    matrix.counts<- matrix.counts[-1,]
+  }
+
+  return(matrix.counts)
+
+}
+
+
+# weekly PERCENTAGE functions -----
+create.perc.week.1 <- function(rows.index.week=index.dates.week[,1],
+                               cols.index=parity,
+                               data=assumed.pregnant,
+                               value.to.count=1,
+                               test=c("equal","greater")
+){
+  matrix.perc <- array(NA,dim=c(length(rows.index.week),length(cols.index),2))
+  dimnames(matrix.perc)[[2]] <- cols.index
+  dimnames(matrix.perc)[[3]] <- c("numerator","denominator")
+
+  for (r in 1:length(rows.index.week)){
+    for (c in 1:length(cols.index)){
+
+      if(test=="equal"){
+        matrix.perc[r,c,1] <- length(which((data[(((r-1)*7)+1):min(c(r*7,dim(data)[1])),,c])==value.to.count))
+      }else{
+        matrix.perc[r,c,1] <- length(which((data[(((r-1)*7)+1):min(c(r*7,dim(data)[1])),,c])>value.to.count))
+      }
+
+      matrix.perc[r,c,2] <- length(which(!is.na(data[(((r-1)*7)+1):min(c(r*7,dim(data)[1])),,c])))
+
+    }}
+  return(matrix.perc)
 }
 
 
@@ -221,7 +366,7 @@ weekly.indicators <- function(indicators.data=list(reservices.week=reservices.we
       }
     }
   }
-     #names(outputs.parity.matrix) <- names(indicators.data)
+     #names(outputs.group.matrix) <- names(indicators.data)
 
 
     if(is.matrix(i)==FALSE) {   #i=indicators.data[[3]]

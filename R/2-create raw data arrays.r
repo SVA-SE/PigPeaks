@@ -482,7 +482,7 @@ for (s in 1:dim(individual.sows[[1]])[2]){
 
 
 save(individual.sows,active.sows.displayID,index.dates.days,index.dates.week,file="data/individual.sows.RData")
-save(animal,exit,progeny.dead,file="data/animal.RData")
+save(animal,exit,progeny.dead,cause,file="data/animal.RData")
 
 
 

@@ -4,10 +4,12 @@
 parity = 1:15
 
 reservice.threshold <- 90
-reservice.perc.window <- 4     #(weeks)
+reservice.perc.window <- 4     #(weeks to calculate success of service)
 
 empty.days.target <- 4
 opendays.target <- 4
+
+min.pregnancy.length <- 110
 
 
 # events ----
