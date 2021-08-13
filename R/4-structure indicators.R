@@ -20,27 +20,44 @@ load("data/indicators.RData")
 # indicators.labels
 # indicators.type
 
+## indicators.sys
 
-# Gilts ----
+indicators.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE,
+                    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
+                    TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE,
+                    FALSE)
 
-## Age at first service
+indicators.time.series <- list()
 
-## Age at first farrowing
+for (i in 1:length(indicators.to.keep.numerical)){
+  indicators.time.series[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])
+}
+names(indicators.data)<-indicators.all[indicators.to.keep.numerical]
 
 
-# Empty sows ----
+indicators.time.series <- list()
 
-## Sows empty longer than 4 days
+for (i in which(which(indicators.sys==TRUE) && which(indicators.type=="W"))) {
+  
+  indicators.time.series[[i]] <- range.weekly(indicator=indicators.data[[i]],
+                                              weekly.window=weekly.window)
+}
 
+
+which(which(indicators.sys==TRUE) %in% which(indicators.type=="W"))
+
+
+names(indicators.time.series) <- indicators.labels
 
 # Services ----
 
 ## Reservices per week
 
-range_weekly <- range.weekly(indicator=reservices.week,    #indicators.data$reservices.week
+range_weekly <- range.weekly(indicator=indicators.data$reservices.week,    #indicators.data$reservices.week
                              weekly.window = 271)
 
-df.reservices.week <- weekly.indicators(indicator=reservices.week)
+df.reservices.week <- weekly.indicators(indicator=indicators.data$reservices.week,
+                                        range=range_weekly)
 
 df.reservices.week <- clean_baseline_perc(df.indicator=df.reservices.week,
                                           limit.upp=0.95,
@@ -56,8 +73,8 @@ df.reservices.week <- apply_ewma(df.indicator=df.reservices.week,
                                  guard.band.weekly=2,
                                  correct.baseline.UCL=TRUE,
                                  correct.baseline.LCL=TRUE,
-                                 UCL=2,
-                                 LCL=2)
+                                 UCL.ewma=2,
+                                 LCL.ewma=2)
 
 df.reservices.week <- shew_apply(df.indicator=df.reservices.week,
                                  evaluate.weekly.window=165,
@@ -66,8 +83,8 @@ df.reservices.week <- shew_apply(df.indicator=df.reservices.week,
                                  guard.band.weekly=2,
                                  correct.baseline.UCL=FALSE,
                                  correct.baseline.LCL=FALSE,
-                                 UCL=FALSE,
-                                 LCL=FALSE)
+                                 UCL.shew=2,
+                                 LCL.shew=2)
 
 
 # Farrowings ----

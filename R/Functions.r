@@ -323,23 +323,18 @@ range.weekly <- function(indicator=indicator,        #indicator=reservices.week 
 }
 
 
-
-
 ## weekly indicators with and without parity into one function
 
 weekly.indicators <- function(indicator=indicator,
-                              range=range_weekly,
-                              index.dates.week=index.dates.week
+                              range=range_weekly
 
 )
 {
-  date <- index.dates.week$start[range]
-  week <- index.dates.week$week[range]
-  year <- index.dates.week$ISOweekYear[range]
-
   baseline <- c(rep(NA, length(range)))
-  UCL <- c(rep(NA, length(range)))
-  LCL <- c(rep(NA, length(range)))
+  UCL.ewma <- c(rep(NA, length(range)))
+  LCL.ewma <- c(rep(NA, length(range)))
+  UCL.shew <- c(rep(NA, length(range)))
+  LCL.shew <- c(rep(NA, length(range)))
   alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
 
@@ -349,14 +344,14 @@ weekly.indicators <- function(indicator=indicator,
 
     observed <- rowSums(indicator)[range]
 
-    table <- data.frame(date, week, year,
-                        observed, baseline, UCL, LCL,
-                        alarms.ewma, alarms.shew)
+    table <- data.frame(observed, baseline, 
+                        UCL.ewma, LCL.ewma, alarms.ewma, 
+                        UCL.shew, LCL.shew, alarms.shew)
 
 
-    colnames(table) <- c("date", "week", "year",
-                         "observed", "baseline", "UCL", "LCL",
-                         "alarms EWMA", "alarms Shewhart")
+    colnames(table) <- c("observed", "baseline",
+                         "UCL EWMA", "LCL EWMA", "alarms EWMA", 
+                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
 
     #names(table) <- indicator
   }
@@ -367,13 +362,13 @@ weekly.indicators <- function(indicator=indicator,
 
     observed <- indicator[range]
 
-    table <- data.frame(date, week, year,
-                        observed, baseline, UCL, LCL,
-                        alarms.ewma, alarms.shew)
+    table <- data.frame(observed, baseline, 
+                        UCL.ewma, LCL.ewma, alarms.ewma, 
+                        UCL.shew, LCL.shew, alarms.shew)
 
-    colnames(table) <- c("date", "week", "year",
-                         "observed", "baseline", "UCL", "LCL",
-                         "alarms EWMA", "alarms Shewhart")
+    colnames(table) <- c("observed", "baseline",
+                         "UCL EWMA", "LCL EWMA", "alarms EWMA", 
+                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
 
     #names(table) <- indicator
   }
@@ -397,22 +392,24 @@ continuous.indicators <- function(indicator=indicator,       #indicator=days.bet
   sowINDEX <- indicator[,"sowINDEX"][range]
   observed <- indicator[,"indicator"][range]
   baseline <- c(rep(NA, length(range)))
-  UCL <- c(rep(NA, length(range)))
-  LCL <- c(rep(NA, length(range)))
+  UCL.ewma <- c(rep(NA, length(range)))
+  LCL.ewma <- c(rep(NA, length(range)))
+  UCL.shew <- c(rep(NA, length(range)))
+  LCL.shew <- c(rep(NA, length(range)))
   alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
 
   observed <- indicator[, "indicator"][range]
 
   table <- data.frame(date, week, year,
-                      sowINDEX, observed, baseline,
-                      UCL, LCL, alarms.ewma, alarms.shew)
-
+                      observed, baseline, 
+                      UCL.ewma, LCL.ewma, alarms.ewma, 
+                      UCL.shew, LCL.shew, alarms.shew)
 
   colnames(table) <- c("date", "week", "year",
-                       "sowINDEX", "observed", "baseline",
-                       "UCL", "LCL", "alarms EWMA", "alarms Shewhart")
-
+                       "observed", "baseline",
+                       "UCL EWMA", "LCL EWMA", "alarms EWMA", 
+                       "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
   return(table)
 }
 
@@ -612,8 +609,8 @@ apply_ewma <- function(df.indicator=df.indicator,
                        guard.band.weekly=guard.band.weekly,
                        correct.baseline.UCL=correct.baseline.UCL,
                        correct.baseline.LCL=correct.baseline.LCL,
-                       UCL=UCL,
-                       LCL=LCL
+                       UCL.ewma=UCL.ewma,
+                       LCL.ewma=LCL.ewma
 )
 {
     if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {   # for continuous indicators, retrospective framework
@@ -627,9 +624,12 @@ apply_ewma <- function(df.indicator=df.indicator,
 
   #choose UCL and LCL
 
-  if (l==UCL){
-    df.indicator[,"UCL"] <- ewma1$limits[,"UCL"]
-    df.indicator[,"LCL"] <- ewma1$limits[,"LCL"]
+  if (l==UCL.ewma){
+    df.indicator[,"UCL EWMA"] <- ewma1$limits[,"UCL"]
+  }
+  
+  if (l==LCL.ewma){
+    df.indicator[,"LCL EWMA"] <- ewma1$limits[,"LCL"]
   }
 
   ##ADD one if the result of this loop was a detection
@@ -703,12 +703,12 @@ apply_ewma <- function(df.indicator=df.indicator,
               df.indicator[tpoint,"alarms EWMA"]<-0
             }
 
-            if (l==UCL){
-              df.indicator[tpoint,"UCL"]<-UCL.value
+            if (l==UCL.ewma){
+              df.indicator[tpoint,"UCL EWMA"]<-UCL.value
             }
 
-            if (l==LCL){
-              df.indicator[tpoint,"LCL"]<-LCL.value
+            if (l==LCL.ewma){
+              df.indicator[tpoint,"LCL EWMA"]<-LCL.value
             }
 
             #ADD a one if the result of this loop was a detection
@@ -746,8 +746,8 @@ shew_apply <- function (df.indicator=df.indicator,
                         guard.band.weekly=guard.band.weekly,
                         correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
                         correct.baseline.LCL=correct.baseline.LCL,
-                        UCL=UCL,                                   #should be possible to choose if they want
-                        LCL=LCL                                    #to put the values of ewma or shew in the columns?
+                        UCL.shew=UCL.shew,
+                        LCL.shew=LCL.shew
 )
 {
 
@@ -770,9 +770,9 @@ shew_apply <- function (df.indicator=df.indicator,
 
         #choose UCL and LCL
 
-        if (l==UCL){
-          df.indicator[,"UCL"] <- UCL.value
-          df.indicator[,"LCL"] <- LCL.value
+        if (l==UCL.shew){
+          df.indicator[,"UCL Shewhart"] <- UCL.value
+          df.indicator[,"LCL Shewhart"] <- LCL.value
         }
 
         ##ADD or SUBTRACT one if the result of this loop was a detection
@@ -830,12 +830,12 @@ shew_apply <- function (df.indicator=df.indicator,
                 df.indicator[tpoint,"alarms Shewhart"]<-0
               }
 
-              if (l==UCL){
-                df.indicator[tpoint,"UCL"]<-UCL.value
+              if (l==UCL.shew){
+                df.indicator[tpoint,"UCL Shewhart"]<-UCL.value
               }
 
-              if (l==LCL){
-                df.indicator[tpoint,"LCL"]<-LCL.value
+              if (l==UCL.shew){
+                df.indicator[tpoint,"LCL Shewhart"]<-LCL.value
               }
 
               #ADD a one if the result of this loop was a detection

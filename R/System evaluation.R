@@ -1,6 +1,6 @@
 # inject outbreaks in quarters
 
-quarter.list = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",   
+quarters.list = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",   
                  "2017.1", "2017.2", "2017.3", "2017.4", "2018.1")                       
 
 
@@ -9,7 +9,7 @@ quarter.list = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "20
 
 evaluate_system <- function(indicator=indicator,         #indicator=reservices.week
                             df.indicator=df.indicator,   #df.indicator=df.reservices.week
-                            quarter.list=quarter.list
+                            quarters.list=quarters.list
                             
 )
 {
@@ -45,10 +45,11 @@ evaluate_system <- function(indicator=indicator,         #indicator=reservices.w
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
                                          "observed", "baseline", "UCL", "LCL",
                                          "alarms EWMA", "alarms Shewhart")
-      
-    for ( q in quarter.list){ #q="2015.2"
+    
       
       if(df.indicator==df.reservices.week){
+        
+        for ( q in quarters.list){ #q="2015.3"
 
         start = first(which(table.evaluate.system[, "quarter"] == q))
         end = last(which(table.evaluate.system[, "quarter"] == q))
@@ -104,9 +105,12 @@ evaluate_system <- function(indicator=indicator,         #indicator=reservices.w
                                             LCL=FALSE)
 
         }
+      }
 
 
     if(df.indicator==df.number.deaths.week){
+      
+      for ( q in quarters.list){ #q="2015.2"
 
       start = first(which(table.evaluate.system[, "quarter"] == q))
       end = last(which(table.evaluate.system[, "quarter"] == q))
@@ -174,16 +178,16 @@ evaluate_system <- function(indicator=indicator,         #indicator=reservices.w
 
 evaluate.system.results.reservices <- list()
 
-for (quarter in quarter.list){
+for (quarter in quarters.list){
   
   evaluate.system.results.reservices[[quarter]] <- evaluate_system(indicator=reservices.week,
                                                                    df.indicator=df.reservices.week,
-                                                                   quarter.list=c("2015.2", "2015.3", "2015.4", 
+                                                                   quarters.list=c("2015.2", "2015.3", "2015.4", 
                                                                                   "2016.1", "2016.2", "2016.3", "2016.4",   
                                                                                   "2017.1", "2017.2", "2017.3", "2017.4", "2018.1"))
 }
 
-View(evaluate.system.results.reservices[["2015.2"]])
+View(evaluate.system.results.reservices[["2015.3"]])
 
 
 
@@ -192,13 +196,15 @@ View(evaluate.system.results.reservices[["2015.2"]])
 
 ## Dead sows per week
 
+### Cluster all 12 copies in one list
+
 evaluate.system.results.number.deaths.week <- list()
 
-for (quarter in quarter.list){
+for (quarter in quarters.list){
   
 evaluate.system.results.number.deaths.week[[quarter]] <- evaluate_system(indicator=number.deaths.week,
                                                                          df.indicator=df.number.deaths.week,
-                                                                         quarter.list=c("2015.2", "2015.3", "2015.4", 
+                                                                         quarters.list=c("2015.2", "2015.3", "2015.4", 
                                                                                         "2016.1", "2016.2", "2016.3", "2016.4",
                                                                                         "2017.1", "2017.2", "2017.3", "2017.4", "2018.1"))      
 }

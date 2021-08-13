@@ -61,9 +61,10 @@ limit.sd=c(2.5,3,3.5)          #3 limits (standard deviations)
 
 correct.baseline.UCL=TRUE      #the algorithm can also be used to correct the data, correct for the UCL
 correct.baseline.LCL=TRUE      #the algorithm can also be used to correct the data, correct for the LCL
-UCL=2                          #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL.The user must provide the INDEX in the limit.sd vector for which the UCL values should be corrected
-LCL=2                          #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL.The user must provide the INDEX in the limit.sd vector for which the LCL values should be corrected
-
+UCL.ewma=2                     #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL ewma.The user must provide the INDEX in the limit.sd vector for which the UCL ewma values should be corrected
+LCL.ewma=2                     #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL ewma.The user must provide the INDEX in the limit.sd vector for which the LCL ewma values should be corrected
+UCL.shew=2                     #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL shew.The user must provide the INDEX in the limit.sd vector for which the UCL shew values should be corrected
+LCL.shew=2                     #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL shew.The user must provide the INDEX in the limit.sd vector for which the LCL shew values should be corrected
 
 # plotting and dashboard -----
 
