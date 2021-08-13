@@ -12,8 +12,8 @@ source("Settings.r")
 source("R/Functions.r")
 
 
-load("data/individual.sows.RData")
-load("data/animal.RData")
+#load("data/individual.sows2.RData")
+#load("data/animal.RData")
 load("data/indicators.RData")
 
 
