@@ -814,6 +814,7 @@ names(indicators.data)<-indicators.all[indicators.to.keep.numerical]
 save(index.dates.days,  index.dates.week,
      indicators.data,
      indicators.labels,
+     indicators.type,
 
      file="data/indicators.RData")
 
