@@ -804,6 +804,7 @@ indicators.to.keep.numerical <- which(indicators.to.keep==T)
 
 indicators.data   <- list()
 indicators.labels <- indicators.all.labels[indicators.to.keep.numerical]
+indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
 
 for (i in 1:length(indicators.to.keep.numerical)){
   indicators.data[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])

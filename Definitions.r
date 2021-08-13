@@ -91,6 +91,13 @@ indicators.all.labels <- c("Services per week","Sows empty longer than target, w
                        "death after event, weekly",
                        "number of exits per week","exit reason, weekly","exit type, weekly","exit after event, weekly")
 
+indicators.all.type <- c("W","W","W","C","C","W","W","W","C","C","W","C",
+                         "C","C","C","W","W","W","W","W","W","W","W","W",
+                         "W","W","C","C","C","C","C","C","C","C","C","C",
+                         "W","W","W","W","C","C","C","C","C","W","W","W",
+                         "W","W","W","W","W")
+
+
 # services.week              #   NumberOfWeeks x   ParityFrom1
 # reservices.week	           #	 NumberOfWeeks x   ParityFrom1
 # perc.pregnancy	           #	 NumberOfWeeks x   ParityFrom1   x 2

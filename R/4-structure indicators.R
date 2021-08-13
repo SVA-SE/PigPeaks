@@ -15,7 +15,8 @@ source("R/Functions.r")
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
 load("data/indicators.RData")
-
+#indicators.data
+#indicators.labels
 
 
 # Gilts ----
