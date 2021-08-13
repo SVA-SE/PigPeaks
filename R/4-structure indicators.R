@@ -15,8 +15,10 @@ source("R/Functions.r")
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
 load("data/indicators.RData")
-#indicators.data
-#indicators.labels
+#index.dates.week
+# indicators.data
+# indicators.labels
+# indicators.type
 
 
 # Gilts ----
@@ -35,7 +37,7 @@ load("data/indicators.RData")
 
 ## Reservices per week
 
-range_weekly <- range.weekly(indicator=reservices.week,
+range_weekly <- range.weekly(indicator=reservices.week,    #indicators.data$reservices.week
                              weekly.window = 271)
 
 df.reservices.week <- weekly.indicators(indicator=reservices.week)

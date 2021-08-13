@@ -328,7 +328,8 @@ range.weekly <- function(indicator=indicator,        #indicator=reservices.week 
 ## weekly indicators with and without parity into one function
 
 weekly.indicators <- function(indicator=indicator,
-                              range=range_weekly
+                              range=range_weekly,
+                              index.dates.week=index.dates.week
 
 )
 {
