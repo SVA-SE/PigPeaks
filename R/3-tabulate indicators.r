@@ -795,6 +795,24 @@ save(index.dates.days,  index.dates.week,
 
      active.sows.displayID,
 
-     file="data/indicators.RData")
+     file="data/indicators-ALL.RData")
 
+
+
+indicators.to.keep <- indicators.all.labels %in% indicators.to.keep.labels
+indicators.to.keep.numerical <- which(indicators.to.keep==T)
+
+indicators.data   <- list()
+indicators.labels <- indicators.all.labels[indicators.to.keep.numerical]
+
+for (i in 1:length(indicators.to.keep.numerical)){
+  indicators.data[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])
+}
+names(indicators.data)<-indicators.all[indicators.to.keep.numerical]
+
+save(index.dates.days,  index.dates.week,
+     indicators.data,
+     indicators.labels,
+
+     file="data/indicators.RData")
 

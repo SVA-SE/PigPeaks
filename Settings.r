@@ -9,6 +9,24 @@ farm.name="farm01" #name will be used to save base files
 language=19 #19 is swedish, see documentation for other languages
 
 
+# desired indicators ----- (see list of all at the end of the script)
+indicators.to.keep.labels <- c("Services per week","Sows empty longer than target, weekly",
+                       "Reservices per week","Time to reservice",
+                       "% failure, weekly","% reservice, weekly",
+                       "time to first service","time to first farrowing",
+                       "abortions per week","time to abortion",
+                       "pregnancy length","days between farrowings",
+                       "farrowings per week",
+                       "piglets per farrowing","live born per farrowing","dead born per farrowing","% dead born per farrowing",
+                       "mummified per farrowing",
+                       "weanings per week","piglets weaned per week","expected-weaned weaned per week",
+                       "days to weaning",
+                       "piglets weaned per weaning",
+                       "average weight at weaning",
+                       "sow deaths per week","gilt deaths per week","weaned piglet deaths per week",
+                       "death after event, weekly",
+                       "number of exits per week","exit type, weekly","exit after event, weekly")
+
 
 # grouping parity ----
 c1 <- 0:15
@@ -62,3 +80,24 @@ baseline.years=3
 
 
 
+# ALL INDICATORS POSSIBLE -----
+# indicators.labels <- c("Services per week","Sows empty longer than target, weekly",
+#                        "Reservices per week","Time to reservice","Sows re-serviced twice",
+#                        "% pregnancy, weekly","% failure, weekly","% reservice, weekly",
+#                        "time to first service","time to first farrowing",
+#                        "abortions per week","time to abortion",
+#                        "services to farrow","pregnancy length","days between farrowings",
+#                        "farrowings per week",
+#                        "total born per week","live born per week","dead born per week",
+#                        "small born per week","weak born per week","mummified born per week",
+#                        "% born dead, weekly","% small born, weekly","% weak born, weekly","% mummified, weekly",
+#                        "piglets per farrowing","live born per farrowing","dead born per farrowing","% dead born per farrowing",
+#                        "small born per farrowing","% small born per farrowing","weak born per farrowing","% weak born per farrowing",
+#                        "mummified per farrowing","% mummified per farrowing",
+#                        "weanings per week","piglets weaned per week","weaned-expected weaned per week","expected-weaned weaned per week",
+#                        "days to weaning",
+#                        "piglets weaned per weaning","weaned-expected weaned per weaning","% weaned-expected weaned per weaning",
+#                        "average weight at weaning",
+#                        "sow deaths per week","gilt deaths per week","weaned piglet deaths per week",
+#                        "death after event, weekly",
+#                        "number of exits per week","exit reason, weekly","exit type, weekly","exit after event, weekly")
