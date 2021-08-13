@@ -7,7 +7,7 @@ require(ISOweek)
 require(lubridate)
 require(abind)
 
-source("Definitions.r")
+#source("Definitions.r") #settings already runs definitions
 source("Settings.r")
 source("R/Functions.r")
 

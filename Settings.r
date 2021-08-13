@@ -1,3 +1,6 @@
+source("Definitions.r")
+
+
 # database connection settings ----
 server="XXXX" #private information referring to the local computer, see documentation
 database="XXXXX" #name of the WinPig database on your computer, see documentation
@@ -56,4 +59,6 @@ group.window <- 114
 
 # statistical settings ----
 baseline.years=3
+
+
 

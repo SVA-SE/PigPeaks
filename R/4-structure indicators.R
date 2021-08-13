@@ -7,7 +7,7 @@ require(ISOweek)
 require(lubridate)
 require(abind)
 
-source("Definitions.r")
+#source("Definitions.r") #settings already runs definitions
 source("Settings.r")
 source("R/Functions.r")
 
@@ -63,7 +63,7 @@ df.reservices.week <- shew_apply(df.indicator=df.reservices.week,
                                  guard.band.weekly=2,
                                  correct.baseline.UCL=FALSE,
                                  correct.baseline.LCL=FALSE,
-                                 UCL=FALSE,                     
+                                 UCL=FALSE,
                                  LCL=FALSE)
 
 
@@ -98,7 +98,7 @@ df.days.between.farrowings <- shew_apply(df.indicator=df.indicator,
                                          guard.band.weekly=NULL,
                                          correct.baseline.UCL=FALSE,
                                          correct.baseline.LCL=FALSE,
-                                         UCL=FALSE,                     
+                                         UCL=FALSE,
                                          LCL=FALSE)
 
 # Post-Weaning ----
@@ -134,7 +134,7 @@ df.piglets.deaths.week <- shew_apply(df.indicator=df.piglets.deaths.week,
                                      guard.band.weekly=2,
                                      correct.baseline.UCL=FALSE,
                                      correct.baseline.LCL=FALSE,
-                                     UCL=FALSE,                     
+                                     UCL=FALSE,
                                      LCL=FALSE)
 
 
@@ -171,5 +171,5 @@ df.number.deaths.week <- shew_apply(df.indicator=df.number.deaths.week,
                                     guard.band.weekly=2,
                                     correct.baseline.UCL=FALSE,
                                     correct.baseline.LCL=FALSE,
-                                    UCL=FALSE,                     
+                                    UCL=FALSE,
                                     LCL=FALSE)
