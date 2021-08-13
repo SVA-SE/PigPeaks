@@ -459,6 +459,8 @@ for (r in 1:dim(index.dates.week)[1]){
   }
 
 
+# mortality weaned pigs ----
+
 
 piglets.deaths.days <- rep(0,dim(index.dates.days)[1])
 if(dim(progeny.dead)[1]>1){
@@ -467,13 +469,12 @@ if(dim(progeny.dead)[1]>1){
   }
 }
 
-
 piglets.deaths.week <- rep(NA,dim(index.dates.week)[1])
 for (r in 1:dim(index.dates.week)[1]){
   piglets.deaths.week[r] <- sum(piglets.deaths.days[((((r-1)*7)+1):min(c((r*7),dim(index.dates.days)[1])))],na.rm=TRUE)
 }
-# length(piglets.deaths.week)
-# tail(piglets.deaths.week,500)
+
+
 
 
 
@@ -731,21 +732,6 @@ for (r in 1:dim(index.dates.week)[1]){
 
 
 
-# mortality weaned pigs ----
-
-
-piglets.deaths.days <- rep(0,dim(index.dates.days)[1])
-if(dim(progeny.dead)[1]>1){
-  for (d in 1:dim(index.dates.days)[1]){
-    piglets.deaths.days[d] <- sum(progeny.dead$NumOfPigs[(which(progeny.dead$EventDate==index.dates.days$dates[d]))])
-  }
-}
-
-piglets.deaths.week <- rep(NA,dim(index.dates.week)[1])
-for (r in 1:dim(index.dates.week)[1]){
-  piglets.deaths.week[r] <- sum(piglets.deaths.days[((((r-1)*7)+1):min(c((r*7),dim(index.dates.days)[1])))],na.rm=TRUE)
-}
-
 
 ## ALL INDICATORS ----
 
@@ -806,7 +792,6 @@ save(index.dates.days,  index.dates.week,
      exit.after.event.week		  ,#	 NumberOfWeeks x    6
      death.after.event.week		  ,#	 NumberOfWeeks x    6
      empty.long.week			      ,#	 NumberOfWeeks x   ParityFrom1
-     piglets.deaths.week		    ,#	 NumberOfWeeks x ,
 
      active.sows.displayID,
 
