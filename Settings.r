@@ -43,28 +43,30 @@ c3 <- c(rep("gilt",2),
 
 # functions arguments ----
 
-weekly.window <- 271           #weeks to see in each indicator
-continuous.window <- 5500      #observations to see in each indicator
+weekly.window <- 271            #weeks to see in each indicator
+continuous.window <- 5500       #observations to see in each indicator
 
-limit.upp <- 0.95              #upper limit (upper percentile) to clean baseline non-parametric
-limit.lw <- 0.05               #lower limit (lower percentile) to clean baseline non-parametric
+limit.upp <- 0.95               #upper limit (upper percentile) to clean baseline non-parametric
+limit.lw <- 0.05                #lower limit (lower percentile) to clean baseline non-parametric
 
-run.window.weekly <- 104       #window of time points which will be used to calculate the percentile set (weekly indicators)
-run.window.continuous <- 1300  #window of time points which will be used to calculate the percentile set (continuous indicators)
+run.window.weekly <- 104        #window of time points which will be used to calculate the percentile set (weekly indicators)
+run.window.continuous <- 1300   #window of time points which will be used to calculate the percentile set (continuous indicators)
 
-evaluate.weekly.window=165     #number of time points to be evaluated by the algorithm for weekly indicators
-baseline.weekly.window=104     #baseline used to train the algorithm in order to provide a forecast for weekly indicators
-guard.band.weekly=2            #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
+evaluate.weekly.window=165      #number of time points to be evaluated by the algorithm for weekly indicators
+baseline.weekly.window=104      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
+guard.band.weekly=2             #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
 
-lambda=0.2                     #EWMA parameter (lambda)
-limit.sd=c(2.5,3,3.5)          #3 limits (standard deviations)
+lambda=0.2                      #EWMA parameter (lambda)
+limit.sd=c(2.5,3,3.5)           #3 limits (standard deviations)
 
-correct.baseline.UCL=TRUE      #the algorithm can also be used to correct the data, correct for the UCL
-correct.baseline.LCL=TRUE      #the algorithm can also be used to correct the data, correct for the LCL
-UCL.ewma=2                     #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL ewma.The user must provide the INDEX in the limit.sd vector for which the UCL ewma values should be corrected
-LCL.ewma=2                     #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL ewma.The user must provide the INDEX in the limit.sd vector for which the LCL ewma values should be corrected
-UCL.shew=2                     #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL shew.The user must provide the INDEX in the limit.sd vector for which the UCL shew values should be corrected
-LCL.shew=2                     #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL shew.The user must provide the INDEX in the limit.sd vector for which the LCL shew values should be corrected
+correct.baseline.UCL.ewma=TRUE  #the algorithm can also be used to correct the data, correct for the UCL with ewma algorithm
+correct.baseline.LCL.ewma=TRUE  #the algorithm can also be used to correct the data, correct for the LCL with ewma algorithm
+correct.baseline.UCL.shew=FALSE #the algorithm can also be used to correct the data, correct for the UCL with shew algorithm
+correct.baseline.LCL.shew=FALSE #the algorithm can also be used to correct the data, correct for the LCL with shew algorithm
+UCL.ewma=2                      #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL ewma.The user must provide the INDEX in the limit.sd vector for which the UCL ewma values should be corrected
+LCL.ewma=2                      #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL ewma.The user must provide the INDEX in the limit.sd vector for which the LCL ewma values should be corrected
+UCL.shew=2                      #the minimum number that would have generated an alarm, for every time point, can be recorded in the indicator's column UCL shew.The user must provide the INDEX in the limit.sd vector for which the UCL shew values should be corrected
+LCL.shew=2                      #the maximum number that would have generated an alarm, for every time point, can be recorded in the indicator's column LCL shew.The user must provide the INDEX in the limit.sd vector for which the LCL shew values should be corrected
 
 # plotting and dashboard -----
 

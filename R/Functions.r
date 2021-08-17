@@ -1,4 +1,4 @@
-packages <- c("ISOweek","RColorBrewer", "lubridate", "abind", "qcc")
+packages <- c("ISOweek","RColorBrewer", "caTools", "lubridate", "abind", "qcc")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(ISOweek)
@@ -302,21 +302,23 @@ create.perc.week.1 <- function(rows.index.week=index.dates.week[,1],
 
 # farm range for weekly indicators
 
-range.weekly <- function(indicator=indicator,        #indicator=reservices.week    indicator=piglets.deaths.week
+range.weekly <- function(indicator=indicator,
                          weekly.window=weekly.window
 )
 
 {
-  if(is.matrix(indicator)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
+  if(is.array(indicator)==TRUE) {   #for indicators with parity (with and without denominator)
+                                    #indicator=indicators.data$reservices.week  indicator=indicators.data$perc.failure
 
     range <- max(1,(dim(indicator)[1]-weekly.window+1)):dim(indicator)[1]
 
   }
-
-  if(is.matrix(indicator)==FALSE) {   #for indicators that are not matrix, and therefore they have no parity
-
+  
+  if(is.array(indicator)==FALSE) {  #for indicators without parity
+                                    #indicator=indicators.data$gilts.deaths.week
+    
     range <- max(1,(length(indicator)-weekly.window+1)):length(indicator)
-
+    
   }
 
   return(range)
@@ -327,7 +329,6 @@ range.weekly <- function(indicator=indicator,        #indicator=reservices.week 
 
 weekly.indicators <- function(indicator=indicator,
                               range=range_weekly
-
 )
 {
   baseline <- c(rep(NA, length(range)))
@@ -339,8 +340,8 @@ weekly.indicators <- function(indicator=indicator,
   alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
 
 
-  if(is.matrix(indicator)==TRUE) {    #for indicators that are a matrix, and therefore they have parity
-    #indicator=reservices.week
+  if(is.array(indicator)==TRUE && is.matrix(indicator)==TRUE) {    #for indicators with parity (without denominator)
+    #indicator=indicators.data$reservices.week
 
     observed <- rowSums(indicator)[range]
 
@@ -352,13 +353,25 @@ weekly.indicators <- function(indicator=indicator,
     colnames(table) <- c("observed", "baseline",
                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-
-    #names(table) <- indicator
   }
+  
+  if(is.array(indicator)==TRUE && is.matrix(indicator)==FALSE) {    #for indicators with parity (with denominator)
+    #indicator=indicators.data$perc.failure
+    
+    observed <- round((rowSums(indicator[,,"numerator"])[range]) / (rowSums(indicator[,,"denominator"])[range])*100,2)
+    
+    table <- data.frame(observed, baseline, 
+                        UCL.ewma, LCL.ewma, alarms.ewma, 
+                        UCL.shew, LCL.shew, alarms.shew)
+    
+    
+    colnames(table) <- c("observed", "baseline",
+                         "UCL EWMA", "LCL EWMA", "alarms EWMA", 
+                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
+      }
 
-
-  if(is.matrix(indicator)==FALSE) {   #for indicators that are not a matrix, and therefore they have no parity
-    #indicator=piglets.deaths.week
+  if(is.array(indicator)==FALSE) {                                #for indicators without parity
+    #indicator=indicators.data$gilts.deaths.week
 
     observed <- indicator[range]
 
@@ -369,10 +382,8 @@ weekly.indicators <- function(indicator=indicator,
     colnames(table) <- c("observed", "baseline",
                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-
-    #names(table) <- indicator
   }
-
+  
   return(table)
 }
 
@@ -398,16 +409,14 @@ continuous.indicators <- function(indicator=indicator,       #indicator=days.bet
   LCL.shew <- c(rep(NA, length(range)))
   alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-
-  observed <- indicator[, "indicator"][range]
-
+  
   table <- data.frame(date, week, year,
-                      observed, baseline, 
+                      sowINDEX, observed, baseline, 
                       UCL.ewma, LCL.ewma, alarms.ewma, 
                       UCL.shew, LCL.shew, alarms.shew)
 
   colnames(table) <- c("date", "week", "year",
-                       "observed", "baseline",
+                       "sowINDEX", "observed", "baseline",
                        "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                        "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
   return(table)
@@ -430,8 +439,8 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 )
 {
 
-    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {       # for continuous indicators
-                                                                #df.indicator=df.reservices.week
+    if (length(colnames(df.indicator))==12) {       # for continuous indicators
+                                                    #df.indicator=indicators.time.series$`Time to reservice`
 
       df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
@@ -449,11 +458,9 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     limitV.upp <- runquantile(days, run.window.continuous,
                               probs=limit.upp, endrule="quantile")
 
-
     peaks.upp <- which(days > round(limitV.upp))
     x.smooth <- days
     x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
-
 
     df.indicator[,"baseline"] <- x.smooth
 
@@ -462,11 +469,8 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     limitV.lw <- runquantile(days, run.window.continuous,
                              probs=limit.lw, endrule="quantile")
 
-
-
     peaks.lw <- which(days < round(limitV.lw))
     x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
-
 
     df.indicator[,"baseline"] <- x.smooth
   }
@@ -481,13 +485,9 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     limitV.upp <- runquantile(days, run.window.continuous,
                               probs=limit.upp, endrule="quantile")
 
-
-
     peaks.upp <- which(days > round(limitV.upp))
     x.smooth <- days
     x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
-
-
 
     df.indicator[,"baseline"] <- x.smooth
   }
@@ -502,18 +502,17 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     limitV.lw <- runquantile(days, run.window.continuous,
                              probs=limit.lw, endrule="quantile")
 
-
-
     peaks.lw <- which(days < round(limitV.lw))
     x.smooth <- days
     x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-
-
     df.indicator[,"baseline"] <- x.smooth
 
   }
-    }else{                   # for weekly indicators
+    }
+  
+  if (length(colnames(df.indicator))==8) {     # for weekly indicators
+                                               #df.indicator=indicators.time.series$`time to abortion`
 
       df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
@@ -531,24 +530,18 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         limitV.upp <- runquantile(days, run.window.weekly,
                                   probs=limit.upp, endrule="quantile")
 
-
         peaks.upp <- which(days > round(limitV.upp))
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-
         df.indicator[,"baseline"] <- x.smooth
 
-
-
+        
         limitV.lw <- runquantile(days, run.window.weekly,
                                  probs=limit.lw, endrule="quantile")
 
-
-
         peaks.lw <- which(days < round(limitV.lw))
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
-
 
         df.indicator[,"baseline"] <- x.smooth
       }
@@ -563,13 +556,9 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         limitV.upp <- runquantile(days, run.window.weekly,
                                   probs=limit.upp, endrule="quantile")
 
-
-
         peaks.upp <- which(days > round(limitV.upp))
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
-
-
 
         df.indicator[,"baseline"] <- x.smooth
       }
@@ -584,13 +573,9 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         limitV.lw <- runquantile(days, run.window.weekly,
                                  probs=limit.lw, endrule="quantile")
 
-
-
         peaks.lw <- which(days < round(limitV.lw))
         x.smooth <- days
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
-
-
 
         df.indicator[,"baseline"] <- x.smooth
       }
@@ -599,37 +584,51 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
   return(df.indicator)
 }
 
+
 # apply EWMA control chart ----
 
-apply_ewma <- function(df.indicator=df.indicator,
+apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`abortions per week`
                        evaluate.weekly.window=evaluate.weekly.window,
                        baseline.weekly.window=baseline.weekly.window,
                        lambda=lambda,
                        limit.sd=limit.sd,
                        guard.band.weekly=guard.band.weekly,
-                       correct.baseline.UCL=correct.baseline.UCL,
-                       correct.baseline.LCL=correct.baseline.LCL,
+                       correct.baseline.UCL.ewma=correct.baseline.UCL.ewma,
+                       correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
                        UCL.ewma=UCL.ewma,
                        LCL.ewma=LCL.ewma
 )
 {
-    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {   # for continuous indicators, retrospective framework
+  if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
+    
+    #replace the NaN values for 0.00
+    df.indicator[,"observed"] <- 
+      replace(df.indicator[,"observed"],
+              which(is.nan(df.indicator[, "observed"])), 0.00)
+    
+    #replace the Na values for 0.00
+    df.indicator[,"observed"] <- 
+      replace(df.indicator[,"observed"],
+              which(is.na(df.indicator[, "observed"])), 0.00)
+  }
+  
+  if (length(colnames(df.indicator))==12) {     # for continuous indicators, retrospective framework
 
   data <- df.indicator[,"observed"]
 
   for (l in 1:length(limit.sd)){ #l=2
 
   #require(qcc)
-  ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l])
+  ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l], plot = FALSE, na.rm=TRUE)
 
   #choose UCL and LCL
 
   if (l==UCL.ewma){
-    df.indicator[,"UCL EWMA"] <- ewma1$limits[,"UCL"]
+    df.indicator[,"UCL EWMA"] <- ceiling(ewma1$limits[,"UCL"])
   }
   
   if (l==LCL.ewma){
-    df.indicator[,"LCL EWMA"] <- ewma1$limits[,"LCL"]
+    df.indicator[,"LCL EWMA"] <- floor(ewma1$limits[,"LCL"])
   }
 
   ##ADD one if the result of this loop was a detection
@@ -646,9 +645,9 @@ apply_ewma <- function(df.indicator=df.indicator,
     df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
 
   }
-      }else{        # for weekly indicators, prospective framework
-                    #df.indicator=df.reservices.week
-
+  }
+  if (length(colnames(df.indicator))==8) {         # for weekly indicators, prospective framework
+                    
         if(guard.band.weekly<1)(guard.band.weekly<-1)
 
         #require(abind)
@@ -721,12 +720,12 @@ apply_ewma <- function(df.indicator=df.indicator,
             }
 
             #Correct baseline IF the user indicated so
-            if (isTRUE(correct.baseline.UCL)){
+            if (isTRUE(correct.baseline.UCL.ewma)){
               if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
                 df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
               }
             }
-            if (isTRUE(correct.baseline.LCL)){
+            if (isTRUE(correct.baseline.LCL.ewma)){
               if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
                 df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
               }
@@ -744,16 +743,28 @@ shew_apply <- function (df.indicator=df.indicator,
                         baseline.weekly.window=baseline.weekly.window,
                         limit.sd=limit.sd,
                         guard.band.weekly=guard.band.weekly,
-                        correct.baseline.UCL=correct.baseline.UCL,  #should be possible to correct the baseline with Shewhart also?
-                        correct.baseline.LCL=correct.baseline.LCL,
+                        correct.baseline.UCL.shew=correct.baseline.UCL.shew,
+                        correct.baseline.LCL.shew=correct.baseline.LCL.shew,
                         UCL.shew=UCL.shew,
                         LCL.shew=LCL.shew
 )
 {
+  if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
+    
+    #replace the NaN values for 0.00
+    df.indicator[,"observed"] <- 
+      replace(df.indicator[,"observed"],
+              which(is.nan(df.indicator[, "observed"])), 0.00)
+    
+    #replace the Na values for 0.00
+    df.indicator[,"observed"] <- 
+      replace(df.indicator[,"observed"],
+              which(is.na(df.indicator[, "observed"])), 0.00)
+  }
+  
+  if (length(colnames(df.indicator))==12) {        # for continuous indicators, retrospective framework
 
-    if (("sowINDEX" %in% colnames(df.indicator))==TRUE) {       # for continuous indicators, retrospective framework
-                                                                #df.indicator=df.days.between.farrowings
-        data <- df.indicator[,"observed"]
+         data <- df.indicator[,"observed"]
 
         for (l in 1:length(limit.sd)){ #l=2
 
@@ -786,10 +797,11 @@ shew_apply <- function (df.indicator=df.indicator,
         df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] <- df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] -1
 
      }
-        }else{        # for weekly indicators, prospective framework
-                      #df.indicator=df.piglets.deaths.week
-
-          if(guard.band.weekly<1)(guard.band.weekly<-1)
+        }
+  
+  if (length(colnames(df.indicator))==8) {   # for weekly indicators, prospective framework
+    
+    if(guard.band.weekly<1)(guard.band.weekly<-1)
 
           #require(abind)
 
@@ -848,12 +860,12 @@ shew_apply <- function (df.indicator=df.indicator,
               }
 
               #Correct baseline IF the user indicated so
-              if (isTRUE(correct.baseline.UCL)){
+              if (isTRUE(correct.baseline.UCL.shew)){
                 if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
                   df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
                 }
               }
-              if (isTRUE(correct.baseline.LCL)){
+              if (isTRUE(correct.baseline.LCL.shew)){
                 if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
                   df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
                 }

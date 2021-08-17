@@ -1,11 +1,12 @@
 # packages ----
 
-packages <- c("ISOweek","lubridate","abind")
+packages <- c("ISOweek","lubridate","abind", "tidyverse")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(ISOweek)
 require(lubridate)
 require(abind)
+require(tidyverse)
 
 #source("Definitions.r") #settings already runs definitions
 source("Settings.r")
@@ -27,28 +28,118 @@ indicators.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FAL
                     TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE,
                     FALSE)
 
-indicators.time.series <- list()
+## indicators.limits
 
-for (i in 1:length(indicators.to.keep.numerical)){
-  indicators.time.series[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])
-}
-names(indicators.data)<-indicators.all[indicators.to.keep.numerical]
+indicators.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp", 
+                       "limit.upp", "non-sys", "non-sys", "limit.upp", "non-sys", 
+                       "both", "both", "limit.lw", "both", "limit.lw",
+                       "limit.upp", "limit.upp", "limit.upp", "non-sys", "limit.lw",
+                       "limit.lw", "non-sys", "limit.lw", "limit.lw", "limit.upp",
+                       "limit.upp", "limit.upp", "non-sys", "both", "non-sys",
+                       "non-sys")
+
+#for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {}
+
+head(indicators.data[["perc.failure"]][,,"numerator"])
 
 
-indicators.time.series <- list()
+indicators.time.series <- list_along(1:length(indicators.data))
 
-for (i in which(which(indicators.sys==TRUE) && which(indicators.type=="W"))) {
+
+# weekly range ----
+
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
   
   indicators.time.series[[i]] <- range.weekly(indicator=indicators.data[[i]],
                                               weekly.window=weekly.window)
 }
 
-
-which(which(indicators.sys==TRUE) %in% which(indicators.type=="W"))
-
-
 names(indicators.time.series) <- indicators.labels
+ 
 
+# structure weekly indicators ----
+
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
+  
+  indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
+                                                   range=indicators.time.series[[i]])
+}
+
+
+# structure continuous indicators ----
+
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
+  
+  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
+                                                       continuous.window=continuous.window)
+}
+
+
+# clean baseline ----
+
+for (i in which(indicators.sys==TRUE)) {
+  
+  if (indicators.limits[i]=="limit.upp") {
+
+  indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
+                                                     limit.upp=limit.upp,
+                                                     limit.lw=NULL,
+                                                     run.window.weekly=run.window.weekly,
+                                                     run.window.continuous=run.window.continuous)
+  }
+  
+  if (indicators.limits[i]=="limit.lw") {
+    
+    indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
+                                                       limit.upp=NULL,
+                                                       limit.lw=limit.lw,
+                                                       run.window.weekly=run.window.weekly,
+                                                       run.window.continuous=run.window.continuous)
+  }
+  
+  if (indicators.limits[i]=="both") {
+    
+    indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
+                                                       limit.upp=limit.upp,
+                                                       limit.lw=limit.lw,
+                                                       run.window.weekly=run.window.weekly,
+                                                       run.window.continuous=run.window.continuous)
+  }
+}
+
+
+# apply EWMA ----
+
+for (i in which(indicators.sys==TRUE)) {
+  
+  indicators.time.series[[i]] <- apply_ewma(df.indicator=indicators.time.series[[i]],
+                                            evaluate.weekly.window=evaluate.weekly.window,
+                                            baseline.weekly.window=baseline.weekly.window,
+                                            lambda=lambda,
+                                            limit.sd=limit.sd,
+                                            guard.band.weekly=guard.band.weekly,
+                                            correct.baseline.UCL.ewma=correct.baseline.UCL.ewma,
+                                            correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
+                                            UCL.ewma=UCL.ewma,
+                                            LCL.ewma=LCL.ewma)
+}
+
+
+# apply Shewhart ----
+
+for (i in which(indicators.sys==TRUE)) {
+  
+  indicators.time.series[[i]] <- shew_apply(df.indicator=indicators.time.series[[i]],
+                                            evaluate.weekly.window=evaluate.weekly.window,
+                                            baseline.weekly.window=baseline.weekly.window,
+                                            limit.sd=limit.sd,
+                                            guard.band.weekly=guard.band.weekly,
+                                            correct.baseline.UCL.shew=correct.baseline.UCL.shew,
+                                            correct.baseline.LCL.shew=correct.baseline.LCL.shew,
+                                            UCL.shew=UCL.shew,
+                                            LCL.shew=LCL.shew)
+}
+  
 # Services ----
 
 ## Reservices per week
@@ -91,7 +182,7 @@ df.reservices.week <- shew_apply(df.indicator=df.reservices.week,
 
 ## Days between farrowings
 
-df.days.between.farrowings <- continuous.indicators(indicator=days.between.farrowings,
+df.days.between.farrowings <- continuous.indicators(indicator=indicators.data$days.between.farrowings,
                                                     continuous.window=5500)
 
 df.days.between.farrowings <- clean_baseline_perc(df.indicator=df.days.between.farrowings,
@@ -106,20 +197,20 @@ df.days.between.farrowings <- apply_ewma(df.indicator=df.days.between.farrowings
                                          lambda=0.2,
                                          limit.sd=c(2.5,3,3.5),
                                          guard.band.weekly=NULL,
-                                         correct.baseline.UCL=TRUE,
-                                         correct.baseline.LCL=TRUE,
-                                         UCL=2,
-                                         LCL=2)
+                                         correct.baseline.UCL.ewma=TRUE,
+                                         correct.baseline.LCL.ewma=TRUE,
+                                         UCL.ewma=2,
+                                         LCL.ewma=2)
 
-df.days.between.farrowings <- shew_apply(df.indicator=df.indicator,
+df.days.between.farrowings <- shew_apply(df.indicator=df.days.between.farrowings,
                                          evaluate.weekly.window=NULL,
                                          baseline.weekly.window=NULL,
                                          limit.sd=c(2.5,3,3.5),
                                          guard.band.weekly=NULL,
-                                         correct.baseline.UCL=FALSE,
-                                         correct.baseline.LCL=FALSE,
-                                         UCL=FALSE,
-                                         LCL=FALSE)
+                                         correct.baseline.UCL.shew=FALSE,
+                                         correct.baseline.LCL.shew=FALSE,
+                                         UCL.shew=2,
+                                         LCL.shew=2)
 
 # Post-Weaning ----
 
