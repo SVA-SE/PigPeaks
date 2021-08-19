@@ -9,7 +9,7 @@ farm.name="farm01" #name will be used to save base files
 language=19 #19 is swedish, see documentation for other languages
 
 
-# desired indicators ----- (see list of all at the end of the script)
+# desired indicators ----- (see list of all at the end of the script) #"days between farrowings" has to be chosen
 indicators.to.keep.labels <- c("Services per week","Sows empty longer than target, weekly",
                        "Reservices per week","Time to reservice",
                        "% failure, weekly","% reservice, weekly",
@@ -50,7 +50,7 @@ limit.upp <- 0.95               #upper limit (upper percentile) to clean baselin
 limit.lw <- 0.05                #lower limit (lower percentile) to clean baseline non-parametric
 
 run.window.weekly <- 104        #window of time points which will be used to calculate the percentile set (weekly indicators)
-run.window.continuous <- 1300   #window of time points which will be used to calculate the percentile set (continuous indicators)
+nr.production.cycles <- 2       #number of production cycles to consider to construct a window of time points which will be used to calculate the percentile set (continuous indicators)
 
 evaluate.weekly.window=165      #number of time points to be evaluated by the algorithm for weekly indicators
 baseline.weekly.window=104      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
