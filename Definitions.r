@@ -97,6 +97,25 @@ indicators.all.type <- c("W","W","W","C","C","W","W","W","C","C","W","C",
                          "W","W","W","W","C","C","C","C","C","W","W","W",
                          "W","W","W","W","W")
 
+indicators.all.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE,
+                        TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
+                        TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
+                        TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE,
+                        FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
+                        FALSE, FALSE, FALSE)
+
+indicators.all.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp",
+                           "limit.lw", "limit.upp", "limit.upp", "non-sys", "non-sys",
+                           "limit.upp", "non-sys", "both", "both", "both",
+                           "limit.lw", "limit.lw", "limit.lw", "limit.upp", "limit.upp",
+                           "limit.upp", "limit.upp", "limit.upp", "limit.upp", "limit.upp",
+                           "limit.upp", "both", "limit.lw", "limit.upp", "limit.upp",
+                           "limit.upp", "limit.upp", "limit.upp", "limit.upp", "limit.upp",
+                           "limit.upp", "non-sys", "limit.lw", "limit.lw", "limit.upp",
+                           "non-sys", "limit.lw", "limit.lw", "limit.lw", "limit.lw",
+                           "limit.upp", "limit.upp", "limit.upp", "non-sys", "both",
+                           "non-sys", "non-sys", "non-sys")
+
 
 # services.week              #   NumberOfWeeks x   ParityFrom1
 # reservices.week	           #	 NumberOfWeeks x   ParityFrom1

@@ -805,6 +805,8 @@ indicators.to.keep.numerical <- which(indicators.to.keep==T)
 indicators.data   <- list()
 indicators.labels <- indicators.all.labels[indicators.to.keep.numerical]
 indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
+#indicators.sys <- indicators.all.sys[indicators.to.keep.numerical]
+#indicators.limits <- indicators.all.limits[indicators.to.keep.numerical]
 
 for (i in 1:length(indicators.to.keep.numerical)){
   indicators.data[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])
@@ -815,6 +817,8 @@ save(index.dates.days,  index.dates.week,
      indicators.data,
      indicators.labels,
      indicators.type,
+     #indicators.sys
+     #indicators.limits
 
      file="data/indicators.RData")
 
