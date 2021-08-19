@@ -1,4 +1,4 @@
-packages <- c("ISOweek","RColorBrewer", "caTools", "lubridate", "abind", "qcc")
+packages <- c("ISOweek","RColorBrewer", "caTools", "lubridate", "abind", "qcc", "dplyr")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(ISOweek)
@@ -7,6 +7,7 @@ require(lubridate)
 require(caTools)
 require(abind)
 require(qcc)
+require(dplyr)
 
 # background functions ----
 
@@ -328,22 +329,22 @@ range.weekly <- function(indicator=indicator,
 ## weekly indicators with and without parity into one function
 
 weekly.indicators <- function(indicator=indicator,
-                              range=range_weekly
+                              range.weekly=range_weekly
 )
 {
-  baseline <- c(rep(NA, length(range)))
-  UCL.ewma <- c(rep(NA, length(range)))
-  LCL.ewma <- c(rep(NA, length(range)))
-  UCL.shew <- c(rep(NA, length(range)))
-  LCL.shew <- c(rep(NA, length(range)))
-  alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+  baseline <- c(rep(NA, length(range.weekly)))
+  UCL.ewma <- c(rep(NA, length(range.weekly)))
+  LCL.ewma <- c(rep(NA, length(range.weekly)))
+  UCL.shew <- c(rep(NA, length(range.weekly)))
+  LCL.shew <- c(rep(NA, length(range.weekly)))
+  alarms.ewma <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
 
 
   if(is.array(indicator)==TRUE && is.matrix(indicator)==TRUE) {    #for indicators with parity (without denominator)
     #indicator=indicators.data$reservices.week
 
-    observed <- rowSums(indicator)[range]
+    observed <- rowSums(indicator)[range.weekly]
 
     table <- data.frame(observed, baseline, 
                         UCL.ewma, LCL.ewma, alarms.ewma, 
@@ -358,7 +359,7 @@ weekly.indicators <- function(indicator=indicator,
   if(is.array(indicator)==TRUE && is.matrix(indicator)==FALSE) {    #for indicators with parity (with denominator)
     #indicator=indicators.data$perc.failure
     
-    observed <- round((rowSums(indicator[,,"numerator"])[range]) / (rowSums(indicator[,,"denominator"])[range])*100,2)
+    observed <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
     
     table <- data.frame(observed, baseline, 
                         UCL.ewma, LCL.ewma, alarms.ewma, 
@@ -373,7 +374,7 @@ weekly.indicators <- function(indicator=indicator,
   if(is.array(indicator)==FALSE) {                                #for indicators without parity
     #indicator=indicators.data$gilts.deaths.week
 
-    observed <- indicator[range]
+    observed <- indicator[range.weekly]
 
     table <- data.frame(observed, baseline, 
                         UCL.ewma, LCL.ewma, alarms.ewma, 
@@ -390,7 +391,7 @@ weekly.indicators <- function(indicator=indicator,
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator,       #indicator=days.between.farrowings
+continuous.indicators <- function(indicator=indicator,       #indicator=indicators.data$perc.dead.born.litter
                                   continuous.window=continuous.window
 
 )
@@ -423,6 +424,60 @@ continuous.indicators <- function(indicator=indicator,       #indicator=days.bet
 }
 
 
+## for non-sys indicators
+
+non.sys.indicators <- function (indicator=indicator,
+                                range.weekly=range_weekly,
+                                continuous.window=continuous.window
+)
+{
+  if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
+    
+    observed <- rowSums(indicator)[range.weekly]
+    
+    table <- data.frame(observed)
+    
+    colnames(table) <- "observed"
+    
+  }
+  if (dim(indicator)[2]==4) {    #for continuous indicators
+    
+    range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+    
+    date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
+    week <- isoweek(as.Date(date,origin="1970-01-01"))
+    year <- isoyear(as.Date(date,origin="1970-01-01"))
+    sowINDEX <- indicator[,"sowINDEX"][range.continuous]
+    observed <- indicator[,"indicator"][range.continuous]
+    
+    table <- data.frame(date, week, year,
+                        sowINDEX, observed)
+    
+    colnames(table) <- c("date", "week", "year",
+                         "sowINDEX", "observed")
+    
+  }
+  if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
+    #for weekly indicators composed
+    
+    observed <- indicator[range.weekly,]
+    
+    table <- data.frame(observed)
+    
+  }
+  if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
+    
+    observed <- indicator[range.weekly]
+    
+    table <- data.frame(observed)
+    
+    colnames(table) <- "observed"
+    
+  }
+  return(table)
+}
+
+
 # clean baseline non-parametric ----
 
 ##'The cleaning is non-parametric, based on moving
@@ -435,84 +490,11 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
                                  limit.upp=limit.upp,
                                  limit.lw=limit.lw,
                                  run.window.weekly=run.window.weekly,
-                                 run.window.continuous=run.window.continuous
+                                 nr.production.cycles=nr.production.cycles
 )
 {
-
-    if (length(colnames(df.indicator))==12) {       # for continuous indicators
-                                                    #df.indicator=indicators.time.series$`Time to reservice`
-
-      df.indicator[,"baseline"] <- df.indicator[,"observed"]
-
-  #require(caTools)
-
-  #pulling data form the object to work out of the object
-  observed.matrix=df.indicator[,"observed"]
-
-  #if both upper and lower limits are not NULL
-
-  if(!is.null(limit.upp) & !is.null(limit.lw)){
-
-    days = observed.matrix
-
-    limitV.upp <- runquantile(days, run.window.continuous,
-                              probs=limit.upp, endrule="quantile")
-
-    peaks.upp <- which(days > round(limitV.upp))
-    x.smooth <- days
-    x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
-
-    df.indicator[,"baseline"] <- x.smooth
-
-
-
-    limitV.lw <- runquantile(days, run.window.continuous,
-                             probs=limit.lw, endrule="quantile")
-
-    peaks.lw <- which(days < round(limitV.lw))
-    x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
-
-    df.indicator[,"baseline"] <- x.smooth
-  }
-
-
-  #if only upper limit is not NULL
-
-  if(!is.null(limit.upp) & is.null(limit.lw)){
-
-    days = observed.matrix
-
-    limitV.upp <- runquantile(days, run.window.continuous,
-                              probs=limit.upp, endrule="quantile")
-
-    peaks.upp <- which(days > round(limitV.upp))
-    x.smooth <- days
-    x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
-
-    df.indicator[,"baseline"] <- x.smooth
-  }
-
-
-  #if only lower limit is not NULL
-
-  if(!is.null(limit.lw) & is.null(limit.upp)){
-
-    days = observed.matrix
-
-    limitV.lw <- runquantile(days, run.window.continuous,
-                             probs=limit.lw, endrule="quantile")
-
-    peaks.lw <- which(days < round(limitV.lw))
-    x.smooth <- days
-    x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
-
-    df.indicator[,"baseline"] <- x.smooth
-
-  }
-    }
-  
-  if (length(colnames(df.indicator))==8) {     # for weekly indicators
-                                               #df.indicator=indicators.time.series$`time to abortion`
+  if (dim(df.indicator)[2]==8) {     # for weekly indicators
+                                     #df.indicator=indicators.time.series$`time to abortion`
 
       df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
@@ -579,8 +561,88 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
         df.indicator[,"baseline"] <- x.smooth
       }
-    }
+  }
+  
+  if (dim(df.indicator)[2]==12) {       # for continuous indicators
+    #df.indicator=indicators.time.series$`Time to reservice`
 
+    df.indicator[,"baseline"] <- df.indicator[,"observed"]
+    
+    i.date <- first(df.indicator[, "date"])
+    f.date <- last(df.indicator[, "date"])
+    
+    median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[,"observed"])* nr.production.cycles
+    
+    run.window.continuous <- round((median.days.production.cycles*dim(df.indicator)[1])/
+      as.numeric(difftime(as.POSIXct(f.date), as.POSIXct(i.date, tz="UTC"), units="days")),0)
+      
+
+    #require(caTools)
+    
+    #pulling data form the object to work out of the object
+    observed.matrix=df.indicator[,"observed"]
+    
+    #if both upper and lower limits are not NULL
+    
+    if(!is.null(limit.upp) & !is.null(limit.lw)){
+      
+      days = observed.matrix
+      
+      limitV.upp <- runquantile(days, run.window.continuous,
+                                probs=limit.upp, endrule="quantile")
+      
+      peaks.upp <- which(days > round(limitV.upp))
+      x.smooth <- days
+      x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+      
+      df.indicator[,"baseline"] <- x.smooth
+      
+      
+      
+      limitV.lw <- runquantile(days, run.window.continuous,
+                               probs=limit.lw, endrule="quantile")
+      
+      peaks.lw <- which(days < round(limitV.lw))
+      x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+      
+      df.indicator[,"baseline"] <- x.smooth
+    }
+    
+    
+    #if only upper limit is not NULL
+    
+    if(!is.null(limit.upp) & is.null(limit.lw)){
+      
+      days = observed.matrix
+      
+      limitV.upp <- runquantile(days, run.window.continuous,
+                                probs=limit.upp, endrule="quantile")
+      
+      peaks.upp <- which(days > round(limitV.upp))
+      x.smooth <- days
+      x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
+      
+      df.indicator[,"baseline"] <- x.smooth
+    }
+    
+    
+    #if only lower limit is not NULL
+    
+    if(!is.null(limit.lw) & is.null(limit.upp)){
+      
+      days = observed.matrix
+      
+      limitV.lw <- runquantile(days, run.window.continuous,
+                               probs=limit.lw, endrule="quantile")
+      
+      peaks.lw <- which(days < round(limitV.lw))
+      x.smooth <- days
+      x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
+      
+      df.indicator[,"baseline"] <- x.smooth
+      
+    }
+  }
   return(df.indicator)
 }
 
@@ -612,41 +674,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
               which(is.na(df.indicator[, "observed"])), 0.00)
   }
   
-  if (length(colnames(df.indicator))==12) {     # for continuous indicators, retrospective framework
-
-  data <- df.indicator[,"observed"]
-
-  for (l in 1:length(limit.sd)){ #l=2
-
-  #require(qcc)
-  ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l], plot = FALSE, na.rm=TRUE)
-
-  #choose UCL and LCL
-
-  if (l==UCL.ewma){
-    df.indicator[,"UCL EWMA"] <- ceiling(ewma1$limits[,"UCL"])
-  }
-  
-  if (l==LCL.ewma){
-    df.indicator[,"LCL EWMA"] <- floor(ewma1$limits[,"LCL"])
-  }
-
-  ##ADD one if the result of this loop was a detection
-
-  if(l==1){
-    df.indicator[,"alarms EWMA"]<-0
-  }
-
-  df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
-    df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
-
-
-  df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <-
-    df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
-
-  }
-  }
-  if (length(colnames(df.indicator))==8) {         # for weekly indicators, prospective framework
+    if (dim(df.indicator)[2]==8) {         # for weekly indicators, prospective framework
                     
         if(guard.band.weekly<1)(guard.band.weekly<-1)
 
@@ -732,9 +760,46 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
             }
           }
         }
+    }
+  
+  if (dim(df.indicator)[2]==12) {     # for continuous indicators, retrospective framework
+    
+    data <- df.indicator[,"observed"]
+    
+    for (l in 1:length(limit.sd)){ #l=2
+      
+      #require(qcc)
+      ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l], plot = FALSE, na.rm=TRUE)
+      
+      #choose UCL and LCL
+      
+      if (l==UCL.ewma){
+        df.indicator[,"UCL EWMA"] <- ceiling(ewma1$limits[,"UCL"])
       }
+      
+      if (l==LCL.ewma){
+        df.indicator[,"LCL EWMA"] <- floor(ewma1$limits[,"LCL"])
+      }
+      
+      ##ADD one if the result of this loop was a detection
+      
+      if(l==1){
+        df.indicator[,"alarms EWMA"]<-0
+      }
+      
+      df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
+        df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"] +1
+      
+      
+      df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] <-
+        df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data<ewma1$center)], "alarms EWMA"] -1
+      
+    }
+  }
+  
   return(df.indicator)
 }
+
 
 # apply Shewhart control chart ----
 
@@ -762,44 +827,7 @@ shew_apply <- function (df.indicator=df.indicator,
               which(is.na(df.indicator[, "observed"])), 0.00)
   }
   
-  if (length(colnames(df.indicator))==12) {        # for continuous indicators, retrospective framework
-
-         data <- df.indicator[,"observed"]
-
-        for (l in 1:length(limit.sd)){ #l=2
-
-        #require(qcc)
-        stats <- stats.xbar.one(data)
-        sd.xbar <- sd.xbar.one(data,
-                               std.dev = "SD", k=2)
-        shew <- limits.xbar.one(center=stats$center,
-                                 std.dev=as.double(sd.xbar),
-                                 conf=limit.sd[l])
-
-        UCL.value= ceiling(shew[2])
-        LCL.value= floor(shew[1])
-
-        #choose UCL and LCL
-
-        if (l==UCL.shew){
-          df.indicator[,"UCL Shewhart"] <- UCL.value
-          df.indicator[,"LCL Shewhart"] <- LCL.value
-        }
-
-        ##ADD or SUBTRACT one if the result of this loop was a detection
-
-        if(l==1){
-          df.indicator[,"alarms Shewhart"]<-0
-        }
-
-        df.indicator[data>shew[,"UCL"],"alarms Shewhart"] <- df.indicator[data>shew[,"UCL"],"alarms Shewhart"] +1
-
-        df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] <- df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] -1
-
-     }
-        }
-  
-  if (length(colnames(df.indicator))==8) {   # for weekly indicators, prospective framework
+  if (dim(df.indicator)[2]==8) {   # for weekly indicators, prospective framework
     
     if(guard.band.weekly<1)(guard.band.weekly<-1)
 
@@ -872,9 +900,47 @@ shew_apply <- function (df.indicator=df.indicator,
               }
             }
           }
-        }
-          return(df.indicator)
-        }
+  }
+  
+  if (dim(df.indicator)[2]==12) {        # for continuous indicators, retrospective framework
+    
+    data <- df.indicator[,"observed"]
+    
+    for (l in 1:length(limit.sd)){ #l=2
+      
+      #require(qcc)
+      stats <- stats.xbar.one(data)
+      sd.xbar <- sd.xbar.one(data,
+                             std.dev = "SD", k=2)
+      shew <- limits.xbar.one(center=stats$center,
+                              std.dev=as.double(sd.xbar),
+                              conf=limit.sd[l])
+      
+      UCL.value= ceiling(shew[2])
+      LCL.value= floor(shew[1])
+      
+      #choose UCL and LCL
+      
+      if (l==UCL.shew){
+        df.indicator[,"UCL Shewhart"] <- UCL.value
+        df.indicator[,"LCL Shewhart"] <- LCL.value
+      }
+      
+      ##ADD or SUBTRACT one if the result of this loop was a detection
+      
+      if(l==1){
+        df.indicator[,"alarms Shewhart"]<-0
+      }
+      
+      df.indicator[data>shew[,"UCL"],"alarms Shewhart"] <- df.indicator[data>shew[,"UCL"],"alarms Shewhart"] +1
+      
+      df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] <- df.indicator[data<max(0,shew[,"LCL"]),"alarms Shewhart"] -1
+      
+    }
+  }
+  
+  return(df.indicator)
+  }
 
 # plotting functions ----
 
