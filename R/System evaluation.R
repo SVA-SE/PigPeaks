@@ -154,7 +154,7 @@ for (quarter in quarters.list){
 
 
 
-# Pregnancy length ----
+# pregnancy length ----
 
 add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.length,
                                            quarters.list=quarters.list
@@ -326,7 +326,7 @@ for (quarter in quarters.list){
 
 
 
-# Abortions per week ----
+# abortions per week ----
 
 add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
                                     quarters.list=quarters.list
@@ -478,7 +478,7 @@ for (quarter in quarters.list){
 
 
 
-# Live piglets per farrowing ----
+# live born per farrowing ----
 
 add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litter,
                                        quarters.list=quarters.list
@@ -660,7 +660,7 @@ for (quarter in quarters.list){
 
 
 
-# % dead piglets per farrowing ----
+# % dead born per farrowing ----
 ##NEEDS TO BE *100 TO WORK
 
 add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.born.litter,
@@ -816,7 +816,7 @@ for (quarter in quarters.list){
 
 
 
-# Mummified piglets per farrowing ----
+# mummified per farrowing ----
 
 add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.litter,
                                         quarters.list=quarters.list
@@ -964,7 +964,7 @@ for (quarter in quarters.list){
 
 
 
-# Piglets weaned per week ----
+# piglets weaned per week ----
 
 add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.wean.week,
                                               quarters.list=quarters.list
@@ -1110,7 +1110,7 @@ for (quarter in quarters.list){
 
 
 
-# Piglets weaned per litter ----
+# piglets weaned per weaning ----
 
 add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.wean.litter,
                                                 quarters.list=quarters.list
@@ -1269,7 +1269,8 @@ for (quarter in quarters.list){
 
 
 
-# Deaths in weaning piglets per week ----
+# expected-weaned weaned per week  ----
+## (deaths in weaning piglets per week)
 
 add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.week,
                                          quarters.list=quarters.list
@@ -1414,7 +1415,7 @@ for (quarter in quarters.list){
 
 
 
-# Dead sows per week ----
+# sow deaths per week ----
 
 add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths.week,
                                          quarters.list=quarters.list
