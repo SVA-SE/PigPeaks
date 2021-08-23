@@ -661,7 +661,6 @@ for (quarter in quarters.list){
 
 
 # % dead born per farrowing ----
-##NEEDS TO BE *100 TO WORK
 
 add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.born.litter,
                                             quarters.list=quarters.list
