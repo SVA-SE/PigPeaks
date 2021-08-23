@@ -1,5 +1,9 @@
-source("Definitions.r")
+packages <- c("utils")
+install.packages(setdiff(packages, rownames(installed.packages()))) 
 
+require(utils)
+
+source("Definitions.r")
 
 # database connection settings ----
 server="XXXX" #private information referring to the local computer, see documentation
@@ -8,6 +12,12 @@ farm.name="farm01" #name will be used to save base files
 
 language=19 #19 is swedish, see documentation for other languages
 
+# desired indicators from EXCEL ---- 
+
+indicators.excel <- read.table(file=file.choose(), header=TRUE, sep=";")
+
+##"days between farrowings" has to be chosen
+indicators.to.keep.excel <- indicators.excel[indicators.excel$indicators.to.keep==TRUE,]
 
 # desired indicators ----- (see list of all at the end of the script) #"days between farrowings" has to be chosen
 indicators.to.keep.labels <- c("Services per week","Sows empty longer than target, weekly",

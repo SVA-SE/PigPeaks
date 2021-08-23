@@ -21,22 +21,19 @@ load("data/indicators.RData")
 # indicators.labels
 # indicators.type
 
-## indicators.sys
+# indicators.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE,
+#                     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
+#                     TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE,
+#                     FALSE)
 
-indicators.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE,
-                    TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
-                    TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE,
-                    FALSE)
 
-## indicators.limits
-
-indicators.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp", 
-                       "limit.upp", "non-sys", "non-sys", "limit.upp", "non-sys", 
-                       "both", "both", "limit.lw", "both", "limit.lw",
-                       "limit.upp", "limit.upp", "limit.upp", "non-sys", "limit.lw",
-                       "limit.upp", "non-sys", "limit.lw", "limit.lw", "limit.upp",
-                       "limit.upp", "limit.upp", "non-sys", "both", "non-sys",
-                       "non-sys")
+# indicators.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp", 
+#                        "limit.upp", "non-sys", "non-sys", "limit.upp", "non-sys", 
+#                        "both", "both", "limit.lw", "both", "limit.lw",
+#                        "limit.upp", "limit.upp", "limit.upp", "non-sys", "limit.lw",
+#                        "limit.upp", "non-sys", "limit.lw", "limit.lw", "limit.upp",
+#                        "limit.upp", "limit.upp", "non-sys", "both", "non-sys",
+#                        "non-sys")
 
 
 ## % dead born per farrowing *100
@@ -51,7 +48,7 @@ indicators.time.series <- list_along(1:length(indicators.data))
 
 # weekly range ----
 
-for (i in which(indicators.type=="W")) {
+for (i in which(indicators.to.keep.excel$type=="W")) {
   
   indicators.time.series[[i]] <- range.weekly(indicator=indicators.data[[i]],
                                               weekly.window=weekly.window)
@@ -62,7 +59,7 @@ names(indicators.time.series) <- indicators.labels
 
 # structure weekly indicators with SyS ----
 
-for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
+for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="W"))) {
   
   indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
                                                    range.weekly=indicators.time.series[[i]])
@@ -71,7 +68,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
 # structure continuous indicators with SyS ----
 
-for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
+for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="C"))) {
   
   indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
                                                        continuous.window=continuous.window)
@@ -80,7 +77,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
 # structure non-sys indicators ----
 
-for (i in which(indicators.sys==FALSE)) {
+for (i in which(indicators.to.keep.excel$sys==FALSE)) {
   
   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
                                                     range.weekly=indicators.time.series[[i]],
@@ -90,7 +87,7 @@ for (i in which(indicators.sys==FALSE)) {
 
 # clean baseline ----
 
-for (i in which(indicators.sys==TRUE)) {
+for (i in which(indicators.to.keep.excel$sys==TRUE)) {
   
   if (indicators.limits[i]=="limit.upp") {
 
@@ -123,7 +120,7 @@ for (i in which(indicators.sys==TRUE)) {
 
 # apply EWMA ----
 
-for (i in which(indicators.sys==TRUE)) {
+for (i in which(indicators.to.keep.excel$sys==TRUE)) {
   
   indicators.time.series[[i]] <- apply_ewma(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
@@ -140,7 +137,7 @@ for (i in which(indicators.sys==TRUE)) {
 
 # apply Shewhart ----
 
-for (i in which(indicators.sys==TRUE)) {
+for (i in which(indicators.to.keep.excel$sys==TRUE)) {
   
   indicators.time.series[[i]] <- shew_apply(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
