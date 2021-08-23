@@ -86,6 +86,18 @@ nonTS.to.show <- 100
 #days.ago.nonTS <- 114
 group.window <- 114
 
+indicator.label ="indicator"
+ylabel = 'Number of sows'
+target.vector = NULL
+UCL.EWMA = TRUE       
+LCL.EWMA = TRUE       
+UCL.SHEW = TRUE      
+LCL.SHEW = TRUE       
+alarms.EWMA = TRUE      
+alarms.SHEW = TRUE      
+shading.matrix = NULL
+limits = NULL
+series.label="sows"
 
 
 # statistical settings ----
