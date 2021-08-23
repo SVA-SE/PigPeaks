@@ -649,7 +649,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
 # apply EWMA control chart ----
 
-apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`abortions per week`
+apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`% dead born per farrowing`
                        evaluate.weekly.window=evaluate.weekly.window,
                        baseline.weekly.window=baseline.weekly.window,
                        lambda=lambda,
@@ -662,14 +662,15 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
 )
 {
   if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
+   ## don't work if replaced by NA
     
     #replace the NaN values for 0.00
-    df.indicator[,"observed"] <- 
+    df.indicator[,"observed"] <-
       replace(df.indicator[,"observed"],
               which(is.nan(df.indicator[, "observed"])), 0.00)
-    
+
     #replace the Na values for 0.00
-    df.indicator[,"observed"] <- 
+    df.indicator[,"observed"] <-
       replace(df.indicator[,"observed"],
               which(is.na(df.indicator[, "observed"])), 0.00)
   }
@@ -815,6 +816,7 @@ shew_apply <- function (df.indicator=df.indicator,
 )
 {
   if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
+    ## don't work if replaced by NA
     
     #replace the NaN values for 0.00
     df.indicator[,"observed"] <- 
