@@ -39,6 +39,11 @@ indicators.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp",
                        "non-sys")
 
 
+## % dead born per farrowing *100
+# run once
+#indicators.data$perc.dead.born.litter[, "indicator"] <- round(indicators.data$perc.dead.born.litter[, "indicator"]*100, 2)
+
+
 ## RUN in the following order:
 
 indicators.time.series <- list_along(1:length(indicators.data))
