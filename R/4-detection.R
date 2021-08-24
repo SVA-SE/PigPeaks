@@ -20,25 +20,8 @@ load("data/indicators.RData")
 # indicators.data
 # indicators.labels
 # indicators.type
-
-# indicators.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE, FALSE,
-#                     TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
-#                     TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE,
-#                     FALSE)
-
-
-# indicators.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp", 
-#                        "limit.upp", "non-sys", "non-sys", "limit.upp", "non-sys", 
-#                        "both", "both", "limit.lw", "both", "limit.lw",
-#                        "limit.upp", "limit.upp", "limit.upp", "non-sys", "limit.lw",
-#                        "limit.upp", "non-sys", "limit.lw", "limit.lw", "limit.upp",
-#                        "limit.upp", "limit.upp", "non-sys", "both", "non-sys",
-#                        "non-sys")
-
-
-## % dead born per farrowing *100
-# run once
-#indicators.data$perc.dead.born.litter[, "indicator"] <- round(indicators.data$perc.dead.born.litter[, "indicator"]*100, 2)
+#indicators.sys
+#indicators.limits
 
 
 ## RUN in the following order:
@@ -49,18 +32,18 @@ indicators.time.series <- list_along(1:length(indicators.data))
 # weekly range ----
 
 for (i in which(indicators.to.keep.excel$type=="W")) {
-  
+
   indicators.time.series[[i]] <- range.weekly(indicator=indicators.data[[i]],
                                               weekly.window=weekly.window)
 }
 
 names(indicators.time.series) <- indicators.labels
- 
+
 
 # structure weekly indicators with SyS ----
 
 for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="W"))) {
-  
+
   indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
                                                    range.weekly=indicators.time.series[[i]])
 }
@@ -69,7 +52,7 @@ for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.
 # structure continuous indicators with SyS ----
 
 for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="C"))) {
-  
+
   indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
                                                        continuous.window=continuous.window)
 }
@@ -78,7 +61,7 @@ for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.
 # structure non-sys indicators ----
 
 for (i in which(indicators.to.keep.excel$sys==FALSE)) {
-  
+
   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
                                                     range.weekly=indicators.time.series[[i]],
                                                     continuous.window=continuous.window)
@@ -88,7 +71,7 @@ for (i in which(indicators.to.keep.excel$sys==FALSE)) {
 # clean baseline ----
 
 for (i in which(indicators.to.keep.excel$sys==TRUE)) {
-  
+
   if (indicators.to.keep.excel$limits[i]=="limit.upp") {
 
   indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
@@ -97,18 +80,18 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
                                                      run.window.weekly=run.window.weekly,
                                                      nr.production.cycles=nr.production.cycles)
   }
-  
+
   if (indicators.to.keep.excel$limits[i]=="limit.lw") {
-    
+
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=NULL,
                                                        limit.lw=limit.lw,
                                                        run.window.weekly=run.window.weekly,
                                                        nr.production.cycles=nr.production.cycles)
   }
-  
+
   if (indicators.to.keep.excel$limits[i]=="both") {
-    
+
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=limit.upp,
                                                        limit.lw=limit.lw,
@@ -121,7 +104,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
 # apply EWMA ----
 
 for (i in which(indicators.to.keep.excel$sys==TRUE)) {
-  
+
   indicators.time.series[[i]] <- apply_ewma(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
                                             baseline.weekly.window=baseline.weekly.window,
@@ -138,7 +121,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
 # apply Shewhart ----
 
 for (i in which(indicators.to.keep.excel$sys==TRUE)) {
-  
+
   indicators.time.series[[i]] <- shew_apply(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
                                             baseline.weekly.window=baseline.weekly.window,
