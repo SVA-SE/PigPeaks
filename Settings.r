@@ -1,5 +1,5 @@
 packages <- c("utils")
-install.packages(setdiff(packages, rownames(installed.packages()))) 
+install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(utils)
 
@@ -12,30 +12,20 @@ farm.name="farm01" #name will be used to save base files
 
 language=19 #19 is swedish, see documentation for other languages
 
-# desired indicators from EXCEL ---- 
+# desired indicators from EXCEL ----
 
 indicators.excel <- read.table(file="Table_Indicators_CSV.csv", header=TRUE, sep=";")
+indicators.to.keep <- indicators.all %in% indicators.excel$indicators[indicators.excel$indicators.to.keep==TRUE]
+indicators.to.keep.numerical <- which(indicators.to.keep==T)
 
-##"days between farrowings" has to be chosen
-indicators.to.keep.excel <- indicators.excel[indicators.excel$indicators.to.keep==TRUE,]
+indicators.labels <- indicators.excel$indicators.labels[indicators.excel$indicators.to.keep==TRUE]
+#assumes that a user will NOT change the order of the indicators in the Excel, but
+#CAN modify the labels in the column labels if desired
 
-# desired indicators ----- (see list of all at the end of the script) #"days between farrowings" has to be chosen
-indicators.to.keep.labels <- c("Services per week","Sows empty longer than target, weekly",
-                       "Reservices per week","Time to reservice",
-                       "% failure, weekly","% reservice, weekly",
-                       "time to first service","time to first farrowing",
-                       "abortions per week","time to abortion",
-                       "pregnancy length","days between farrowings",
-                       "farrowings per week",
-                       "piglets per farrowing","live born per farrowing","dead born per farrowing","% dead born per farrowing",
-                       "mummified per farrowing",
-                       "weanings per week","piglets weaned per week","expected-weaned weaned per week",
-                       "days to weaning",
-                       "piglets weaned per weaning",
-                       "average weight at weaning",
-                       "sow deaths per week","gilt deaths per week","weaned piglet deaths per week",
-                       "death after event, weekly",
-                       "number of exits per week","exit type, weekly","exit after event, weekly")
+
+indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
+indicators.sys    <- indicators.all.sys[indicators.to.keep.numerical]
+indicators.limits <- indicators.all.limits[indicators.to.keep.numerical]
 
 
 # grouping parity ----
@@ -89,13 +79,13 @@ group.window <- 114
 indicator.label = "indicator"
 target = NULL
 target.unit = "vector"          #c("value","vector"), defaults to vector
-UCL.EWMA = TRUE       
-LCL.EWMA = TRUE       
-UCL.SHEW = TRUE      
-LCL.SHEW = TRUE       
-alarms.EWMA.UPP = TRUE 
+UCL.EWMA = TRUE
+LCL.EWMA = TRUE
+UCL.SHEW = TRUE
+LCL.SHEW = TRUE
+alarms.EWMA.UPP = TRUE
 alarms.EWMA.LW = TRUE
-alarms.SHEW.UPP = TRUE 
+alarms.SHEW.UPP = TRUE
 alarms.SHEW.LW = TRUE
 series.label="sows"
 vertical.line = NULL            #vector of dates
