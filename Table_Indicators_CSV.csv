@@ -1,0 +1,54 @@
+indicators;indicators labels;type;sys;limits;category;indicators to keep
+services.week;Services per week;W;FALSE;non-sys;services;TRUE
+empty.long.week;Sows empty longer than target, weekly;W;TRUE;limit.upp;empty sows;TRUE
+reservices.week;Reservices per week;W;TRUE;limit.upp;services;TRUE
+time.to.reservice;Time to reservice;C;TRUE;both;services;TRUE
+rereservices;Sows re-serviced twice;C;TRUE;limit.upp;services;FALSE
+perc.pregnancy;% pregnancy, weekly;W;TRUE;limit.lw;pregnancy;FALSE
+perc.failure;% failure, weekly;W;TRUE;limit.upp;services;TRUE
+perc.reservice;% reservice, weekly;W;TRUE;limit.upp;services;TRUE
+time.to.first.service;time to first service;C;FALSE;non-sys;gilts;TRUE
+time.to.first.farrowing;time to first farrowing;C;FALSE;non-sys;gilts;TRUE
+abortions.week;abortions per week;W;TRUE;limit.upp;pregnancy;TRUE
+time.to.abortion;time to abortion;C;FALSE;non-sys;pregnancy;TRUE
+services.to.farrow;services to farrow;C;TRUE;both;pregnancy;FALSE
+pregnancy.length;pregnancy length;C;TRUE;both;pregnancy;TRUE
+days.between.farrowings;days between farrowings;C;TRUE;both;farrowing;TRUE
+farrowings.week;farrowings per week;W;TRUE;limit.lw;farrowing;TRUE
+total.born.week;total born per week;W;TRUE;limit.lw;farrowing;FALSE
+live.born.week;live born per week;W;TRUE;limit.lw;farrowing;FALSE
+dead.born.week;dead born per week;W;TRUE;limit.upp;farrowing;FALSE
+small.born.week;small born per week;W;TRUE;limit.upp;farrowing;FALSE
+weak.born.week;weak born per week;W;TRUE;limit.upp;farrowing;FALSE
+mummi.born.week;mummified born per week;W;TRUE;limit.upp;farrowing;FALSE
+perc.dead.born.week;% born dead, weekly;W;TRUE;limit.upp;farrowing;FALSE
+perc.small.born.week;% small born, weekly;W;TRUE;limit.upp;farrowing;FALSE
+perc.weak.born.week;% weak born, weekly;W;TRUE;limit.upp;farrowing;FALSE
+perc.mummi.born.week;% mummified, weekly;W;TRUE;limit.upp;farrowing;FALSE
+total.born.litter;piglets per farrowing;C;TRUE;both;farrowing;TRUE
+live.born.litter;live born per farrowing;C;TRUE;limit.lw;farrowing;TRUE
+dead.born.litter;dead born per farrowing;C;TRUE;limit.upp;farrowing;TRUE
+perc.dead.born.litter;% dead born per farrowing;C;TRUE;limit.upp;farrowing;TRUE
+small.born.litter;small born per farrowing;C;TRUE;limit.upp;farrowing;FALSE
+perc.small.born.litter;% small born per farrowing;C;TRUE;limit.upp;farrowing;FALSE
+weak.born.litter;weak born per farrowing;C;TRUE;limit.upp;farrowing;FALSE
+perc.weak.born.litter;% weak born per farrowing;C;TRUE;limit.upp;farrowing;FALSE
+mummi.born.litter;mummified per farrowing;C;TRUE;limit.upp;farrowing;TRUE
+perc.mummi.born.litter;% mummified per farrowing;C;TRUE;limit.upp;farrowing;FALSE
+weanings.week;weanings per week;W;FALSE;non-sys;weaning;TRUE
+total.wean.week;piglets weaned per week;W;TRUE;limit.lw;weaning;TRUE
+diff.wean.week;weaned-expected weaned per week;W;TRUE;limit.lw;weaning;FALSE
+negdiff.wean.week;expected-weaned weaned per week;W;TRUE;limit.upp;weaning;TRUE
+weaning.length;days to weaning;C;FALSE;non-sys;weaning;TRUE
+total.wean.litter;piglets weaned per weaning;C;TRUE;limit.lw;weaning;TRUE
+negdiff.weaned.litter;weaned-expected weaned per weaning;C;TRUE;limit.lw;weaning;FALSE
+perc.negdiff.weaned.litter;% weaned-expected weaned per weaning;C;TRUE;limit.lw;weaning;FALSE
+weight.wean.litter;average weight at weaning;C;TRUE;limit.lw;weaning;TRUE
+number.deaths.week;sow deaths per week;W;TRUE;limit.upp;exit;TRUE
+gilts.deaths.week;gilt deaths per week;W;TRUE;limit.upp;exit;TRUE
+piglets.deaths.week;weaned piglet deaths per week;W;TRUE;limit.upp;post-weaning;TRUE
+death.after.event.week;death after event, weekly;W;FALSE;non-sys;exit;TRUE
+number.exits.week;number of exits per week;W;TRUE;both;exit;TRUE
+exit.reason.week;exit reason, weekly;W;FALSE;non-sys;exit;FALSE
+exit.type.week;exit type, weekly;W;FALSE;non-sys;exit;TRUE
+exit.after.event.week;exit after event, weekly;W;FALSE;non-sys;exit;TRUE
