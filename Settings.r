@@ -14,7 +14,7 @@ language=19 #19 is swedish, see documentation for other languages
 
 # desired indicators from EXCEL ---- 
 
-indicators.excel <- read.table(file=file.choose(), header=TRUE, sep=";")
+indicators.excel <- read.table(file="Table_Indicators_CSV.csv", header=TRUE, sep=";")
 
 ##"days between farrowings" has to be chosen
 indicators.to.keep.excel <- indicators.excel[indicators.excel$indicators.to.keep==TRUE,]
@@ -86,18 +86,20 @@ nonTS.to.show <- 100
 #days.ago.nonTS <- 114
 group.window <- 114
 
-indicator.label ="indicator"
-ylabel = 'Number of sows'
-target.vector = NULL
+indicator.label = "indicator"
+target = NULL
+target.unit = "vector"          #c("value","vector"), defaults to vector
 UCL.EWMA = TRUE       
 LCL.EWMA = TRUE       
 UCL.SHEW = TRUE      
 LCL.SHEW = TRUE       
-alarms.EWMA = TRUE      
-alarms.SHEW = TRUE      
-shading.matrix = NULL
-limits = NULL
+alarms.EWMA.UPP = TRUE 
+alarms.EWMA.LW = TRUE
+alarms.SHEW.UPP = TRUE 
+alarms.SHEW.LW = TRUE
 series.label="sows"
+vertical.line = NULL            #vector of dates
+vertical.line.label= NULL
 
 
 # statistical settings ----
