@@ -89,7 +89,7 @@ for (i in which(indicators.to.keep.excel$sys==FALSE)) {
 
 for (i in which(indicators.to.keep.excel$sys==TRUE)) {
   
-  if (indicators.limits[i]=="limit.upp") {
+  if (indicators.to.keep.excel$limits[i]=="limit.upp") {
 
   indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                      limit.upp=limit.upp,
@@ -98,7 +98,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
                                                      nr.production.cycles=nr.production.cycles)
   }
   
-  if (indicators.limits[i]=="limit.lw") {
+  if (indicators.to.keep.excel$limits[i]=="limit.lw") {
     
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=NULL,
@@ -107,7 +107,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
                                                        nr.production.cycles=nr.production.cycles)
   }
   
-  if (indicators.limits[i]=="both") {
+  if (indicators.to.keep.excel$limits[i]=="both") {
     
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=limit.upp,
