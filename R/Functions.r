@@ -504,7 +504,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
       #if both upper and lower limits are not NULL
 
-      if(!is.null(limit.upp) & !is.null(limit.lw)){
+      if(!is.null(limit.upp) && !is.null(limit.lw)){
 
         days = observed.matrix
 
@@ -530,7 +530,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
       #if only upper limit is not NULL
 
-      if(!is.null(limit.upp) & is.null(limit.lw)){
+      if(!is.null(limit.upp) && is.null(limit.lw)){
 
         days = observed.matrix
 
@@ -547,7 +547,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
       #if only lower limit is not NULL
 
-      if(!is.null(limit.lw) & is.null(limit.upp)){
+      if(!is.null(limit.lw) && is.null(limit.upp)){
 
         days = observed.matrix
 
@@ -583,7 +583,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     
     #if both upper and lower limits are not NULL
     
-    if(!is.null(limit.upp) & !is.null(limit.lw)){
+    if(!is.null(limit.upp) && !is.null(limit.lw)){
       
       days = observed.matrix
       
@@ -610,7 +610,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     
     #if only upper limit is not NULL
     
-    if(!is.null(limit.upp) & is.null(limit.lw)){
+    if(!is.null(limit.upp) && is.null(limit.lw)){
       
       days = observed.matrix
       
@@ -627,7 +627,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     
     #if only lower limit is not NULL
     
-    if(!is.null(limit.lw) & is.null(limit.upp)){
+    if(!is.null(limit.lw) && is.null(limit.upp)){
       
       days = observed.matrix
       
