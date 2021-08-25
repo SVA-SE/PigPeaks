@@ -100,6 +100,7 @@ alarms.SHEW.LW = TRUE
 series.label="sows"
 vertical.line = NULL            #vector of dates
 vertical.line.label= NULL
+group.labels=c('birth','service','reservice','abortion','farrowing','weaning')
 
 
 # statistical settings ----
