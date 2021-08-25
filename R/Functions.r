@@ -342,12 +342,12 @@ weekly.indicators <- function(indicator=indicator,
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator,       #indicator=indicators.data$perc.dead.born.litter
-                                  continuous.window=continuous.window
-
+continuous.indicators <- function(indicator=indicator#,       #indicator=indicators.data$perc.dead.born.litter
+                                  #continuous.window=continuous.window
 )
 {
-  range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+  #range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+  range <- dim(indicator)[1]   #apply range restriction only to detection
 
   date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
   week <- isoweek(as.Date(date,origin="1970-01-01"))

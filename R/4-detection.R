@@ -43,16 +43,16 @@ range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.date
 for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
   indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
-                                                   range.weekly=range.weekly)
+                                                   range.weekly=1:dim(index.dates.week)[1])
 }
 
 
 # structure continuous indicators with SyS ----
 
-for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="C"))) {
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
-  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
-                                                       continuous.window=continuous.window)
+  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]])#,
+                                                       #continuous.window=continuous.window)
 }
 
 
