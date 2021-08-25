@@ -8,6 +8,8 @@ output:
     vertical_layout: scroll
     social: menu
     orientation: rows
+  # logo: SVA_logo.png
+
 ---
 
 <style type="text/css">
@@ -39,31 +41,151 @@ Gilts
 
 plots.gilts <- list()
 
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"][1]
+#   
 for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="gilts"]) {
   #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="gilts"][1]
   
-  plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                                             indicator.label = indicator.label, 
-                                             show.window = nonTS.to.show,
-                                             index.dates = index.dates.days,
-                                             vertical.line = NULL,              
-                                             vertical.line.label=NULL,
-                                             ylabel = i,
-                                             xlabel = 'Last 100 events',
-                                             target = NULL,
-                                             target.unit = NULL,             
-                                             UCL.EWMA = FALSE,              
-                                             LCL.EWMA = FALSE,               
-                                             UCL.SHEW = FALSE,            
-                                             LCL.SHEW = FALSE,              
-                                             alarms.EWMA.UPP = FALSE, 
-                                             alarms.EWMA.LW = FALSE,   
-                                             alarms.SHEW.UPP = FALSE, 
-                                             alarms.SHEW.LW = FALSE, 
-                                             series.label="gilts")
+  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = FALSE
+      UCL.SHEW = TRUE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = FALSE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = FALSE
+      
+    }
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      
+      UCL.EWMA = FALSE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = TRUE
+      alarms.EWMA.UPP = FALSE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = FALSE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                     df.indicator = indicators.time.series[[i]],
+                                     indicator.label = "indicator",
+                                     show.window = weeks.to.show,
+                                     index.dates = index.dates.week,
+                                     ylabel = i,
+                                     xlabel = 'Week',
+                                     target = NULL,
+                                     target.unit = NULL,             
+                                     UCL.EWMA = UCL.EWMA,                 
+                                     LCL.EWMA = LCL.EWMA,             
+                                     UCL.SHEW = UCL.SHEW,             
+                                     LCL.SHEW = LCL.SHEW,                
+                                     alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                     alarms.EWMA.LW = alarms.EWMA.LW,      
+                                     alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                     alarms.SHEW.LW = alarms.SHEW.LW,      
+                                     series.label="sows")
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                 indicator.label = "indicator", 
+                                                 show.window = nonTS.to.show,
+                                                 index.dates = index.dates.days,
+                                                 vertical.line = NULL,              
+                                                 vertical.line.label=NULL,
+                                                 ylabel = i,
+                                                 xlabel = 'Last 100 events',
+                                                 target = NULL,
+                                                 target.unit = NULL,             
+                                                 UCL.EWMA = UCL.EWMA,              
+                                                 LCL.EWMA = LCL.EWMA,               
+                                                 UCL.SHEW = UCL.SHEW,            
+                                                 LCL.SHEW = LCL.SHEW,              
+                                                 alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                 alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                 alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                 alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                 series.label = "sows")
+    }
+  }
+  
+  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                     df.indicator = indicators.time.series[[i]],
+                                     indicator.label = "indicator",
+                                     show.window = weeks.to.show,
+                                     index.dates = index.dates.week,
+                                     ylabel = i,
+                                     xlabel = 'Week',
+                                     target = NULL,
+                                     target.unit = NULL,             
+                                     UCL.EWMA = FALSE,                 
+                                     LCL.EWMA = FALSE,             
+                                     UCL.SHEW = FALSE,             
+                                     LCL.SHEW = FALSE,                
+                                     alarms.EWMA.UPP = FALSE,    
+                                     alarms.EWMA.LW = FALSE,      
+                                     alarms.SHEW.UPP = FALSE,   
+                                     alarms.SHEW.LW = FALSE,      
+                                     series.label="sows")
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                 indicator.label = "indicator", 
+                                                 show.window = nonTS.to.show,
+                                                 index.dates = index.dates.days,
+                                                 vertical.line = NULL,              
+                                                 vertical.line.label=NULL,
+                                                 ylabel = i,
+                                                 xlabel = 'Last 100 events',
+                                                 target = NULL,
+                                                 target.unit = NULL,             
+                                                 UCL.EWMA = FALSE,              
+                                                 LCL.EWMA = FALSE,               
+                                                 UCL.SHEW = FALSE,            
+                                                 LCL.SHEW = FALSE,              
+                                                 alarms.EWMA.UPP = FALSE, 
+                                                 alarms.EWMA.LW = FALSE,   
+                                                 alarms.SHEW.UPP = FALSE, 
+                                                 alarms.SHEW.LW = FALSE, 
+                                                 series.label = "sows")
+    }
+  }
 }
+#}
 
-print(plots.gilts)
+plots.gilts
+
 ```
 
 
@@ -74,26 +196,148 @@ Empty Sows
 
 plots.empty.sows <- list()
 
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"][1]
+#   
 for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="empty sows"]) {
+  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="empty sows"][1]
   
-  plots.empty.sows[[i]] <- TS.barplot(df.indicator = indicators.time.series[[i]],
-                                      indicator.label = "indicator",
-                                      show.window = weeks.to.show,
-                                      index.dates = index.dates.week,
-                                      ylabel = i,
-                                      xlabel = 'Week',
-                                      target = NULL,
-                                      target.unit = NULL,             
-                                      UCL.EWMA = FALSE,                 
-                                      LCL.EWMA = FALSE,             
-                                      UCL.SHEW = FALSE,             
-                                      LCL.SHEW = FALSE,                
-                                      alarms.EWMA.UPP = FALSE,    
-                                      alarms.EWMA.LW = FALSE,      
-                                      alarms.SHEW.UPP = FALSE,   
-                                      alarms.SHEW.LW = FALSE,      
-                                      series.label="sows")
+  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = FALSE
+      UCL.SHEW = TRUE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = FALSE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = FALSE
+      
+    }
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      
+      UCL.EWMA = FALSE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = TRUE
+      alarms.EWMA.UPP = FALSE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = FALSE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                          df.indicator = indicators.time.series[[i]],
+                                          indicator.label = "indicator",
+                                          show.window = weeks.to.show,
+                                          index.dates = index.dates.week,
+                                          ylabel = i,
+                                          xlabel = 'Week',
+                                          target = NULL,
+                                          target.unit = NULL,             
+                                          UCL.EWMA = UCL.EWMA,                 
+                                          LCL.EWMA = LCL.EWMA,             
+                                          UCL.SHEW = UCL.SHEW,             
+                                          LCL.SHEW = LCL.SHEW,                
+                                          alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                          alarms.EWMA.LW = alarms.EWMA.LW,      
+                                          alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                          alarms.SHEW.LW = alarms.SHEW.LW,      
+                                          series.label="sows")
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                      indicator.label = "indicator", 
+                                                      show.window = nonTS.to.show,
+                                                      index.dates = index.dates.days,
+                                                      vertical.line = NULL,              
+                                                      vertical.line.label=NULL,
+                                                      ylabel = i,
+                                                      xlabel = 'Last 100 events',
+                                                      target = NULL,
+                                                      target.unit = NULL,             
+                                                      UCL.EWMA = UCL.EWMA,              
+                                                      LCL.EWMA = LCL.EWMA,               
+                                                      UCL.SHEW = UCL.SHEW,            
+                                                      LCL.SHEW = LCL.SHEW,              
+                                                      alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                      alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                      alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                      alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                      series.label = "sows")
+    }
+  }
+  
+  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                          df.indicator = indicators.time.series[[i]],
+                                          indicator.label = "indicator",
+                                          show.window = weeks.to.show,
+                                          index.dates = index.dates.week,
+                                          ylabel = i,
+                                          xlabel = 'Week',
+                                          target = NULL,
+                                          target.unit = NULL,             
+                                          UCL.EWMA = FALSE,                 
+                                          LCL.EWMA = FALSE,             
+                                          UCL.SHEW = FALSE,             
+                                          LCL.SHEW = FALSE,                
+                                          alarms.EWMA.UPP = FALSE,    
+                                          alarms.EWMA.LW = FALSE,      
+                                          alarms.SHEW.UPP = FALSE,   
+                                          alarms.SHEW.LW = FALSE,      
+                                          series.label="sows")
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                      indicator.label = "indicator", 
+                                                      show.window = nonTS.to.show,
+                                                      index.dates = index.dates.days,
+                                                      vertical.line = NULL,              
+                                                      vertical.line.label=NULL,
+                                                      ylabel = i,
+                                                      xlabel = 'Last 100 events',
+                                                      target = NULL,
+                                                      target.unit = NULL,             
+                                                      UCL.EWMA = FALSE,              
+                                                      LCL.EWMA = FALSE,               
+                                                      UCL.SHEW = FALSE,            
+                                                      LCL.SHEW = FALSE,              
+                                                      alarms.EWMA.UPP = FALSE, 
+                                                      alarms.EWMA.LW = FALSE,   
+                                                      alarms.SHEW.UPP = FALSE, 
+                                                      alarms.SHEW.LW = FALSE, 
+                                                      series.label = "sows")
+    }
+  }
 }
+#}
 
 plots.empty.sows
 ```
@@ -106,109 +350,914 @@ Services
 
 plots.services <- list()
 
-for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"][1]
-  
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
-
-  if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"][1]
+#   
+  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"]) {
+    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"][1]
     
-        if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
-          
-          plots.services[[i]] <- TS.barplot(df.indicator = indicators.time.series[[i]],
-                                            indicator.label = "indicator",
-                                             show.window = weeks.to.show,
-                                             index.dates = index.dates.week,
-                                             ylabel = i,
-                                             xlabel = 'Week',
-                                             target = NULL,
-                                             target.unit = NULL,             
-                                             UCL.EWMA = TRUE,                 
-                                             LCL.EWMA = FALSE,             
-                                             UCL.SHEW = TRUE,             
-                                             LCL.SHEW = FALSE,                
-                                             alarms.EWMA.UPP = TRUE,    
-                                             alarms.EWMA.LW = FALSE,      
-                                             alarms.SHEW.UPP = TRUE,   
-                                             alarms.SHEW.LW = FALSE,      
-                                             series.label="sows")
-        }
-  }
-    
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
       
       if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
         
-         plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
-                                                        indicator.label = "indicator", 
-                                                        show.window = nonTS.to.show,
-                                                        index.dates = index.dates.days,
-                                                        vertical.line = NULL,              
-                                                        vertical.line.label=NULL,
-                                                        ylabel = i,
-                                                        xlabel = 'Last 100 events',
-                                                        target = NULL,
-                                                        target.unit = NULL,             
-                                                        UCL.EWMA = TRUE,              
-                                                        LCL.EWMA = FALSE,               
-                                                        UCL.SHEW = TRUE,            
-                                                        LCL.SHEW = FALSE,              
-                                                        alarms.EWMA.UPP = TRUE, 
-                                                        alarms.EWMA.LW = FALSE,   
-                                                        alarms.SHEW.UPP = TRUE, 
-                                                        alarms.SHEW.LW = FALSE, 
-                                                        series.label = "sows")
+        UCL.EWMA = TRUE
+        LCL.EWMA = FALSE
+        UCL.SHEW = TRUE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = FALSE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = FALSE
+        
       }
-
-        if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
-          
-          plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
-                                                        indicator.label = "indicator", 
-                                                        show.window = nonTS.to.show,
-                                                        index.dates = index.dates.days,
-                                                        vertical.line = NULL,              
-                                                        vertical.line.label=NULL,
-                                                        ylabel = i,
-                                                        xlabel = 'Last 100 events',
-                                                        target = NULL,
-                                                        target.unit = NULL,             
-                                                        UCL.EWMA = TRUE,              
-                                                        LCL.EWMA = TRUE,               
-                                                        UCL.SHEW = FALSE,            
-                                                        LCL.SHEW = FALSE,              
-                                                        alarms.EWMA.UPP = TRUE, 
-                                                        alarms.EWMA.LW = TRUE,   
-                                                        alarms.SHEW.UPP = TRUE, 
-                                                        alarms.SHEW.LW = TRUE, 
-                                                        series.label = "sows")
-        }
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+        
+        UCL.EWMA = TRUE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+        
+        UCL.EWMA = FALSE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = TRUE
+        alarms.EWMA.UPP = FALSE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = FALSE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                          df.indicator = indicators.time.series[[i]],
+                                          indicator.label = "indicator",
+                                          show.window = weeks.to.show,
+                                          index.dates = index.dates.week,
+                                          ylabel = i,
+                                          xlabel = 'Week',
+                                          target = NULL,
+                                          target.unit = NULL,             
+                                          UCL.EWMA = UCL.EWMA,                 
+                                          LCL.EWMA = LCL.EWMA,             
+                                          UCL.SHEW = UCL.SHEW,             
+                                          LCL.SHEW = LCL.SHEW,                
+                                          alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                          alarms.EWMA.LW = alarms.EWMA.LW,      
+                                          alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                          alarms.SHEW.LW = alarms.SHEW.LW,      
+                                          series.label="sows")
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                      indicator.label = "indicator", 
+                                                      show.window = nonTS.to.show,
+                                                      index.dates = index.dates.days,
+                                                      vertical.line = NULL,              
+                                                      vertical.line.label=NULL,
+                                                      ylabel = i,
+                                                      xlabel = 'Last 100 events',
+                                                      target = NULL,
+                                                      target.unit = NULL,             
+                                                      UCL.EWMA = UCL.EWMA,              
+                                                      LCL.EWMA = LCL.EWMA,               
+                                                      UCL.SHEW = UCL.SHEW,            
+                                                      LCL.SHEW = LCL.SHEW,              
+                                                      alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                      alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                      alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                      alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                      series.label = "sows")
+      }
     }
-  }
     
     if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
       
-      plots.services[[i]] <- TS.barplot(df.indicator = indicators.time.series[[i]],
-                                        indicator.label = "indicator",
-                                        show.window = weeks.to.show,
-                                        index.dates = index.dates.week,
-                                        ylabel = i,
-                                        xlabel = 'Week',
-                                        target = NULL,
-                                        target.unit = NULL,             
-                                        UCL.EWMA = FALSE,                 
-                                        LCL.EWMA = FALSE,             
-                                        UCL.SHEW = FALSE,             
-                                        LCL.SHEW = FALSE,                
-                                        alarms.EWMA.UPP = FALSE,    
-                                        alarms.EWMA.LW = FALSE,      
-                                        alarms.SHEW.UPP = FALSE,   
-                                        alarms.SHEW.LW = FALSE,      
-                                        series.label="sows")
-
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                          df.indicator = indicators.time.series[[i]],
+                                          indicator.label = "indicator",
+                                          show.window = weeks.to.show,
+                                          index.dates = index.dates.week,
+                                          ylabel = i,
+                                          xlabel = 'Week',
+                                          target = NULL,
+                                          target.unit = NULL,             
+                                          UCL.EWMA = FALSE,                 
+                                          LCL.EWMA = FALSE,             
+                                          UCL.SHEW = FALSE,             
+                                          LCL.SHEW = FALSE,                
+                                          alarms.EWMA.UPP = FALSE,    
+                                          alarms.EWMA.LW = FALSE,      
+                                          alarms.SHEW.UPP = FALSE,   
+                                          alarms.SHEW.LW = FALSE,      
+                                          series.label="sows")
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                      indicator.label = "indicator", 
+                                                      show.window = nonTS.to.show,
+                                                      index.dates = index.dates.days,
+                                                      vertical.line = NULL,              
+                                                      vertical.line.label=NULL,
+                                                      ylabel = i,
+                                                      xlabel = 'Last 100 events',
+                                                      target = NULL,
+                                                      target.unit = NULL,             
+                                                      UCL.EWMA = FALSE,              
+                                                      LCL.EWMA = FALSE,               
+                                                      UCL.SHEW = FALSE,            
+                                                      LCL.SHEW = FALSE,              
+                                                      alarms.EWMA.UPP = FALSE, 
+                                                      alarms.EWMA.LW = FALSE,   
+                                                      alarms.SHEW.UPP = FALSE, 
+                                                      alarms.SHEW.LW = FALSE, 
+                                                      series.label = "sows")
+      }
     }
-}
+  }
+#}
 
 plots.services
+
+```
+
+
+Pregnancy
+====================================
+
+```{r}
+plots.pregnancy <- list()
+# 
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"][1]
+
+  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="pregnancy"]) {
+    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="pregnancy"][1]
+    
+    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+        
+        UCL.EWMA = TRUE
+        LCL.EWMA = FALSE
+        UCL.SHEW = TRUE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = FALSE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = FALSE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+        
+        UCL.EWMA = TRUE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+        
+        UCL.EWMA = FALSE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = TRUE
+        alarms.EWMA.UPP = FALSE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = FALSE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                           df.indicator = indicators.time.series[[i]],
+                                           indicator.label = "indicator",
+                                           show.window = weeks.to.show,
+                                           index.dates = index.dates.week,
+                                           ylabel = i,
+                                           xlabel = 'Week',
+                                           target = NULL,
+                                           target.unit = NULL,             
+                                           UCL.EWMA = UCL.EWMA,                 
+                                           LCL.EWMA = LCL.EWMA,             
+                                           UCL.SHEW = UCL.SHEW,             
+                                           LCL.SHEW = LCL.SHEW,                
+                                           alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                           alarms.EWMA.LW = alarms.EWMA.LW,      
+                                           alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                           alarms.SHEW.LW = alarms.SHEW.LW,      
+                                           series.label="sows")
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                       indicator.label = "indicator", 
+                                                       show.window = nonTS.to.show,
+                                                       index.dates = index.dates.days,
+                                                       vertical.line = NULL,              
+                                                       vertical.line.label=NULL,
+                                                       ylabel = i,
+                                                       xlabel = 'Last 100 events',
+                                                       target = NULL,
+                                                       target.unit = NULL,             
+                                                       UCL.EWMA = UCL.EWMA,              
+                                                       LCL.EWMA = LCL.EWMA,               
+                                                       UCL.SHEW = UCL.SHEW,            
+                                                       LCL.SHEW = LCL.SHEW,              
+                                                       alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                       alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                       alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                       alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                       series.label = "sows")
+      }
+    }
+    
+    if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                           df.indicator = indicators.time.series[[i]],
+                                           indicator.label = "indicator",
+                                           show.window = weeks.to.show,
+                                           index.dates = index.dates.week,
+                                           ylabel = i,
+                                           xlabel = 'Week',
+                                           target = NULL,
+                                           target.unit = NULL,             
+                                           UCL.EWMA = FALSE,                 
+                                           LCL.EWMA = FALSE,             
+                                           UCL.SHEW = FALSE,             
+                                           LCL.SHEW = FALSE,                
+                                           alarms.EWMA.UPP = FALSE,    
+                                           alarms.EWMA.LW = FALSE,      
+                                           alarms.SHEW.UPP = FALSE,   
+                                           alarms.SHEW.LW = FALSE,      
+                                           series.label="sows")
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                       indicator.label = "indicator", 
+                                                       show.window = nonTS.to.show,
+                                                       index.dates = index.dates.days,
+                                                       vertical.line = NULL,              
+                                                       vertical.line.label=NULL,
+                                                       ylabel = i,
+                                                       xlabel = 'Last 100 events',
+                                                       target = NULL,
+                                                       target.unit = NULL,             
+                                                       UCL.EWMA = FALSE,              
+                                                       LCL.EWMA = FALSE,               
+                                                       UCL.SHEW = FALSE,            
+                                                       LCL.SHEW = FALSE,              
+                                                       alarms.EWMA.UPP = FALSE, 
+                                                       alarms.EWMA.LW = FALSE,   
+                                                       alarms.SHEW.UPP = FALSE, 
+                                                       alarms.SHEW.LW = FALSE, 
+                                                       series.label = "sows")
+      }
+    }
+  }
+#}
+
+plots.pregnancy
+
+```
+
+
+Farrowing
+====================================
+
+```{r}
+
+plots.farrowing <- list()
+
+
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"][2]
+#   
+  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="farrowing"]) {
+    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="farrowing"][2]
+    
+    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+        
+        UCL.EWMA = TRUE
+        LCL.EWMA = FALSE
+        UCL.SHEW = TRUE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = FALSE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = FALSE
+        
+      }
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+        
+        UCL.EWMA = TRUE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = FALSE
+        alarms.EWMA.UPP = TRUE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = TRUE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+        
+        UCL.EWMA = FALSE
+        LCL.EWMA = TRUE
+        UCL.SHEW = FALSE
+        LCL.SHEW = TRUE
+        alarms.EWMA.UPP = FALSE
+        alarms.EWMA.LW = TRUE
+        alarms.SHEW.UPP = FALSE
+        alarms.SHEW.LW = TRUE
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                           df.indicator = indicators.time.series[[i]],
+                                           indicator.label = "indicator",
+                                           show.window = weeks.to.show,
+                                           index.dates = index.dates.week,
+                                           ylabel = i,
+                                           xlabel = 'Week',
+                                           target = NULL,
+                                           target.unit = NULL,             
+                                           UCL.EWMA = UCL.EWMA,                 
+                                           LCL.EWMA = LCL.EWMA,             
+                                           UCL.SHEW = UCL.SHEW,             
+                                           LCL.SHEW = LCL.SHEW,                
+                                           alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                           alarms.EWMA.LW = alarms.EWMA.LW,      
+                                           alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                           alarms.SHEW.LW = alarms.SHEW.LW,      
+                                           series.label="piglets")
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                       indicator.label = "indicator", 
+                                                       show.window = nonTS.to.show,
+                                                       index.dates = index.dates.days,
+                                                       vertical.line = NULL,              
+                                                       vertical.line.label=NULL,
+                                                       ylabel = i,
+                                                       xlabel = 'Last 100 events',
+                                                       target = NULL,
+                                                       target.unit = NULL,             
+                                                       UCL.EWMA = UCL.EWMA,              
+                                                       LCL.EWMA = LCL.EWMA,               
+                                                       UCL.SHEW = UCL.SHEW,            
+                                                       LCL.SHEW = LCL.SHEW,              
+                                                       alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                       alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                       alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                       alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                       series.label = "piglets")
+      }
+    }
+    
+    if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+        
+        plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                           df.indicator = indicators.time.series[[i]],
+                                           indicator.label = "indicator",
+                                           show.window = weeks.to.show,
+                                           index.dates = index.dates.week,
+                                           ylabel = i,
+                                           xlabel = 'Week',
+                                           target = NULL,
+                                           target.unit = NULL,             
+                                           UCL.EWMA = FALSE,                 
+                                           LCL.EWMA = FALSE,             
+                                           UCL.SHEW = FALSE,             
+                                           LCL.SHEW = FALSE,                
+                                           alarms.EWMA.UPP = FALSE,    
+                                           alarms.EWMA.LW = FALSE,      
+                                           alarms.SHEW.UPP = FALSE,   
+                                           alarms.SHEW.LW = FALSE,      
+                                           series.label= NULL)
+        
+      }
+      
+      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+        
+        plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                       indicator.label = "indicator", 
+                                                       show.window = nonTS.to.show,
+                                                       index.dates = index.dates.days,
+                                                       vertical.line = NULL,              
+                                                       vertical.line.label=NULL,
+                                                       ylabel = i,
+                                                       xlabel = 'Last 100 events',
+                                                       target = NULL,
+                                                       target.unit = NULL,             
+                                                       UCL.EWMA = FALSE,              
+                                                       LCL.EWMA = FALSE,               
+                                                       UCL.SHEW = FALSE,            
+                                                       LCL.SHEW = FALSE,              
+                                                       alarms.EWMA.UPP = FALSE, 
+                                                       alarms.EWMA.LW = FALSE,   
+                                                       alarms.SHEW.UPP = FALSE, 
+                                                       alarms.SHEW.LW = FALSE, 
+                                                       series.label = NULL)
+      }
+    }
+  }
+#}
+
+plots.farrowing
+
+
+```
+
+
+Weaning
+====================================
+
+```{r}
+
+plots.weaning <- list()
+
+# 
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"][3]
+#   
+  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="weaning"]) {
+  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="weaning"][3]
+  
+  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = FALSE
+      UCL.SHEW = TRUE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = FALSE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = FALSE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      
+      UCL.EWMA = FALSE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = TRUE
+      alarms.EWMA.UPP = FALSE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = FALSE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                       df.indicator = indicators.time.series[[i]],
+                                       indicator.label = "indicator",
+                                       show.window = weeks.to.show,
+                                       index.dates = index.dates.week,
+                                       ylabel = i,
+                                       xlabel = 'Week',
+                                       target = NULL,
+                                       target.unit = NULL,             
+                                       UCL.EWMA = UCL.EWMA,                 
+                                       LCL.EWMA = LCL.EWMA,             
+                                       UCL.SHEW = UCL.SHEW,             
+                                       LCL.SHEW = LCL.SHEW,                
+                                       alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                       alarms.EWMA.LW = alarms.EWMA.LW,      
+                                       alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                       alarms.SHEW.LW = alarms.SHEW.LW,      
+                                       series.label="piglets")
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                   indicator.label = "indicator", 
+                                                   show.window = nonTS.to.show,
+                                                   index.dates = index.dates.days,
+                                                   vertical.line = NULL,              
+                                                   vertical.line.label=NULL,
+                                                   ylabel = i,
+                                                   xlabel = 'Last 100 events',
+                                                   target = NULL,
+                                                   target.unit = NULL,             
+                                                   UCL.EWMA = UCL.EWMA,              
+                                                   LCL.EWMA = LCL.EWMA,               
+                                                   UCL.SHEW = UCL.SHEW,            
+                                                   LCL.SHEW = LCL.SHEW,              
+                                                   alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                   alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                   alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                   alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                   series.label = "piglets")
+    }
+  }
+  
+  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                       df.indicator = indicators.time.series[[i]],
+                                       indicator.label = "indicator",
+                                       show.window = weeks.to.show,
+                                       index.dates = index.dates.week,
+                                       ylabel = i,
+                                       xlabel = 'Week',
+                                       target = NULL,
+                                       target.unit = NULL,             
+                                       UCL.EWMA = FALSE,                 
+                                       LCL.EWMA = FALSE,             
+                                       UCL.SHEW = FALSE,             
+                                       LCL.SHEW = FALSE,                
+                                       alarms.EWMA.UPP = FALSE,    
+                                       alarms.EWMA.LW = FALSE,      
+                                       alarms.SHEW.UPP = FALSE,   
+                                       alarms.SHEW.LW = FALSE,      
+                                       series.label=NULL)
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                   indicator.label = "indicator", 
+                                                   show.window = nonTS.to.show,
+                                                   index.dates = index.dates.days,
+                                                   vertical.line = NULL,              
+                                                   vertical.line.label=NULL,
+                                                   ylabel = i,
+                                                   xlabel = 'Last 100 events',
+                                                   target = NULL,
+                                                   target.unit = NULL,             
+                                                   UCL.EWMA = FALSE,              
+                                                   LCL.EWMA = FALSE,               
+                                                   UCL.SHEW = FALSE,            
+                                                   LCL.SHEW = FALSE,              
+                                                   alarms.EWMA.UPP = FALSE, 
+                                                   alarms.EWMA.LW = FALSE,   
+                                                   alarms.SHEW.UPP = FALSE, 
+                                                   alarms.SHEW.LW = FALSE, 
+                                                   series.label = NULL)
+    }
+  }
+}
+#}
+
+plots.weaning
+```
+
+
+Post-Weaning
+====================================
+
+```{r}
+
+plots.post.weaning <- list()
+
+
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"]) {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"][1]
+#   
+for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="post-weaning"]) {
+  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="post-weaning"][1]
+  
+  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = FALSE
+      UCL.SHEW = TRUE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = FALSE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = FALSE
+      
+    }
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      
+      UCL.EWMA = FALSE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = TRUE
+      alarms.EWMA.UPP = FALSE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = FALSE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                            df.indicator = indicators.time.series[[i]],
+                                            indicator.label = "indicator",
+                                            show.window = weeks.to.show,
+                                            index.dates = index.dates.week,
+                                            ylabel = i,
+                                            xlabel = 'Week',
+                                            target = NULL,
+                                            target.unit = NULL,             
+                                            UCL.EWMA = UCL.EWMA,                 
+                                            LCL.EWMA = LCL.EWMA,             
+                                            UCL.SHEW = UCL.SHEW,             
+                                            LCL.SHEW = LCL.SHEW,                
+                                            alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                            alarms.EWMA.LW = alarms.EWMA.LW,      
+                                            alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                            alarms.SHEW.LW = alarms.SHEW.LW,      
+                                            series.label="weaned piglets")
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                        indicator.label = "indicator", 
+                                                        show.window = nonTS.to.show,
+                                                        index.dates = index.dates.days,
+                                                        vertical.line = NULL,              
+                                                        vertical.line.label=NULL,
+                                                        ylabel = i,
+                                                        xlabel = 'Last 100 events',
+                                                        target = NULL,
+                                                        target.unit = NULL,             
+                                                        UCL.EWMA = UCL.EWMA,              
+                                                        LCL.EWMA = LCL.EWMA,               
+                                                        UCL.SHEW = UCL.SHEW,            
+                                                        LCL.SHEW = LCL.SHEW,              
+                                                        alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                        alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                        alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                        alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                        series.label = "weaned piglets")
+    }
+  }
+  
+  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                            df.indicator = indicators.time.series[[i]],
+                                            indicator.label = "indicator",
+                                            show.window = weeks.to.show,
+                                            index.dates = index.dates.week,
+                                            ylabel = i,
+                                            xlabel = 'Week',
+                                            target = NULL,
+                                            target.unit = NULL,             
+                                            UCL.EWMA = FALSE,                 
+                                            LCL.EWMA = FALSE,             
+                                            UCL.SHEW = FALSE,             
+                                            LCL.SHEW = FALSE,                
+                                            alarms.EWMA.UPP = FALSE,    
+                                            alarms.EWMA.LW = FALSE,      
+                                            alarms.SHEW.UPP = FALSE,   
+                                            alarms.SHEW.LW = FALSE,      
+                                            series.label=NULL)
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                        indicator.label = "indicator", 
+                                                        show.window = nonTS.to.show,
+                                                        index.dates = index.dates.days,
+                                                        vertical.line = NULL,              
+                                                        vertical.line.label=NULL,
+                                                        ylabel = i,
+                                                        xlabel = 'Last 100 events',
+                                                        target = NULL,
+                                                        target.unit = NULL,             
+                                                        UCL.EWMA = FALSE,              
+                                                        LCL.EWMA = FALSE,               
+                                                        UCL.SHEW = FALSE,            
+                                                        LCL.SHEW = FALSE,              
+                                                        alarms.EWMA.UPP = FALSE, 
+                                                        alarms.EWMA.LW = FALSE,   
+                                                        alarms.SHEW.UPP = FALSE, 
+                                                        alarms.SHEW.LW = FALSE, 
+                                                        series.label = NULL)
+    }
+  }
+}
+#}
+
+plots.post.weaning
+
+```
+
+
+Exit
+====================================
+
+```{r}
+
+plots.exit <- list()
+
+# 
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="exit"]) {
+#   #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"][1]
+#   
+  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"]) {
+  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"][1]
+  
+  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = FALSE
+      UCL.SHEW = TRUE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = FALSE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = FALSE
+      
+    }
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      
+      UCL.EWMA = TRUE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = FALSE
+      alarms.EWMA.UPP = TRUE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = TRUE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      
+      UCL.EWMA = FALSE
+      LCL.EWMA = TRUE
+      UCL.SHEW = FALSE
+      LCL.SHEW = TRUE
+      alarms.EWMA.UPP = FALSE
+      alarms.EWMA.LW = TRUE
+      alarms.SHEW.UPP = FALSE
+      alarms.SHEW.LW = TRUE
+      
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      plots.exit[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
+                                    df.indicator = indicators.time.series[[i]],
+                                    indicator.label = "indicator",
+                                    show.window = weeks.to.show,
+                                    index.dates = index.dates.week,
+                                    ylabel = i,
+                                    xlabel = 'Week',
+                                    target = NULL,
+                                    target.unit = NULL,             
+                                    UCL.EWMA = UCL.EWMA,                 
+                                    LCL.EWMA = LCL.EWMA,             
+                                    UCL.SHEW = UCL.SHEW,             
+                                    LCL.SHEW = LCL.SHEW,                
+                                    alarms.EWMA.UPP = alarms.EWMA.UPP,    
+                                    alarms.EWMA.LW = alarms.EWMA.LW,      
+                                    alarms.SHEW.UPP = alarms.SHEW.UPP,   
+                                    alarms.SHEW.LW = alarms.SHEW.LW,      
+                                    series.label="sows")
+    }
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      
+      plots.exit[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
+                                                indicator.label = "indicator", 
+                                                how.window = nonTS.to.show,
+                                                index.dates = index.dates.days,
+                                                vertical.line = NULL,              
+                                                vertical.line.label=NULL,
+                                                ylabel = i,
+                                                xlabel = 'Last 100 events',
+                                                target = NULL,
+                                                target.unit = NULL,             
+                                                UCL.EWMA = UCL.EWMA,              
+                                                LCL.EWMA = LCL.EWMA,               
+                                                UCL.SHEW = UCL.SHEW,            
+                                                LCL.SHEW = LCL.SHEW,              
+                                                alarms.EWMA.UPP = alarms.EWMA.UPP, 
+                                                alarms.EWMA.LW = alarms.EWMA.LW,   
+                                                alarms.SHEW.UPP = alarms.SHEW.UPP, 
+                                                alarms.SHEW.LW = alarms.SHEW.LW, 
+                                                series.label = "sows")
+    }
+  }
+  
+  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    
+    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      
+      if (dim(indicators.time.series[[i]])[2]==6) {
+        
+        group.labels=c('birth','service','reservice','abortion','farrowing','weaning')
+        
+      }
+      
+      if (dim(indicators.time.series[[i]])[2]==7) {
+        
+        group.labels=c('slaughtered','sold','euthanized','dead','sold.pregnant','missing','exported')
+        
+      }
+      
+      plots.exit[[i]] <- TS.exit(#indicator = indicators.data[[ind]],
+                                 df.indicator=indicators.time.series[[i]],
+                                 indicator.label="Number of sows",
+                                 show.window = weeks.to.show,
+                                 index.dates = index.dates.week,
+                                 ylabel = i,
+                                 xlabel = 'Week',
+                                 target = NULL,  
+                                 target.unit = NULL,            
+                                 shading.matrix = NULL,
+                                 limits = NULL,
+                                 group.labels=group.labels
+                                 
+      )
+    }
+  }
+  }
+#}
+
+plots.exit
 
 ```
 
