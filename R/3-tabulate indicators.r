@@ -294,6 +294,8 @@ perc.dead.born.litter <- create.nonTS.counts(event.matrix=individual.sows$farrow
                                              count.matrix=list(individual.sows$NrBornDead),
                                              denominator.matrix=list(individual.sows$NrBornAlive,
                                                                      individual.sows$NrBornDead))
+perc.dead.born.litter <-round(perc.dead.born.litter[, "indicator"]*100, 2)
+
 
 small.born.litter <- create.nonTS.counts(event.matrix=individual.sows$farrowing,
                                          event.value=1,
@@ -798,15 +800,12 @@ save(index.dates.days,  index.dates.week,
      file="data/indicators-ALL.RData")
 
 
+    #those are now defined in the Settings/excel
+#indicators.to.keep <- indicators.all.labels %in% indicators.to.keep.labels
+#indicators.to.keep.numerical <- which(indicators.to.keep==T)
 
-indicators.to.keep <- indicators.all.labels %in% indicators.to.keep.labels
-indicators.to.keep.numerical <- which(indicators.to.keep==T)
 
 indicators.data   <- list()
-indicators.labels <- indicators.all.labels[indicators.to.keep.numerical]
-indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
-#indicators.sys <- indicators.all.sys[indicators.to.keep.numerical]
-#indicators.limits <- indicators.all.limits[indicators.to.keep.numerical]
 
 for (i in 1:length(indicators.to.keep.numerical)){
   indicators.data[[i]] <- get(indicators.all[indicators.to.keep.numerical[i]])
@@ -817,8 +816,8 @@ save(index.dates.days,  index.dates.week,
      indicators.data,
      indicators.labels,
      indicators.type,
-     #indicators.sys
-     #indicators.limits
+     indicators.sys,
+     indicators.limits,
 
      file="data/indicators.RData")
 
