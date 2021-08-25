@@ -300,17 +300,6 @@ create.perc.week.1 <- function(rows.index.week=index.dates.week[,1],
 
 # structure indicators ----
 
-# farm range for weekly indicators
-
-# range.weekly <- function(indicator=indicator,
-#                          weekly.window=weekly.window
-# ){
-#
-#   indicator <- as.matrix(indicator)
-#       range <- max(1,(dim(indicator)[1]-weekly.window+1)):dim(indicator)[1]
-#
-#   return(range)
-# }
 
 
 ## weekly indicators with and without parity into one function
@@ -327,9 +316,14 @@ weekly.indicators <- function(indicator=indicator,
   alarms.ewma <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
 
+  #if array of dim=3, already do the percentage calculation
+  if(length(dim(indicator))>2){
+    indicator <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
+  }
 
-  if(is.array(indicator)==TRUE && is.matrix(indicator)==TRUE) {    #for indicators with parity (without denominator)
-    #indicator=indicators.data$reservices.week
+  #if vector, convert to matrix so that the same functions can be applied.
+  indicator <- as.matrix(indicator)
+
 
     observed <- rowSums(indicator)[range.weekly]
 
@@ -341,36 +335,6 @@ weekly.indicators <- function(indicator=indicator,
     colnames(table) <- c("observed", "baseline",
                          "UCL EWMA", "LCL EWMA", "alarms EWMA",
                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-  }
-
-  if(is.array(indicator)==TRUE && is.matrix(indicator)==FALSE) {    #for indicators with parity (with denominator)
-    #indicator=indicators.data$perc.failure
-
-    observed <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
-
-    table <- data.frame(observed, baseline,
-                        UCL.ewma, LCL.ewma, alarms.ewma,
-                        UCL.shew, LCL.shew, alarms.shew)
-
-
-    colnames(table) <- c("observed", "baseline",
-                         "UCL EWMA", "LCL EWMA", "alarms EWMA",
-                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-      }
-
-  if(is.array(indicator)==FALSE) {                                #for indicators without parity
-    #indicator=indicators.data$gilts.deaths.week
-
-    observed <- indicator[range.weekly]
-
-    table <- data.frame(observed, baseline,
-                        UCL.ewma, LCL.ewma, alarms.ewma,
-                        UCL.shew, LCL.shew, alarms.shew)
-
-    colnames(table) <- c("observed", "baseline",
-                         "UCL EWMA", "LCL EWMA", "alarms EWMA",
-                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-  }
 
   return(table)
 }
