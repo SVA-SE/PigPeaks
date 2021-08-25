@@ -294,7 +294,7 @@ perc.dead.born.litter <- create.nonTS.counts(event.matrix=individual.sows$farrow
                                              count.matrix=list(individual.sows$NrBornDead),
                                              denominator.matrix=list(individual.sows$NrBornAlive,
                                                                      individual.sows$NrBornDead))
-perc.dead.born.litter <-round(perc.dead.born.litter[, "indicator"]*100, 2)
+perc.dead.born.litter[, "indicator"] <-round(perc.dead.born.litter[, "indicator"]*100, 2)
 
 
 small.born.litter <- create.nonTS.counts(event.matrix=individual.sows$farrowing,
