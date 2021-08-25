@@ -441,18 +441,20 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
                                  limit.upp=limit.upp,
                                  limit.lw=limit.lw,
                                  run.window.weekly=run.window.weekly,
-                                 nr.production.cycles=nr.production.cycles
+                                 nr.production.cycles=nr.production.cycles,
+                                 range=range.weekly,
+                                 indicator.type="W"
 )
 {
-  if (dim(df.indicator)[2]==8) {     # for weekly indicators
+  if (indicator.type=="W") {     # for weekly indicators
                                      #df.indicator=indicators.time.series$`time to abortion`
 
-      df.indicator[,"baseline"] <- df.indicator[,"observed"]
+      #df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
       #require(caTools)
 
       #pulling data form the object to work out of the object
-      observed.matrix=df.indicator[,"observed"]
+      observed.matrix=df.indicator[range,"observed"]
 
       #if both upper and lower limits are not NULL
 
@@ -467,7 +469,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
 
 
         limitV.lw <- runquantile(days, run.window.weekly,
@@ -476,7 +478,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         peaks.lw <- which(days < round(limitV.lw))
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
 
 
@@ -510,19 +512,17 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
-  }
-
-  if (dim(df.indicator)[2]==12) {       # for continuous indicators
+  }else{       # for continuous indicators
     #df.indicator=indicators.time.series$`Time to reservice`
 
-    df.indicator[,"baseline"] <- df.indicator[,"observed"]
+    #df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
-    i.date <- first(df.indicator[, "date"])
-    f.date <- last(df.indicator[, "date"])
+    i.date <- first(df.indicator[range, "date"])
+    f.date <- last(df.indicator[range, "date"])
 
-    median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[,"observed"])* nr.production.cycles
+    median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[range,"observed"])* nr.production.cycles
 
     run.window.continuous <- round((median.days.production.cycles*dim(df.indicator)[1])/
       as.numeric(difftime(as.POSIXct(f.date), as.POSIXct(i.date, tz="UTC"), units="days")),0)
@@ -531,7 +531,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     #require(caTools)
 
     #pulling data form the object to work out of the object
-    observed.matrix=df.indicator[,"observed"]
+    observed.matrix=df.indicator[range,"observed"]
 
     #if both upper and lower limits are not NULL
 
@@ -546,7 +546,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
 
 
 
@@ -556,7 +556,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       peaks.lw <- which(days < round(limitV.lw))
       x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
     }
 
 
@@ -573,7 +573,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
     }
 
 
@@ -590,7 +590,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
 
     }
   }

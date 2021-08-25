@@ -68,33 +68,45 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
 # clean baseline ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) {
 
-  if (indicators.to.keep.excel$limits[i]=="limit.upp") {
+  if (indicators.type[i]=="W"){
+  range.indicator <- range.weekly
+  }else{
+    range.indicator <- max(1,(dim(indicators.time.series[[i]])[1]-continuous.window+1)):dim(indicators.time.series[[i]])[1]
+  }
+
+  if (indicators.limits[i]=="limit.upp") {
 
   indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                      limit.upp=limit.upp,
                                                      limit.lw=NULL,
                                                      run.window.weekly=run.window.weekly,
-                                                     nr.production.cycles=nr.production.cycles)
+                                                     nr.production.cycles=nr.production.cycles,
+                                                     range=range.indicator,
+                                                     indicator.type=indicator.type[i])
   }
 
-  if (indicators.to.keep.excel$limits[i]=="limit.lw") {
+  if (indicators.limits[i]=="limit.lw") {
 
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=NULL,
                                                        limit.lw=limit.lw,
                                                        run.window.weekly=run.window.weekly,
-                                                       nr.production.cycles=nr.production.cycles)
+                                                       nr.production.cycles=nr.production.cycles,
+                                                       range=range.indicator,
+                                                       indicator.type=indicator.type[i])
   }
 
-  if (indicators.to.keep.excel$limits[i]=="both") {
+  if (indicators.limits[i]=="both") {
 
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=limit.upp,
                                                        limit.lw=limit.lw,
                                                        run.window.weekly=run.window.weekly,
-                                                       nr.production.cycles=nr.production.cycles)
+                                                       nr.production.cycles=nr.production.cycles,
+                                                       range=range.indicator,
+                                                       indicator.type=indicator.type[i])
   }
 }
 
