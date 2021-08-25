@@ -27,25 +27,21 @@ load("data/indicators.RData")
 ## RUN in the following order:
 
 indicators.time.series <- list_along(1:length(indicators.data))
+names(indicators.time.series) <- indicators.labels
 
 
 # weekly range ----
 
-for (i in which(indicators.to.keep.excel$type=="W")) {
+range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
 
-  indicators.time.series[[i]] <- range.weekly(indicator=indicators.data[[i]],
-                                              weekly.window=weekly.window)
-}
-
-names(indicators.time.series) <- indicators.labels
 
 
 # structure weekly indicators with SyS ----
 
-for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="W"))) {
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
   indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
-                                                   range.weekly=indicators.time.series[[i]])
+                                                   range.weekly=range.weekly)
 }
 
 
