@@ -324,8 +324,8 @@ weekly.indicators <- function(indicator=indicator,
   LCL.ewma <- c(rep(NA, length(range.weekly)))
   UCL.shew <- c(rep(NA, length(range.weekly)))
   LCL.shew <- c(rep(NA, length(range.weekly)))
-  alarms.ewma <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
+  alarms.ewma <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
 
 
   if(is.array(indicator)==TRUE && is.matrix(indicator)==TRUE) {    #for indicators with parity (without denominator)
