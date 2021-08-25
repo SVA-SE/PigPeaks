@@ -33,7 +33,9 @@ names(indicators.time.series) <- indicators.labels
 # weekly range ----
 
 range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
-
+  #the range should be applied when doing DETECTION - which weeks are relevant for training/detection
+  #to actually restrict the historical data to less than all date farm,
+  #please set a start date on Settings.
 
 
 # structure weekly indicators with SyS ----
