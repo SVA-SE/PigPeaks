@@ -300,19 +300,6 @@ create.perc.week.1 <- function(rows.index.week=index.dates.week[,1],
 
 # structure indicators ----
 
-# farm range for weekly indicators
-
-# range.weekly <- function(indicator=indicator,
-#                          weekly.window=weekly.window
-# ){
-#
-#   indicator <- as.matrix(indicator)
-#       range <- max(1,(dim(indicator)[1]-weekly.window+1)):dim(indicator)[1]
-#
-#   return(range)
-# }
-
-
 ## weekly indicators with and without parity into one function
 
 weekly.indicators <- function(indicator=indicator,
@@ -376,6 +363,7 @@ weekly.indicators <- function(indicator=indicator,
 }
 
 
+
 ## for continuous indicators taking parity into account
 
 continuous.indicators <- function(indicator=indicator,       #indicator=indicators.data$perc.dead.born.litter
@@ -411,10 +399,11 @@ continuous.indicators <- function(indicator=indicator,       #indicator=indicato
 }
 
 
+
 ## for non-sys indicators
 
-non.sys.indicators <- function (indicator=indicator,
-                                range.weekly=range_weekly,
+non.sys.indicators <- function (indicator=indicator,      #indicator=indicators.data$services.week
+                                range.weekly=range.weekly,
                                 continuous.window=continuous.window
 )
 {
@@ -632,6 +621,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
   }
   return(df.indicator)
 }
+
 
 
 # apply EWMA control chart ----
