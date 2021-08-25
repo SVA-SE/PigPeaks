@@ -16,12 +16,13 @@ source("R/Functions.r")
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
 load("data/indicators.RData")
-#index.dates.week
+# index.dates.week
 # indicators.data
 # indicators.labels
 # indicators.type
-#indicators.sys
-#indicators.limits
+# indicators.sys
+# indicators.limits
+# indicators.categories
 
 
 ## RUN in the following order:
@@ -47,7 +48,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
 # structure continuous indicators with SyS ----
 
-for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.to.keep.excel$type=="C"))) {
+for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
   indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
                                                        continuous.window=continuous.window)
@@ -56,19 +57,19 @@ for (i in intersect(which(indicators.to.keep.excel$sys==TRUE), which(indicators.
 
 # structure non-sys indicators ----
 
-for (i in which(indicators.to.keep.excel$sys==FALSE)) {
+for (i in which(indicators.sys==FALSE)) {
 
   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
-                                                    range.weekly=indicators.time.series[[i]],
+                                                    range.weekly=range.weekly,
                                                     continuous.window=continuous.window)
 }
 
 
 # clean baseline ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) { 
 
-  if (indicators.to.keep.excel$limits[i]=="limit.upp") {
+  if (indicators.limits[i]=="limit.upp") {
 
   indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                      limit.upp=limit.upp,
@@ -77,7 +78,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
                                                      nr.production.cycles=nr.production.cycles)
   }
 
-  if (indicators.to.keep.excel$limits[i]=="limit.lw") {
+  if (indicators.limits[i]=="limit.lw") {
 
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=NULL,
@@ -86,7 +87,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
                                                        nr.production.cycles=nr.production.cycles)
   }
 
-  if (indicators.to.keep.excel$limits[i]=="both") {
+  if (indicators.limits[i]=="both") {
 
     indicators.time.series[[i]] <- clean_baseline_perc(df.indicator=indicators.time.series[[i]],
                                                        limit.upp=limit.upp,
@@ -99,7 +100,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
 
 # apply EWMA ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) {
 
   indicators.time.series[[i]] <- apply_ewma(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
@@ -116,7 +117,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
 
 # apply Shewhart ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) {
 
   indicators.time.series[[i]] <- shew_apply(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,

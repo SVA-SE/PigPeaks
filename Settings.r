@@ -26,7 +26,7 @@ indicators.labels <- indicators.excel$indicators.labels[indicators.excel$indicat
 indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
 indicators.sys    <- indicators.all.sys[indicators.to.keep.numerical]
 indicators.limits <- indicators.all.limits[indicators.to.keep.numerical]
-
+indicators.categories <- indicators.all.categories[indicators.to.keep.numerical]
 
 # grouping parity ----
 c1 <- 0:15
