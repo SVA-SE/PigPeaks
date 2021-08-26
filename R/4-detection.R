@@ -88,7 +88,7 @@ for (i in which(indicators.sys==TRUE)) {
                                                      run.window.weekly=run.window.weekly,
                                                      nr.production.cycles=nr.production.cycles,
                                                      range=range.indicator,
-                                                     indicator.type=indicator.type[i])
+                                                     indicator.type=indicators.type[i])
   }
 
   if (indicators.limits[i]=="limit.lw") {
@@ -99,7 +99,7 @@ for (i in which(indicators.sys==TRUE)) {
                                                        run.window.weekly=run.window.weekly,
                                                        nr.production.cycles=nr.production.cycles,
                                                        range=range.indicator,
-                                                       indicator.type=indicator.type[i])
+                                                       indicator.type=indicators.type[i])
   }
 
   if (indicators.limits[i]=="both") {
@@ -110,7 +110,7 @@ for (i in which(indicators.sys==TRUE)) {
                                                        run.window.weekly=run.window.weekly,
                                                        nr.production.cycles=nr.production.cycles,
                                                        range=range.indicator,
-                                                       indicator.type=indicator.type[i])
+                                                       indicator.type=indicators.type[i])
   }
 }
 

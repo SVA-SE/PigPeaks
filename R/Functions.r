@@ -346,7 +346,7 @@ continuous.indicators <- function(indicator=indicator#,       #indicator=indicat
 )
 {
   #range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
-  range <- dim(indicator)[1]   #apply range restriction only to detection
+  range <- 1:dim(indicator)[1]   #apply range restriction only to detection
 
   date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
   week <- isoweek(as.Date(date,origin="1970-01-01"))
@@ -497,7 +497,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
 
 
@@ -524,7 +524,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     i.date <- first(df.indicator[range, "date"])
     f.date <- last(df.indicator[range, "date"])
 
-    median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[range,"observed"])* nr.production.cycles
+    median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[,"observed"])* nr.production.cycles
 
     run.window.continuous <- round((median.days.production.cycles*dim(df.indicator)[1])/
       as.numeric(difftime(as.POSIXct(f.date), as.POSIXct(i.date, tz="UTC"), units="days")),0)
