@@ -34,7 +34,9 @@ names(indicators.time.series) <- indicators.labels
 # weekly range ----
 
 range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
-
+  #the range should be applied when doing DETECTION - which weeks are relevant for training/detection
+  #to actually restrict the historical data to less than all date farm,
+  #please set a start date on Settings.
 
 
 # structure weekly indicators with SyS ----
@@ -42,7 +44,7 @@ range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.date
 for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
   indicators.time.series[[i]] <- weekly.indicators(indicator=indicators.data[[i]],
-                                                   range.weekly=range.weekly)
+                                                   range.weekly=1:dim(index.dates.week)[1])
 }
 
 
@@ -50,24 +52,33 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
 for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
-  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]],
-                                                       continuous.window=continuous.window)
+  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]])#,
+                                                       #continuous.window=continuous.window)
 }
 
 
 # structure non-sys indicators ----
 
-for (i in which(indicators.sys==FALSE)) {
 
-  indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
-                                                    range.weekly=range.weekly,
-                                                    continuous.window=continuous.window)
-}
+# for (i in which(indicators.sys==FALSE)) {
+#
+#   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
+#                                                     range.weekly=indicators.time.series[[i]],
+#                                                     continuous.window=continuous.window)
+# }
+
 
 
 # clean baseline ----
 
-for (i in which(indicators.sys==TRUE)) { 
+
+for (i in which(indicators.sys==TRUE)) {
+
+  if (indicators.type[i]=="W"){
+  range.indicator <- range.weekly
+  }else{
+    range.indicator <- max(1,(dim(indicators.time.series[[i]])[1]-continuous.window+1)):dim(indicators.time.series[[i]])[1]
+  }
 
   if (indicators.limits[i]=="limit.upp") {
 
@@ -75,7 +86,9 @@ for (i in which(indicators.sys==TRUE)) {
                                                      limit.upp=limit.upp,
                                                      limit.lw=NULL,
                                                      run.window.weekly=run.window.weekly,
-                                                     nr.production.cycles=nr.production.cycles)
+                                                     nr.production.cycles=nr.production.cycles,
+                                                     range=range.indicator,
+                                                     indicator.type=indicators.type[i])
   }
 
   if (indicators.limits[i]=="limit.lw") {
@@ -84,7 +97,9 @@ for (i in which(indicators.sys==TRUE)) {
                                                        limit.upp=NULL,
                                                        limit.lw=limit.lw,
                                                        run.window.weekly=run.window.weekly,
-                                                       nr.production.cycles=nr.production.cycles)
+                                                       nr.production.cycles=nr.production.cycles,
+                                                       range=range.indicator,
+                                                       indicator.type=indicators.type[i])
   }
 
   if (indicators.limits[i]=="both") {
@@ -93,7 +108,9 @@ for (i in which(indicators.sys==TRUE)) {
                                                        limit.upp=limit.upp,
                                                        limit.lw=limit.lw,
                                                        run.window.weekly=run.window.weekly,
-                                                       nr.production.cycles=nr.production.cycles)
+                                                       nr.production.cycles=nr.production.cycles,
+                                                       range=range.indicator,
+                                                       indicator.type=indicators.type[i])
   }
 }
 

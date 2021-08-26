@@ -58,8 +58,9 @@ death <- exit[exit$ExitType==3|exit$ExitType==4,]
 #start.date for that farm
 #is the MONDAY before the date when the first sow was born
 
+if(is.null(start.date)){
 start.date   <- lastmon(min(animal$BirthDate[active.sows],na.rm=T))
-
+}else{start.date   <- lastmon(as.Date(start.date))}
 
 
 index.dates.week<-data.frame(ISOweek=date2ISOweek(start.date),

@@ -311,12 +311,17 @@ weekly.indicators <- function(indicator=indicator,
   LCL.ewma <- c(rep(NA, length(range.weekly)))
   UCL.shew <- c(rep(NA, length(range.weekly)))
   LCL.shew <- c(rep(NA, length(range.weekly)))
-  alarms.ewma <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range.weekly)))  ## change after choosing what algorithms will be used
+  alarms.ewma <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(NA, length(range.weekly)))  ## change after choosing what algorithms will be used
 
+  #if array of dim=3, already do the percentage calculation
+  if(length(dim(indicator))>2){
+    indicator <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
+  }
 
-  if(is.array(indicator)==TRUE && is.matrix(indicator)==TRUE) {    #for indicators with parity (without denominator)
-    #indicator=indicators.data$reservices.week
+  #if vector, convert to matrix so that the same functions can be applied.
+  indicator <- as.matrix(indicator)
+
 
     observed <- rowSums(indicator)[range.weekly]
 
@@ -328,36 +333,6 @@ weekly.indicators <- function(indicator=indicator,
     colnames(table) <- c("observed", "baseline",
                          "UCL EWMA", "LCL EWMA", "alarms EWMA",
                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-  }
-
-  if(is.array(indicator)==TRUE && is.matrix(indicator)==FALSE) {    #for indicators with parity (with denominator)
-    #indicator=indicators.data$perc.failure
-
-    observed <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
-
-    table <- data.frame(observed, baseline,
-                        UCL.ewma, LCL.ewma, alarms.ewma,
-                        UCL.shew, LCL.shew, alarms.shew)
-
-
-    colnames(table) <- c("observed", "baseline",
-                         "UCL EWMA", "LCL EWMA", "alarms EWMA",
-                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-      }
-
-  if(is.array(indicator)==FALSE) {                                #for indicators without parity
-    #indicator=indicators.data$gilts.deaths.week
-
-    observed <- indicator[range.weekly]
-
-    table <- data.frame(observed, baseline,
-                        UCL.ewma, LCL.ewma, alarms.ewma,
-                        UCL.shew, LCL.shew, alarms.shew)
-
-    colnames(table) <- c("observed", "baseline",
-                         "UCL EWMA", "LCL EWMA", "alarms EWMA",
-                         "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-  }
 
   return(table)
 }
@@ -366,12 +341,12 @@ weekly.indicators <- function(indicator=indicator,
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator,       #indicator=indicators.data$perc.dead.born.litter
-                                  continuous.window=continuous.window
-
+continuous.indicators <- function(indicator=indicator#,       #indicator=indicators.data$perc.dead.born.litter
+                                  #continuous.window=continuous.window
 )
 {
-  range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+  #range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+  range <- 1:dim(indicator)[1]   #apply range restriction only to detection
 
   date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
   week <- isoweek(as.Date(date,origin="1970-01-01"))
@@ -402,56 +377,58 @@ continuous.indicators <- function(indicator=indicator,       #indicator=indicato
 
 ## for non-sys indicators
 
-non.sys.indicators <- function (indicator=indicator,      #indicator=indicators.data$services.week
-                                range.weekly=range.weekly,
-                                continuous.window=continuous.window
-)
-{
-  if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
 
-    observed <- rowSums(indicator)[range.weekly]
+# non.sys.indicators <- function (indicator=indicator,
+#                                 range.weekly=range_weekly,
+#                                 continuous.window=continuous.window
+# )
+# {
+#   if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
+#
+#     observed <- rowSums(indicator)[range.weekly]
+#
+#     table <- data.frame(observed)
+#
+#     colnames(table) <- "observed"
+#
+#   }
+#   if (dim(indicator)[2]==4) {    #for continuous indicators
+#
+#     range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+#
+#     date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
+#     week <- isoweek(as.Date(date,origin="1970-01-01"))
+#     year <- isoyear(as.Date(date,origin="1970-01-01"))
+#     sowINDEX <- indicator[,"sowINDEX"][range.continuous]
+#     observed <- indicator[,"indicator"][range.continuous]
+#
+#     table <- data.frame(date, week, year,
+#                         sowINDEX, observed)
+#
+#     colnames(table) <- c("date", "week", "year",
+#                          "sowINDEX", "observed")
+#
+#   }
+#   if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
+#     #for weekly indicators composed
+#
+#     observed <- indicator[range.weekly,]
+#
+#     table <- data.frame(observed)
+#
+#   }
+#   if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
+#
+#     observed <- indicator[range.weekly]
+#
+#     table <- data.frame(observed)
+#
+#     colnames(table) <- "observed"
+#
+#   }
+#   return(table)
+# }
 
-    table <- data.frame(observed)
-
-    colnames(table) <- "observed"
-
-  }
-  if (dim(indicator)[2]==4) {    #for continuous indicators
-
-    range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
-
-    date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
-    week <- isoweek(as.Date(date,origin="1970-01-01"))
-    year <- isoyear(as.Date(date,origin="1970-01-01"))
-    sowINDEX <- indicator[,"sowINDEX"][range.continuous]
-    observed <- indicator[,"indicator"][range.continuous]
-
-    table <- data.frame(date, week, year,
-                        sowINDEX, observed)
-
-    colnames(table) <- c("date", "week", "year",
-                         "sowINDEX", "observed")
-
-  }
-  if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
-    #for weekly indicators composed
-
-    observed <- indicator[range.weekly,]
-
-    table <- data.frame(observed)
-
-  }
-  if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
-
-    observed <- indicator[range.weekly]
-
-    table <- data.frame(observed)
-
-    colnames(table) <- "observed"
-
-  }
-  return(table)
-}
 
 
 # clean baseline non-parametric ----
@@ -466,18 +443,20 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
                                  limit.upp=limit.upp,
                                  limit.lw=limit.lw,
                                  run.window.weekly=run.window.weekly,
-                                 nr.production.cycles=nr.production.cycles
+                                 nr.production.cycles=nr.production.cycles,
+                                 range=range.weekly,
+                                 indicator.type="W"
 )
 {
-  if (dim(df.indicator)[2]==8) {     # for weekly indicators
+  if (indicator.type=="W") {     # for weekly indicators
                                      #df.indicator=indicators.time.series$`time to abortion`
 
-      df.indicator[,"baseline"] <- df.indicator[,"observed"]
+      #df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
       #require(caTools)
 
       #pulling data form the object to work out of the object
-      observed.matrix=df.indicator[,"observed"]
+      observed.matrix=df.indicator[range,"observed"]
 
       #if both upper and lower limits are not NULL
 
@@ -492,7 +471,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
 
 
         limitV.lw <- runquantile(days, run.window.weekly,
@@ -501,7 +480,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         peaks.lw <- which(days < round(limitV.lw))
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
 
 
@@ -518,7 +497,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
 
 
@@ -535,17 +514,15 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
         x.smooth <- days
         x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-        df.indicator[,"baseline"] <- x.smooth
+        df.indicator[range,"baseline"] <- x.smooth
       }
-  }
-
-  if (dim(df.indicator)[2]==12) {       # for continuous indicators
+  }else{       # for continuous indicators
     #df.indicator=indicators.time.series$`Time to reservice`
 
-    df.indicator[,"baseline"] <- df.indicator[,"observed"]
+    #df.indicator[,"baseline"] <- df.indicator[,"observed"]
 
-    i.date <- first(df.indicator[, "date"])
-    f.date <- last(df.indicator[, "date"])
+    i.date <- first(df.indicator[range, "date"])
+    f.date <- last(df.indicator[range, "date"])
 
     median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[,"observed"])* nr.production.cycles
 
@@ -556,7 +533,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     #require(caTools)
 
     #pulling data form the object to work out of the object
-    observed.matrix=df.indicator[,"observed"]
+    observed.matrix=df.indicator[range,"observed"]
 
     #if both upper and lower limits are not NULL
 
@@ -571,7 +548,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
 
 
 
@@ -581,7 +558,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       peaks.lw <- which(days < round(limitV.lw))
       x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
     }
 
 
@@ -598,7 +575,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.upp] <- round(limitV.upp[peaks.upp])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
     }
 
 
@@ -615,7 +592,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
       x.smooth <- days
       x.smooth [peaks.lw] <- round(limitV.lw[peaks.lw])
 
-      df.indicator[,"baseline"] <- x.smooth
+      df.indicator[range,"baseline"] <- x.smooth
 
     }
   }
