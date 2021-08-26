@@ -60,12 +60,12 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 # structure non-sys indicators ----
 
 
-# for (i in which(indicators.sys==FALSE)) {
-#
-#   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
-#                                                     range.weekly=indicators.time.series[[i]],
-#                                                     continuous.window=continuous.window)
-# }
+for (i in which(indicators.sys==FALSE)) {
+
+  indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
+                                                    range.weekly=indicators.time.series[[i]],
+                                                    continuous.window=continuous.window)
+}
 
 
 

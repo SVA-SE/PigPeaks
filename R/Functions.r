@@ -378,56 +378,56 @@ continuous.indicators <- function(indicator=indicator#,       #indicator=indicat
 ## for non-sys indicators
 
 
-# non.sys.indicators <- function (indicator=indicator,
-#                                 range.weekly=range_weekly,
-#                                 continuous.window=continuous.window
-# )
-# {
-#   if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
-#
-#     observed <- rowSums(indicator)[range.weekly]
-#
-#     table <- data.frame(observed)
-#
-#     colnames(table) <- "observed"
-#
-#   }
-#   if (dim(indicator)[2]==4) {    #for continuous indicators
-#
-#     range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
-#
-#     date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
-#     week <- isoweek(as.Date(date,origin="1970-01-01"))
-#     year <- isoyear(as.Date(date,origin="1970-01-01"))
-#     sowINDEX <- indicator[,"sowINDEX"][range.continuous]
-#     observed <- indicator[,"indicator"][range.continuous]
-#
-#     table <- data.frame(date, week, year,
-#                         sowINDEX, observed)
-#
-#     colnames(table) <- c("date", "week", "year",
-#                          "sowINDEX", "observed")
-#
-#   }
-#   if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
-#     #for weekly indicators composed
-#
-#     observed <- indicator[range.weekly,]
-#
-#     table <- data.frame(observed)
-#
-#   }
-#   if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
-#
-#     observed <- indicator[range.weekly]
-#
-#     table <- data.frame(observed)
-#
-#     colnames(table) <- "observed"
-#
-#   }
-#   return(table)
-# }
+non.sys.indicators <- function (indicator=indicator,
+                                range.weekly=range_weekly,
+                                continuous.window=continuous.window
+)
+{
+  if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
+
+    observed <- rowSums(indicator)[range.weekly]
+
+    table <- data.frame(observed)
+
+    colnames(table) <- "observed"
+
+  }
+  if (dim(indicator)[2]==4) {    #for continuous indicators
+
+    range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
+
+    date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
+    week <- isoweek(as.Date(date,origin="1970-01-01"))
+    year <- isoyear(as.Date(date,origin="1970-01-01"))
+    sowINDEX <- indicator[,"sowINDEX"][range.continuous]
+    observed <- indicator[,"indicator"][range.continuous]
+
+    table <- data.frame(date, week, year,
+                        sowINDEX, observed)
+
+    colnames(table) <- c("date", "week", "year",
+                         "sowINDEX", "observed")
+
+  }
+  if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
+    #for weekly indicators composed
+
+    observed <- indicator[range.weekly,]
+
+    table <- data.frame(observed)
+
+  }
+  if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
+
+    observed <- indicator[range.weekly]
+
+    table <- data.frame(observed)
+
+    colnames(table) <- "observed"
+
+  }
+  return(table)
+}
 
 
 

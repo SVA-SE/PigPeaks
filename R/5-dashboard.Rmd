@@ -47,12 +47,13 @@ plots.gilts <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts") {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"[1]
 #   
-for (i in indicators.category=="gilts") {
+for (i in which(indicators.categories=="gilts")) {
+  
   #i=indicators.category=="gilts"[1]
   
-  if (isTRUE(indicators.sys[indicators.labels==i])) {
+  if (isTRUE(indicators.sys[i])) {
     
-    if (indicators.limits[indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -64,7 +65,7 @@ for (i in indicators.category=="gilts") {
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.limits[indicators.labels==i]=="both") {
+    if (indicators.limits[i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -77,7 +78,7 @@ for (i in indicators.category=="gilts") {
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -90,14 +91,14 @@ for (i in indicators.category=="gilts") {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                      df.indicator = indicators.time.series[[i]],
                                      indicator.label = "indicator",
                                      show.window = weeks.to.show,
                                      index.dates = index.dates.week,
-                                     ylabel = i,
+                                     ylabel = indicators.labels[i],
                                      xlabel = 'Week',
                                      target = NULL,
                                      target.unit = NULL,             
@@ -112,7 +113,7 @@ for (i in indicators.category=="gilts") {
                                      series.label="sows")
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                  indicator.label = "indicator", 
@@ -120,7 +121,7 @@ for (i in indicators.category=="gilts") {
                                                  index.dates = index.dates.days,
                                                  vertical.line = NULL,              
                                                  vertical.line.label=NULL,
-                                                 ylabel = i,
+                                                 ylabel = indicators.labels[i],
                                                  xlabel = 'Last 100 events',
                                                  target = NULL,
                                                  target.unit = NULL,             
@@ -136,16 +137,16 @@ for (i in indicators.category=="gilts") {
     }
   }
   
-  if (isFALSE(indicators.sys[indicators.labels==i])) {
+  if (isFALSE(indicators.sys[i])) {
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                      df.indicator = indicators.time.series[[i]],
                                      indicator.label = "indicator",
                                      show.window = weeks.to.show,
                                      index.dates = index.dates.week,
-                                     ylabel = i,
+                                     ylabel = indicators.labels[i],
                                      xlabel = 'Week',
                                      target = NULL,
                                      target.unit = NULL,             
@@ -161,7 +162,7 @@ for (i in indicators.category=="gilts") {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                  indicator.label = "indicator", 
@@ -169,7 +170,7 @@ for (i in indicators.category=="gilts") {
                                                  index.dates = index.dates.days,
                                                  vertical.line = NULL,              
                                                  vertical.line.label=NULL,
-                                                 ylabel = i,
+                                                 ylabel = indicators.labels[i],
                                                  xlabel = 'Last 100 events',
                                                  target = NULL,
                                                  target.unit = NULL,             
@@ -202,12 +203,12 @@ plots.empty.sows <- list()
 # for (ind in names(indicators.data)[indicators.categories=="empty sows"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"][1]
 #   
-for (i in indicators.labels[indicators.categories=="empty sows"]) {
+for (i in which(indicators.labels=="empty sows")) {
   #i=indicators.labels[which(indicators.categories=="empty sows")][1]
 
-  if (isTRUE(indicators.sys[indicators.labels==i])) {
+  if (isTRUE(indicators.sys[i])) {
     
-    if (indicators.limits[indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[i]=="limit.upp") {
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
       UCL.SHEW = TRUE
@@ -218,7 +219,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.limits[indicators.labels==i]=="both") {
+    if (indicators.limits[i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -231,7 +232,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -244,14 +245,14 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
                                           indicator.label = "indicator",
                                           show.window = weeks.to.show,
                                           index.dates = index.dates.week,
-                                          ylabel = i,
+                                          ylabel = indicators.labels[i],
                                           xlabel = 'Week',
                                           target = NULL,
                                           target.unit = NULL,             
@@ -266,7 +267,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
                                           series.label="sows")
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -274,7 +275,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
                                                       index.dates = index.dates.days,
                                                       vertical.line = NULL,              
                                                       vertical.line.label=NULL,
-                                                      ylabel = i,
+                                                      ylabel = indicators.labels[i],
                                                       xlabel = 'Last 100 events',
                                                       target = NULL,
                                                       target.unit = NULL,             
@@ -290,16 +291,16 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
     }
   }
   
-  if (isFALSE(indicators.sys[indicators.labels==i])) {
+  if (isFALSE(indicators.sys[i])) {
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
                                           indicator.label = "indicator",
                                           show.window = weeks.to.show,
                                           index.dates = index.dates.week,
-                                          ylabel = i,
+                                          ylabel = indicators.labels[i],
                                           xlabel = 'Week',
                                           target = NULL,
                                           target.unit = NULL,             
@@ -315,7 +316,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -323,7 +324,7 @@ for (i in indicators.labels[indicators.categories=="empty sows"]) {
                                                       index.dates = index.dates.days,
                                                       vertical.line = NULL,              
                                                       vertical.line.label=NULL,
-                                                      ylabel = i,
+                                                      ylabel = indicators.labels[i],
                                                       xlabel = 'Last 100 events',
                                                       target = NULL,
                                                       target.unit = NULL,             
@@ -356,12 +357,12 @@ plots.services <- list()
 # for (ind in names(indicators.data)[indicators.categories=="services"]) {
 #   #ind=names(indicators.data)[indicators.categories=="services"][1]
 #   
-  for (i in indicators.labels[indicators.categories=="services"]) {
+  for (i in which(indicators.categories=="services")) {
     #i=indicators.labels[indicators.categories=="services"][1]
 
-    if (isTRUE(indicators.sys[indicators.labels==i])) {
+    if (isTRUE(indicators.sys[i])) {
       
-      if (indicators.limits[indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -373,7 +374,7 @@ plots.services <- list()
         alarms.SHEW.LW = FALSE
         
       }
-      if (indicators.limits[indicators.labels==i]=="both") {
+      if (indicators.limits[i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -386,7 +387,7 @@ plots.services <- list()
         
       }
       
-      if (indicators.limits[indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -399,14 +400,14 @@ plots.services <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
                                           indicator.label = "indicator",
                                           show.window = weeks.to.show,
                                           index.dates = index.dates.week,
-                                          ylabel = i,
+                                          ylabel = indicators.labels[i],
                                           xlabel = 'Week',
                                           target = NULL,
                                           target.unit = NULL,             
@@ -421,7 +422,7 @@ plots.services <- list()
                                           series.label="sows")
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -429,7 +430,7 @@ plots.services <- list()
                                                       index.dates = index.dates.days,
                                                       vertical.line = NULL,              
                                                       vertical.line.label=NULL,
-                                                      ylabel = i,
+                                                      ylabel = indicators.labels[i],
                                                       xlabel = 'Last 100 events',
                                                       target = NULL,
                                                       target.unit = NULL,             
@@ -445,16 +446,16 @@ plots.services <- list()
       }
     }
     
-    if (isFALSE(indicators.sys[indicators.labels==i])) {
+    if (isFALSE(indicators.sys[i])) {
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
                                           indicator.label = "indicator",
                                           show.window = weeks.to.show,
                                           index.dates = index.dates.week,
-                                          ylabel = i,
+                                          ylabel = indicators.labels[i],
                                           xlabel = 'Week',
                                           target = NULL,
                                           target.unit = NULL,             
@@ -470,7 +471,7 @@ plots.services <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -478,7 +479,7 @@ plots.services <- list()
                                                       index.dates = index.dates.days,
                                                       vertical.line = NULL,              
                                                       vertical.line.label=NULL,
-                                                      ylabel = i,
+                                                      ylabel = indicators.labels[i],
                                                       xlabel = 'Last 100 events',
                                                       target = NULL,
                                                       target.unit = NULL,             
@@ -510,12 +511,12 @@ plots.pregnancy <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"][1]
 
-  for (i in indicators.category=="pregnancy") {
+  for (i in which(indicators.category=="pregnancy")) {
     #i=indicators.category=="pregnancy"][1]
     
-    if (isTRUE(indicators.sys[indicators.labels==i])) {
+    if (isTRUE(indicators.sys[i])) {
       
-      if (indicators.limits[indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -528,7 +529,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.limits[indicators.labels==i]=="both") {
+      if (indicators.limits[i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -541,7 +542,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.limits[indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -554,14 +555,14 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
                                            indicator.label = "indicator",
                                            show.window = weeks.to.show,
                                            index.dates = index.dates.week,
-                                           ylabel = i,
+                                           ylabel = indicators.labels[i],
                                            xlabel = 'Week',
                                            target = NULL,
                                            target.unit = NULL,             
@@ -576,7 +577,7 @@ plots.pregnancy <- list()
                                            series.label="sows")
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -584,7 +585,7 @@ plots.pregnancy <- list()
                                                        index.dates = index.dates.days,
                                                        vertical.line = NULL,              
                                                        vertical.line.label=NULL,
-                                                       ylabel = i,
+                                                       ylabel = indicators.labels[i],
                                                        xlabel = 'Last 100 events',
                                                        target = NULL,
                                                        target.unit = NULL,             
@@ -600,16 +601,16 @@ plots.pregnancy <- list()
       }
     }
     
-    if (isFALSE(indicators.sys[indicators.labels==i])) {
+    if (isFALSE(indicators.sys[i])) {
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
                                            indicator.label = "indicator",
                                            show.window = weeks.to.show,
                                            index.dates = index.dates.week,
-                                           ylabel = i,
+                                           ylabel = indicators.labels[i],
                                            xlabel = 'Week',
                                            target = NULL,
                                            target.unit = NULL,             
@@ -625,7 +626,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -633,7 +634,7 @@ plots.pregnancy <- list()
                                                        index.dates = index.dates.days,
                                                        vertical.line = NULL,              
                                                        vertical.line.label=NULL,
-                                                       ylabel = i,
+                                                       ylabel = indicators.labels[i],
                                                        xlabel = 'Last 100 events',
                                                        target = NULL,
                                                        target.unit = NULL,             
@@ -667,12 +668,12 @@ plots.farrowing <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"][2]
 #   
-  for (i in indicators.category=="farrowing") {
+  for (i in which(indicators.category=="farrowing")) {
     #i=indicators.category=="farrowing"][2]
     
-    if (isTRUE(indicators.sys[indicators.labels==i])) {
+    if (isTRUE(indicators.sys[i])) {
       
-      if (indicators.limits[indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -684,7 +685,7 @@ plots.farrowing <- list()
         alarms.SHEW.LW = FALSE
         
       }
-      if (indicators.limits[indicators.labels==i]=="both") {
+      if (indicators.limits[i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -697,7 +698,7 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.limits[indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -710,14 +711,14 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
                                            indicator.label = "indicator",
                                            show.window = weeks.to.show,
                                            index.dates = index.dates.week,
-                                           ylabel = i,
+                                           ylabel = indicators.labels[i],
                                            xlabel = 'Week',
                                            target = NULL,
                                            target.unit = NULL,             
@@ -732,7 +733,7 @@ plots.farrowing <- list()
                                            series.label="piglets")
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -740,7 +741,7 @@ plots.farrowing <- list()
                                                        index.dates = index.dates.days,
                                                        vertical.line = NULL,              
                                                        vertical.line.label=NULL,
-                                                       ylabel = i,
+                                                       ylabel = indicators.labels[i],
                                                        xlabel = 'Last 100 events',
                                                        target = NULL,
                                                        target.unit = NULL,             
@@ -756,16 +757,16 @@ plots.farrowing <- list()
       }
     }
     
-    if (isFALSE(indicators.sys[indicators.labels==i])) {
+    if (isFALSE(indicators.sys[i])) {
       
-      if (indicators.type[indicators.labels==i]=="W") {
+      if (indicators.type[i]=="W") {
         
         plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
                                            indicator.label = "indicator",
                                            show.window = weeks.to.show,
                                            index.dates = index.dates.week,
-                                           ylabel = i,
+                                           ylabel = indicators.labels[i],
                                            xlabel = 'Week',
                                            target = NULL,
                                            target.unit = NULL,             
@@ -781,7 +782,7 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.type[indicators.labels==i]=="C") {
+      if (indicators.type[i]=="C") {
         
         plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -789,7 +790,7 @@ plots.farrowing <- list()
                                                        index.dates = index.dates.days,
                                                        vertical.line = NULL,              
                                                        vertical.line.label=NULL,
-                                                       ylabel = i,
+                                                       ylabel = indicators.labels[i],
                                                        xlabel = 'Last 100 events',
                                                        target = NULL,
                                                        target.unit = NULL,             
@@ -824,12 +825,12 @@ plots.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"][3]
 #   
-  for (i in indicators.category=="weaning") {
+  for (i in which(indicators.category=="weaning")) {
   #i=indicators.category=="weaning"][3]
   
-  if (isTRUE(indicators.sys[indicators.labels==i])) {
+  if (isTRUE(indicators.sys[i])) {
     
-    if (indicators.limits[indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -842,7 +843,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="both") {
+    if (indicators.limits[i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -855,7 +856,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -868,14 +869,14 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                        df.indicator = indicators.time.series[[i]],
                                        indicator.label = "indicator",
                                        show.window = weeks.to.show,
                                        index.dates = index.dates.week,
-                                       ylabel = i,
+                                       ylabel = indicators.labels[i],
                                        xlabel = 'Week',
                                        target = NULL,
                                        target.unit = NULL,             
@@ -890,7 +891,7 @@ plots.weaning <- list()
                                        series.label="piglets")
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                    indicator.label = "indicator", 
@@ -898,7 +899,7 @@ plots.weaning <- list()
                                                    index.dates = index.dates.days,
                                                    vertical.line = NULL,              
                                                    vertical.line.label=NULL,
-                                                   ylabel = i,
+                                                   ylabel = indicators.labels[i],
                                                    xlabel = 'Last 100 events',
                                                    target = NULL,
                                                    target.unit = NULL,             
@@ -914,16 +915,16 @@ plots.weaning <- list()
     }
   }
   
-  if (isFALSE(indicators.sys[indicators.labels==i])) {
+  if (isFALSE(indicators.sys[i])) {
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                        df.indicator = indicators.time.series[[i]],
                                        indicator.label = "indicator",
                                        show.window = weeks.to.show,
                                        index.dates = index.dates.week,
-                                       ylabel = i,
+                                       ylabel = indicators.labels[i],
                                        xlabel = 'Week',
                                        target = NULL,
                                        target.unit = NULL,             
@@ -939,7 +940,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                    indicator.label = "indicator", 
@@ -947,7 +948,7 @@ plots.weaning <- list()
                                                    index.dates = index.dates.days,
                                                    vertical.line = NULL,              
                                                    vertical.line.label=NULL,
-                                                   ylabel = i,
+                                                   ylabel = indicators.labels[i],
                                                    xlabel = 'Last 100 events',
                                                    target = NULL,
                                                    target.unit = NULL,             
@@ -980,12 +981,12 @@ plots.post.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"][1]
 #   
-for (i in indicators.category=="post-weaning") {
+for (i in which(indicators.category=="post-weaning")) {
   #i=indicators.category=="post-weaning"][1]
   
-  if (isTRUE(indicators.sys[indicators.labels==i])) {
+  if (isTRUE(indicators.sys[i])) {
     
-    if (indicators.limits[indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -997,7 +998,7 @@ for (i in indicators.category=="post-weaning") {
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.limits[indicators.labels==i]=="both") {
+    if (indicators.limits[i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -1010,7 +1011,7 @@ for (i in indicators.category=="post-weaning") {
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -1023,14 +1024,14 @@ for (i in indicators.category=="post-weaning") {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                             df.indicator = indicators.time.series[[i]],
                                             indicator.label = "indicator",
                                             show.window = weeks.to.show,
                                             index.dates = index.dates.week,
-                                            ylabel = i,
+                                            ylabel = indicators.labels[i],
                                             xlabel = 'Week',
                                             target = NULL,
                                             target.unit = NULL,             
@@ -1045,7 +1046,7 @@ for (i in indicators.category=="post-weaning") {
                                             series.label="weaned piglets")
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                         indicator.label = "indicator", 
@@ -1053,7 +1054,7 @@ for (i in indicators.category=="post-weaning") {
                                                         index.dates = index.dates.days,
                                                         vertical.line = NULL,              
                                                         vertical.line.label=NULL,
-                                                        ylabel = i,
+                                                        ylabel = indicators.labels[i],
                                                         xlabel = 'Last 100 events',
                                                         target = NULL,
                                                         target.unit = NULL,             
@@ -1069,16 +1070,16 @@ for (i in indicators.category=="post-weaning") {
     }
   }
   
-  if (isFALSE(indicators.sys[indicators.labels==i])) {
+  if (isFALSE(indicators.sys[i])) {
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                             df.indicator = indicators.time.series[[i]],
                                             indicator.label = "indicator",
                                             show.window = weeks.to.show,
                                             index.dates = index.dates.week,
-                                            ylabel = i,
+                                            ylabel = indicators.labels[i],
                                             xlabel = 'Week',
                                             target = NULL,
                                             target.unit = NULL,             
@@ -1094,7 +1095,7 @@ for (i in indicators.category=="post-weaning") {
       
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                         indicator.label = "indicator", 
@@ -1102,7 +1103,7 @@ for (i in indicators.category=="post-weaning") {
                                                         index.dates = index.dates.days,
                                                         vertical.line = NULL,              
                                                         vertical.line.label=NULL,
-                                                        ylabel = i,
+                                                        ylabel = indicators.labels[i],
                                                         xlabel = 'Last 100 events',
                                                         target = NULL,
                                                         target.unit = NULL,             
@@ -1136,12 +1137,12 @@ plots.exit <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="exit"]) {
 #   #i=indicators.category=="exit"][1]
 #   
-  for (i in indicators.category=="exit") {
+  for (i in which(indicators.category=="exit")) {
   #i=indicators.category=="exit"][1]
   
-  if (isTRUE(indicators.sys[indicators.labels==i])) {
+  if (isTRUE(indicators.sys[i])) {
     
-    if (indicators.limits[indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -1153,7 +1154,7 @@ plots.exit <- list()
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.limits[indicators.labels==i]=="both") {
+    if (indicators.limits[i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -1166,7 +1167,7 @@ plots.exit <- list()
       
     }
     
-    if (indicators.limits[indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -1179,14 +1180,14 @@ plots.exit <- list()
       
     }
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       plots.exit[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                     df.indicator = indicators.time.series[[i]],
                                     indicator.label = "indicator",
                                     show.window = weeks.to.show,
                                     index.dates = index.dates.week,
-                                    ylabel = i,
+                                    ylabel = indicators.labels[i],
                                     xlabel = 'Week',
                                     target = NULL,
                                     target.unit = NULL,             
@@ -1201,7 +1202,7 @@ plots.exit <- list()
                                     series.label="sows")
     }
     
-    if (indicators.type[indicators.labels==i]=="C") {
+    if (indicators.type[i]=="C") {
       
       plots.exit[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                 indicator.label = "indicator", 
@@ -1209,7 +1210,7 @@ plots.exit <- list()
                                                 index.dates = index.dates.days,
                                                 vertical.line = NULL,              
                                                 vertical.line.label=NULL,
-                                                ylabel = i,
+                                                ylabel = indicators.labels[i],
                                                 xlabel = 'Last 100 events',
                                                 target = NULL,
                                                 target.unit = NULL,             
@@ -1225,9 +1226,9 @@ plots.exit <- list()
     }
   }
   
-  if (isFALSE(indicators.sys[indicators.labels==i])) {
+  if (isFALSE(indicators.sys[i])) {
     
-    if (indicators.type[indicators.labels==i]=="W") {
+    if (indicators.type[i]=="W") {
       
       if (dim(indicators.time.series[[i]])[2]==6) {
         
@@ -1246,7 +1247,7 @@ plots.exit <- list()
                                  indicator.label="Number of sows",
                                  show.window = weeks.to.show,
                                  index.dates = index.dates.week,
-                                 ylabel = i,
+                                 ylabel = indicators.labels[i],
                                  xlabel = 'Week',
                                  target = NULL,  
                                  target.unit = NULL,            
