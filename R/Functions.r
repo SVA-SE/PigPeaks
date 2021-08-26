@@ -377,7 +377,6 @@ continuous.indicators <- function(indicator=indicator#,       #indicator=indicat
 
 ## for non-sys indicators
 
-
 # non.sys.indicators <- function (indicator=indicator,
 #                                 range.weekly=range_weekly,
 #                                 continuous.window=continuous.window
@@ -428,7 +427,6 @@ continuous.indicators <- function(indicator=indicator#,       #indicator=indicat
 #   }
 #   return(table)
 # }
-
 
 
 # clean baseline non-parametric ----
