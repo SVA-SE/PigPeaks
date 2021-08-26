@@ -819,6 +819,7 @@ save(index.dates.days,  index.dates.week,
      indicators.sys,
      indicators.limits,
      #indicators.categories,
+     active.sows.displayID,
 
      file="data/indicators.RData")
 
