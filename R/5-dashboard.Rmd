@@ -26,10 +26,12 @@ library(plotly)
 library(ggplot2)
 library(stringr)
 
-source('Settings.r')
-source('R/Functions.r')
-source('R/Functions-plotting.r')
-source('R/4-detection.r')
+
+#load("Table_Indicators_CSV.csv")
+source('../Settings.r')
+source('Functions.r')
+source('Functions-plotting.r')
+source('4-detection.r')
 
 ```
 
