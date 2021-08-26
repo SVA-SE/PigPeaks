@@ -41,15 +41,15 @@ Gilts
 
 plots.gilts <- list()
 
-# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"]) {
-#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"][1]
+# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts") {
+#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="gilts"[1]
 #   
-for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="gilts"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="gilts"][1]
+for (i in indicators.category=="gilts") {
+  #i=indicators.category=="gilts"[1]
   
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isTRUE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[indicators.labels==i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -61,7 +61,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+    if (indicators.limits[indicators.labels==i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -74,7 +74,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[indicators.labels==i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -87,7 +87,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                      df.indicator = indicators.time.series[[i]],
@@ -109,7 +109,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
                                      series.label="sows")
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                  indicator.label = "indicator", 
@@ -133,9 +133,9 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
     }
   }
   
-  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isFALSE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.gilts[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                      df.indicator = indicators.time.series[[i]],
@@ -158,7 +158,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.gilts[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                  indicator.label = "indicator", 
@@ -199,12 +199,12 @@ plots.empty.sows <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"][1]
 #   
-for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="empty sows"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="empty sows"][1]
+for (i in indicators.category=="empty sows"]) {
+  #i=indicators.category=="empty sows"][1]
   
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isTRUE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[indicators.labels==i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -216,7 +216,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+    if (indicators.limits[indicators.labels==i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -229,7 +229,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[indicators.labels==i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -242,7 +242,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
@@ -264,7 +264,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
                                           series.label="sows")
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -288,9 +288,9 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
     }
   }
   
-  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isFALSE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.empty.sows[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
@@ -313,7 +313,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.empty.sows[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -353,12 +353,12 @@ plots.services <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"][1]
 #   
-  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"]) {
-    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="services"][1]
+  for (i in indicators.category=="services"]) {
+    #i=indicators.category=="services"][1]
     
-    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isTRUE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[indicators.labels==i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -370,7 +370,7 @@ plots.services <- list()
         alarms.SHEW.LW = FALSE
         
       }
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      if (indicators.limits[indicators.labels==i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -383,7 +383,7 @@ plots.services <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[indicators.labels==i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -396,7 +396,7 @@ plots.services <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
@@ -418,7 +418,7 @@ plots.services <- list()
                                           series.label="sows")
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -442,9 +442,9 @@ plots.services <- list()
       }
     }
     
-    if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isFALSE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.services[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                           df.indicator = indicators.time.series[[i]],
@@ -467,7 +467,7 @@ plots.services <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.services[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                       indicator.label = "indicator", 
@@ -507,12 +507,12 @@ plots.pregnancy <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"][1]
 
-  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="pregnancy"]) {
-    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="pregnancy"][1]
+  for (i in indicators.category=="pregnancy"]) {
+    #i=indicators.category=="pregnancy"][1]
     
-    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isTRUE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[indicators.labels==i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -525,7 +525,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      if (indicators.limits[indicators.labels==i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -538,7 +538,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[indicators.labels==i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -551,7 +551,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
@@ -573,7 +573,7 @@ plots.pregnancy <- list()
                                            series.label="sows")
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -597,9 +597,9 @@ plots.pregnancy <- list()
       }
     }
     
-    if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isFALSE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.pregnancy[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
@@ -622,7 +622,7 @@ plots.pregnancy <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.pregnancy[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -664,12 +664,12 @@ plots.farrowing <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"][2]
 #   
-  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="farrowing"]) {
-    #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="farrowing"][2]
+  for (i in indicators.category=="farrowing"]) {
+    #i=indicators.category=="farrowing"][2]
     
-    if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isTRUE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+      if (indicators.limits[indicators.labels==i]=="limit.upp") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = FALSE
@@ -681,7 +681,7 @@ plots.farrowing <- list()
         alarms.SHEW.LW = FALSE
         
       }
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+      if (indicators.limits[indicators.labels==i]=="both") {
         
         UCL.EWMA = TRUE
         LCL.EWMA = TRUE
@@ -694,7 +694,7 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+      if (indicators.limits[indicators.labels==i]=="limit.lw") {
         
         UCL.EWMA = FALSE
         LCL.EWMA = TRUE
@@ -707,7 +707,7 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
@@ -729,7 +729,7 @@ plots.farrowing <- list()
                                            series.label="piglets")
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -753,9 +753,9 @@ plots.farrowing <- list()
       }
     }
     
-    if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+    if (isFALSE(indicators.sys[indicators.labels==i])) {
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+      if (indicators.type[indicators.labels==i]=="W") {
         
         plots.farrowing[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                            df.indicator = indicators.time.series[[i]],
@@ -778,7 +778,7 @@ plots.farrowing <- list()
         
       }
       
-      if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+      if (indicators.type[indicators.labels==i]=="C") {
         
         plots.farrowing[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                        indicator.label = "indicator", 
@@ -821,12 +821,12 @@ plots.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"][3]
 #   
-  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="weaning"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="weaning"][3]
+  for (i in indicators.category=="weaning"]) {
+  #i=indicators.category=="weaning"][3]
   
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isTRUE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[indicators.labels==i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -839,7 +839,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+    if (indicators.limits[indicators.labels==i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -852,7 +852,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[indicators.labels==i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -865,7 +865,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                        df.indicator = indicators.time.series[[i]],
@@ -887,7 +887,7 @@ plots.weaning <- list()
                                        series.label="piglets")
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                    indicator.label = "indicator", 
@@ -911,9 +911,9 @@ plots.weaning <- list()
     }
   }
   
-  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isFALSE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                        df.indicator = indicators.time.series[[i]],
@@ -936,7 +936,7 @@ plots.weaning <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                    indicator.label = "indicator", 
@@ -977,12 +977,12 @@ plots.post.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"][1]
 #   
-for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="post-weaning"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="post-weaning"][1]
+for (i in indicators.category=="post-weaning"]) {
+  #i=indicators.category=="post-weaning"][1]
   
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isTRUE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[indicators.labels==i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -994,7 +994,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+    if (indicators.limits[indicators.labels==i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -1007,7 +1007,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[indicators.labels==i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -1020,7 +1020,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                             df.indicator = indicators.time.series[[i]],
@@ -1042,7 +1042,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
                                             series.label="weaned piglets")
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                         indicator.label = "indicator", 
@@ -1066,9 +1066,9 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
     }
   }
   
-  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isFALSE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.post.weaning[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                             df.indicator = indicators.time.series[[i]],
@@ -1091,7 +1091,7 @@ for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$ca
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.post.weaning[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                         indicator.label = "indicator", 
@@ -1131,14 +1131,14 @@ plots.exit <- list()
 
 # 
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="exit"]) {
-#   #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"][1]
+#   #i=indicators.category=="exit"][1]
 #   
-  for (i in indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"]) {
-  #i=indicators.to.keep.excel$indicators.labels[indicators.to.keep.excel$category=="exit"][1]
+  for (i in indicators.category=="exit"]) {
+  #i=indicators.category=="exit"][1]
   
-  if (isTRUE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isTRUE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.upp") {
+    if (indicators.limits[indicators.labels==i]=="limit.upp") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
@@ -1150,7 +1150,7 @@ plots.exit <- list()
       alarms.SHEW.LW = FALSE
       
     }
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="both") {
+    if (indicators.limits[indicators.labels==i]=="both") {
       
       UCL.EWMA = TRUE
       LCL.EWMA = TRUE
@@ -1163,7 +1163,7 @@ plots.exit <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "limits"][indicators.to.keep.excel$indicators.labels==i]=="limit.lw") {
+    if (indicators.limits[indicators.labels==i]=="limit.lw") {
       
       UCL.EWMA = FALSE
       LCL.EWMA = TRUE
@@ -1176,7 +1176,7 @@ plots.exit <- list()
       
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       plots.exit[[i]] <- TS.barplot(#indicator = indicators.data[[ind]],
                                     df.indicator = indicators.time.series[[i]],
@@ -1198,7 +1198,7 @@ plots.exit <- list()
                                     series.label="sows")
     }
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="C") {
+    if (indicators.type[indicators.labels==i]=="C") {
       
       plots.exit[[i]] <- nonTS.barplot.timeless(df.indicator=indicators.time.series[[i]],
                                                 indicator.label = "indicator", 
@@ -1222,9 +1222,9 @@ plots.exit <- list()
     }
   }
   
-  if (isFALSE(indicators.to.keep.excel[, "sys"][indicators.to.keep.excel$indicators.labels==i])) {
+  if (isFALSE(indicators.sys[indicators.labels==i])) {
     
-    if (indicators.to.keep.excel[, "type"][indicators.to.keep.excel$indicators.labels==i]=="W") {
+    if (indicators.type[indicators.labels==i]=="W") {
       
       if (dim(indicators.time.series[[i]])[2]==6) {
         
