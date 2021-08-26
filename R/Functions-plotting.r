@@ -7,8 +7,7 @@ require(RColorBrewer)
 
 #  For weekly time-series ----
   
-  TS.barplot <- function(#indicator = indicator,                #indicator=indicators.data$abortions.week
-                         df.indicator = df.indicator,          #df.indicator=indicators.time.series$`abortions per week`
+  TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indicators.time.series$`abortions per week`
                          indicator.label = indicator.label,
                          show.window = weeks.to.show,
                          index.dates = index.dates.week,
@@ -525,8 +524,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
 
 # For exit category weekly indicators non-sys ----
 
-TS.exit <- function(#indicator = indicator,            #indicator =indicators.data$exit.after.event.week
-                    df.indicator = df.indicator,      #df.indicator=indicators.time.series$`exit after event, weekly`
+TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`exit after event, weekly`
                     indicator.label = indicator.label,
                     show.window = weeks.to.show,
                     index.dates = index.dates.week,
