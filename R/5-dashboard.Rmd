@@ -34,6 +34,7 @@ source('Settings.r')
 source('R/Functions.r') 
 source('R/Functions-plotting.r')
 source('R/4-detection.R')
+load('data/individual.sows.RData')
 
 ```
 
@@ -49,7 +50,7 @@ plots.gilts <- list()
 #   
 for (i in which(indicators.categories=="gilts")) {
   
-  #i=indicators.category=="gilts"[1]
+  #i=indicators.categories=="gilts"[1]
   
   if (isTRUE(indicators.sys[i])) {
     
@@ -511,8 +512,8 @@ plots.pregnancy <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"][1]
 
-  for (i in which(indicators.category=="pregnancy")) {
-    #i=indicators.category=="pregnancy"][1]
+  for (i in which(indicators.categories=="pregnancy")) {
+    #i=indicators.categories=="pregnancy"][1]
     
     if (isTRUE(indicators.sys[i])) {
       
@@ -668,8 +669,8 @@ plots.farrowing <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"][2]
 #   
-  for (i in which(indicators.category=="farrowing")) {
-    #i=indicators.category=="farrowing"][2]
+  for (i in which(indicators.categories=="farrowing")) {
+    #i=indicators.categories=="farrowing"][2]
     
     if (isTRUE(indicators.sys[i])) {
       
@@ -825,8 +826,8 @@ plots.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"][3]
 #   
-  for (i in which(indicators.category=="weaning")) {
-  #i=indicators.category=="weaning"][3]
+  for (i in which(indicators.categories=="weaning")) {
+  #i=indicators.categories=="weaning"][3]
   
   if (isTRUE(indicators.sys[i])) {
     
@@ -981,8 +982,8 @@ plots.post.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"][1]
 #   
-for (i in which(indicators.category=="post-weaning")) {
-  #i=indicators.category=="post-weaning"][1]
+for (i in which(indicators.categories=="post-weaning")) {
+  #i=indicators.categories=="post-weaning"][1]
   
   if (isTRUE(indicators.sys[i])) {
     
@@ -1135,10 +1136,10 @@ plots.exit <- list()
 
 # 
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="exit"]) {
-#   #i=indicators.category=="exit"][1]
+#   #i=indicators.categories=="exit"][1]
 #   
-  for (i in which(indicators.category=="exit")) {
-  #i=indicators.category=="exit"][1]
+  for (i in which(indicators.categories=="exit")) {
+  #i=indicators.categories=="exit"][1]
   
   if (isTRUE(indicators.sys[i])) {
     
