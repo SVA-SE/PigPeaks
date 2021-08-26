@@ -26,10 +26,12 @@ library(plotly)
 library(ggplot2)
 library(stringr)
 
-setwd('../')
+
+setwd('..') #do not run this line if running manually (instead of knitting)
+
 #load("Table_Indicators_CSV.csv")
-source('Settings.r') #source('Settings.r')
-source('R/Functions.r')   #source('R/Functions.r')
+source('Settings.r') 
+source('R/Functions.r') 
 source('R/Functions-plotting.r')
 source('R/4-detection.R')
 
@@ -197,16 +199,15 @@ Empty Sows
 
 plots.empty.sows <- list()
 
-# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"]) {
+# for (ind in names(indicators.data)[indicators.categories=="empty sows"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="empty sows"][1]
 #   
-for (i in indicators.category=="empty sows"]) {
-  #i=indicators.category=="empty sows"][1]
-  
+for (i in indicators.labels[indicators.categories=="empty sows"]) {
+  #i=indicators.labels[which(indicators.categories=="empty sows")][1]
+
   if (isTRUE(indicators.sys[indicators.labels==i])) {
     
     if (indicators.limits[indicators.labels==i]=="limit.upp") {
-      
       UCL.EWMA = TRUE
       LCL.EWMA = FALSE
       UCL.SHEW = TRUE
@@ -341,6 +342,7 @@ for (i in indicators.category=="empty sows"]) {
 #}
 
 plots.empty.sows
+
 ```
 
 
@@ -351,12 +353,12 @@ Services
 
 plots.services <- list()
 
-# for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"]) {
-#   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="services"][1]
+# for (ind in names(indicators.data)[indicators.categories=="services"]) {
+#   #ind=names(indicators.data)[indicators.categories=="services"][1]
 #   
-  for (i in indicators.category=="services"]) {
-    #i=indicators.category=="services"][1]
-    
+  for (i in indicators.labels[indicators.categories=="services"]) {
+    #i=indicators.labels[indicators.categories=="services"][1]
+
     if (isTRUE(indicators.sys[indicators.labels==i])) {
       
       if (indicators.limits[indicators.labels==i]=="limit.upp") {
@@ -508,7 +510,7 @@ plots.pregnancy <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="pregnancy"][1]
 
-  for (i in indicators.category=="pregnancy"]) {
+  for (i in indicators.category=="pregnancy") {
     #i=indicators.category=="pregnancy"][1]
     
     if (isTRUE(indicators.sys[indicators.labels==i])) {
@@ -665,7 +667,7 @@ plots.farrowing <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="farrowing"][2]
 #   
-  for (i in indicators.category=="farrowing"]) {
+  for (i in indicators.category=="farrowing") {
     #i=indicators.category=="farrowing"][2]
     
     if (isTRUE(indicators.sys[indicators.labels==i])) {
@@ -822,7 +824,7 @@ plots.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="weaning"][3]
 #   
-  for (i in indicators.category=="weaning"]) {
+  for (i in indicators.category=="weaning") {
   #i=indicators.category=="weaning"][3]
   
   if (isTRUE(indicators.sys[indicators.labels==i])) {
@@ -978,7 +980,7 @@ plots.post.weaning <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"]) {
 #   #ind=indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="post-weaning"][1]
 #   
-for (i in indicators.category=="post-weaning"]) {
+for (i in indicators.category=="post-weaning") {
   #i=indicators.category=="post-weaning"][1]
   
   if (isTRUE(indicators.sys[indicators.labels==i])) {
@@ -1134,7 +1136,7 @@ plots.exit <- list()
 # for (ind in indicators.to.keep.excel$indicators[indicators.to.keep.excel$category=="exit"]) {
 #   #i=indicators.category=="exit"][1]
 #   
-  for (i in indicators.category=="exit"]) {
+  for (i in indicators.category=="exit") {
   #i=indicators.category=="exit"][1]
   
   if (isTRUE(indicators.sys[indicators.labels==i])) {
