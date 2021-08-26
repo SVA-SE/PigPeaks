@@ -302,7 +302,7 @@ create.perc.week.1 <- function(rows.index.week=index.dates.week[,1],
 
 ## weekly indicators with and without parity into one function
 
-weekly.indicators <- function(indicator=indicator,
+weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$gilts.deaths.week
                               range.weekly=range.weekly
 )
 {
@@ -341,18 +341,16 @@ weekly.indicators <- function(indicator=indicator,
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator#,       #indicator=indicators.data$perc.dead.born.litter
-                                  #continuous.window=continuous.window
-)
+continuous.indicators <- function(indicator=indicator       #indicator=indicators.data$perc.dead.born.litter
+                                  )
 {
-  #range <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
   range <- 1:dim(indicator)[1]   #apply range restriction only to detection
 
-  date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
+  date <- as.Date(indicator[,"date"],origin="1970-01-01")
   week <- isoweek(as.Date(date,origin="1970-01-01"))
   year <- isoyear(as.Date(date,origin="1970-01-01"))
-  sowINDEX <- indicator[,"sowINDEX"][range]
-  observed <- indicator[,"indicator"][range]
+  sowINDEX <- indicator[,"sowINDEX"]
+  observed <- indicator[,"indicator"]
   baseline <- c(rep(NA, length(range)))
   UCL.ewma <- c(rep(NA, length(range)))
   LCL.ewma <- c(rep(NA, length(range)))
@@ -449,8 +447,6 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
   if (indicator.type=="W") {     # for weekly indicators
                                      #df.indicator=indicators.time.series$`time to abortion`
 
-      #df.indicator[,"baseline"] <- df.indicator[,"observed"]
-
       #require(caTools)
 
       #pulling data form the object to work out of the object
@@ -514,11 +510,10 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
         df.indicator[range,"baseline"] <- x.smooth
       }
+      
   }else{       # for continuous indicators
     #df.indicator=indicators.time.series$`Time to reservice`
-
-    #df.indicator[,"baseline"] <- df.indicator[,"observed"]
-
+    
     i.date <- first(df.indicator[range, "date"])
     f.date <- last(df.indicator[range, "date"])
 
