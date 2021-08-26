@@ -52,19 +52,16 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="W"))) {
 
 for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
-  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]])#,
-                                                       #continuous.window=continuous.window)
+  indicators.time.series[[i]] <- continuous.indicators(indicator=indicators.data[[i]])
 }
 
 
-# structure non-sys indicators ----
+# join non-sys indicators ----
 
-# for (i in which(indicators.sys==FALSE)) {
-#
-#   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
-#                                                     range.weekly=indicators.time.series[[i]],
-#                                                     continuous.window=continuous.window)
-# }
+for (i in which(indicators.sys==FALSE)) {
+
+  indicators.time.series[[i]] <- indicators.data[[i]]
+}
 
 
 
@@ -74,9 +71,13 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 for (i in which(indicators.sys==TRUE)) {
 
   if (indicators.type[i]=="W"){
+    
   range.indicator <- range.weekly
+  
   }else{
-    range.indicator <- max(1,(dim(indicators.time.series[[i]])[1]-continuous.window+1)):dim(indicators.time.series[[i]])[1]
+    
+  range.indicator <- max(1,(dim(indicators.time.series[[i]])[1]-continuous.window+1)):dim(indicators.time.series[[i]])[1]
+  
   }
 
   if (indicators.limits[i]=="limit.upp") {
