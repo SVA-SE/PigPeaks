@@ -818,6 +818,7 @@ save(index.dates.days,  index.dates.week,
      indicators.type,
      indicators.sys,
      indicators.limits,
+     #indicators.categories,
 
      file="data/indicators.RData")
 

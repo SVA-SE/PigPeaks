@@ -16,12 +16,13 @@ source("R/Functions.r")
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
 load("data/indicators.RData")
-#index.dates.week
+# index.dates.week
 # indicators.data
 # indicators.labels
 # indicators.type
-#indicators.sys
-#indicators.limits
+# indicators.sys
+# indicators.limits
+# indicators.categories
 
 
 ## RUN in the following order:
@@ -58,6 +59,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 
 # structure non-sys indicators ----
 
+
 # for (i in which(indicators.sys==FALSE)) {
 #
 #   indicators.time.series[[i]] <- non.sys.indicators(indicator=indicators.data[[i]],
@@ -66,7 +68,9 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 # }
 
 
+
 # clean baseline ----
+
 
 for (i in which(indicators.sys==TRUE)) {
 
@@ -113,7 +117,7 @@ for (i in which(indicators.sys==TRUE)) {
 
 # apply EWMA ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) {
 
   indicators.time.series[[i]] <- apply_ewma(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,
@@ -130,7 +134,7 @@ for (i in which(indicators.to.keep.excel$sys==TRUE)) {
 
 # apply Shewhart ----
 
-for (i in which(indicators.to.keep.excel$sys==TRUE)) {
+for (i in which(indicators.sys==TRUE)) {
 
   indicators.time.series[[i]] <- shew_apply(df.indicator=indicators.time.series[[i]],
                                             evaluate.weekly.window=evaluate.weekly.window,

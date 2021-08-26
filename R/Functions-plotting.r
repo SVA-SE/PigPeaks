@@ -4,16 +4,18 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 require(plotly)
 require(RColorBrewer)
 
+
 #  For weekly time-series ----
   
-  TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indicators.time.series$`Reservices per week`
+  TS.barplot <- function(#indicator = indicator,                #indicator=indicators.data$abortions.week
+                         df.indicator = df.indicator,          #df.indicator=indicators.time.series$`abortions per week`
                          indicator.label = indicator.label,
                          show.window = weeks.to.show,
                          index.dates = index.dates.week,
                          ylabel = "Number of sows",
                          xlabel = "Week",
                          target = target,  
-                         target.unit = target.unit,             #c("value","vector), defaults to vector
+                         target.unit = target.unit,             #c("value","vector"), defaults to vector
                          UCL.EWMA = UCL.EWMA,                   #Added
                          LCL.EWMA = LCL.EWMA,                   #Added
                          UCL.SHEW = UCL.SHEW,                   #Added
@@ -27,7 +29,13 @@ require(RColorBrewer)
 
     series <- df.indicator$observed
     
+    #data.weekly.removed <- dim(indicator)[1]-dim(df.indicator)[1]
+    
     plot.range <- max(1,(length(series)-show.window+1)):length(series)
+    
+    #index.dates <- index.dates[data.weekly.removed:(dim(indicator)[1]),]
+    
+    #plot.range.dates <- (data.weekly.removed)+(max(1,(length(series)-show.window+1)):length(series))
     
     y = series[plot.range]
     
@@ -92,7 +100,7 @@ require(RColorBrewer)
             x=x,
             y=df.indicator$`LCL EWMA`[plot.range],
             name='LCL EWMA',
-            line=list(color = '#ff0000'), showlegend = TRUE
+            line=list(color = '#800080'), showlegend = TRUE
           )
       }
     
@@ -103,7 +111,7 @@ require(RColorBrewer)
           x=x,
           y=df.indicator$`UCL Shewhart`[plot.range],
           name='UCL SHEW',
-          line=list(color = '#800080'), showlegend = TRUE
+          line=list(color = '#ff0000', dash="dot"), showlegend = TRUE
         )
     }
     
@@ -113,7 +121,7 @@ require(RColorBrewer)
           x=x,
           y=df.indicator$`LCL Shewhart`[plot.range],
           name='LCL SHEW',
-          line=list(color = '#800080'), showlegend = TRUE
+          line=list(color = '#800080',dash="dot"), showlegend = TRUE
         )
     }
 
@@ -257,7 +265,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
                                    ylabel = 'Time between events',
                                    xlabel = 'Last 100 events',
                                    target = target,
-                                   target.unit = target.unit,                  #c("value","vector), defaults to vector
+                                   target.unit = target.unit,                  #c("value","vector"), defaults to vector
                                    UCL.EWMA = UCL.EWMA,                        #Added
                                    LCL.EWMA = LCL.EWMA,                        #Added
                                    UCL.SHEW = UCL.SHEW,                        #Added
@@ -279,7 +287,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   
   x = 1:min(dim(series.range)[1],show.window)
   
-  x.dates = as.Date(series.range[,"date"],origin="1970-01-01")
+  x.dates = series.range[,"date"]
   
   t = series.label
   
@@ -338,7 +346,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
         x=x,
         y=series.range[,"LCL EWMA"],
         name='LCL EWMA',
-        line=list(color = '#ff0000'), showlegend = TRUE
+        line=list(color = '#800080'), showlegend = TRUE
       )
   }
   
@@ -349,7 +357,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
         x=x,
         y=series.range[,"UCL Shewhart"],
         name='UCL SHEW',
-        line=list(color = '#800080'), showlegend = TRUE
+        line=list(color = '#ff0000', dash="dot"), showlegend = TRUE
       )
   }
   
@@ -359,7 +367,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
         x=x,
         y=series.range[,"LCL Shewhart"],
         name='LCL SHEW',
-        line=list(color = '#800080'), showlegend = TRUE
+        line=list(color = '#800080',dash="dot"), showlegend = TRUE
       )
   }
   
@@ -509,6 +517,195 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
         }
       }
     }
+  
+  return(plot)    
+}
+
+
+
+# For exit category weekly indicators non-sys ----
+
+TS.exit <- function(#indicator = indicator,            #indicator =indicators.data$exit.after.event.week
+                    df.indicator = df.indicator,      #df.indicator=indicators.time.series$`exit after event, weekly`
+                    indicator.label = indicator.label,
+                    show.window = weeks.to.show,
+                    index.dates = index.dates.week,
+                    ylabel = 'Number of sows',
+                    xlabel = 'Week',
+                    target = target,  
+                    target.unit = target.unit,        #c("value","vector"), defaults to vector                    
+                    shading.matrix = shading.matrix,
+                    limits = limits,
+                    group.labels = group.labels
+                    
+){ 
+  #data.weekly.removed <- dim(indicator)[1]-dim(df.indicator)[1]
+  
+  plot.range <- max(1,(dim(df.indicator)[1]-show.window+1)):dim(df.indicator)[1]
+  
+  #index.dates = index.dates[data.weekly.removed:(dim(indicator)[1]),]
+  
+  #plot.range.dates <- data.weekly.removed+(max(1,(dim(df.indicator)[1]-show.window+1)):dim(df.indicator)[1])
+  
+  data = as.data.frame(df.indicator[plot.range,])
+  
+  
+  x=index.dates$start[plot.range]
+  x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
+  y1 = data[,1]
+  y2 = data[,2]
+  y3 = data[,3]
+  y4 = data[,4]
+  y5 = data[,5]
+  y6 = data[,6]
+  
+  y = y1+y2+y3+y4+y5+y6
+  
+  #labels
+  t1 = group.labels[1]
+  t2 = group.labels[2]
+  t3 = group.labels[3]
+  t4 = group.labels[4]
+  t5 = group.labels[5]
+  t6 = group.labels[6]
+  
+  text1=str_c("Exit after:",t1,
+              "<br>",indicator.label,":",y1,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text2=str_c("Exit after:",t2,
+              "<br>",indicator.label,":",y2,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text3=str_c("Exit after:",t3,
+              "<br>",indicator.label,":",y3,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text4=str_c("Exit after:",t4,
+              "<br>",indicator.label,":",y4,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text5=str_c("Exit after:",t5,
+              "<br>",indicator.label,":",y5,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text6=str_c("Exit after:",t6,
+              "<br>",indicator.label,":",y6,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  
+
+  target.vector = target
+  if(!is.null(target.unit)){
+    if(target.unit=="value"){
+      target.vector <- rep(target,length(x))
+    }}
+  
+  if(!is.null(shading.matrix)){
+    shading.matrix=shading.matrix[plot.range,]
+  }
+  
+  if(!is.null(shading.matrix)){
+    LL3 <- shading.matrix[,1]
+    LL2 <- shading.matrix[,2]  
+    LL1 <- shading.matrix[,3]  
+    UL1 <- shading.matrix[,4]  
+    UL2 <- shading.matrix[,5]  
+    UL3 <- shading.matrix[,6]  
+  }
+  
+  if(!is.null(limits)){
+    if(limits=="low"){
+      UL1 <- max(y)
+      UL2 <- max(y)
+      UL3 <- max(y)
+    }
+    if(limits=="high"){
+      LL1 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL2 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL3 <- min(0,min(data,na.rm=T),na.rm=T)
+    }
+  }
+  
+  
+  
+  plot <-
+    plot_ly()
+  
+  if(!is.null(shading.matrix)){
+    plot <- plot %>%
+      add_trace(x=x,y = rep(max(y,na.rm=T),show.window),
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL3,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL2,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL1,
+                name = 'normal', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='lightgreen',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = LL1,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%   
+      add_trace(x=x,y = LL2,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%    
+      add_trace(x=x,y = LL3,
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE)
+    
+  }
+  
+  
+  
+  plot <- plot %>%
+    add_trace(x=x,y = y1,name=t1,type='bar',yaxis="y2", 
+              text = text1, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y2,name=t2,type='bar',yaxis="y2",
+              text = text2, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y3,name=t3,type='bar',yaxis="y2",
+              text = text3, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y4,name=t4,type='bar',yaxis="y2",
+              text = text4, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y5,name=t5,type='bar',yaxis="y2",
+              text = text5, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y6,name=t6,type='bar',yaxis="y2",
+              text = text6, hoverinfo = 'text') %>%
+    layout(yaxis = list(side = 'right', title = "", range = c(min(data,na.rm=T), max(y,na.rm=T))),
+           yaxis2 = list(side = 'left', title = ylabel,overlaying = "y",range = c(min(data,na.rm=T), max(y,na.rm=T))),
+           xaxis = list(title = xlabel),
+           barmode = 'stack',
+           legend=list(orientation="h",
+                       x=0.25,y=max(y,na.rm=T),
+                       traceorder='normal'))
+  
+  
+  if(!is.null(target)){
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=target.vector,
+        name='Target', yaxis="y2",
+        line=list(color = '#32cd32'), showlegend = FALSE
+      )
+  }
+  
   
   return(plot)    
 }

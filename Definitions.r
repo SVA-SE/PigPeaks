@@ -116,6 +116,18 @@ indicators.all.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.u
                            "limit.upp", "limit.upp", "limit.upp", "non-sys", "both",
                            "non-sys", "non-sys", "non-sys")
 
+indicators.all.categories <- c("services", "empty sows", "services", "services", "services",
+                               "pregnancy", "services", "services", "gilts", "gilts",
+                               "pregnancy", "pregnancy", "pregnancy", "pregnancy", "farrowing",
+                               "farrowing", "farrowing", "farrowing", "farrowing", "farrowing",
+                               "farrowing", "farrowing", "farrowing", "farrowing", "farrowing",
+                               "farrowing", "farrowing", "farrowing", "farrowing", "farrowing",
+                               "farrowing", "farrowing", "farrowing", "farrowing", "farrowing",
+                               "farrowing", "weaning", "weaning", "weaning", "weaning",
+                               "weaning", "weaning", "weaning", "weaning", "weaning",
+                               "exit", "exit", "post-weaning", "exit", "exit",
+                               "exit", "exit", "exit")
+
 
 # services.week              #   NumberOfWeeks x   ParityFrom1
 # reservices.week	           #	 NumberOfWeeks x   ParityFrom1

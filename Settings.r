@@ -29,7 +29,7 @@ indicators.labels <- indicators.excel$indicators.labels[indicators.excel$indicat
 indicators.type   <- indicators.all.type[indicators.to.keep.numerical]
 indicators.sys    <- indicators.all.sys[indicators.to.keep.numerical]
 indicators.limits <- indicators.all.limits[indicators.to.keep.numerical]
-
+indicators.categories <- indicators.all.categories[indicators.to.keep.numerical]
 
 # grouping parity ----
 c1 <- 0:15
@@ -93,6 +93,7 @@ alarms.SHEW.LW = TRUE
 series.label="sows"
 vertical.line = NULL            #vector of dates
 vertical.line.label= NULL
+group.labels=c('birth','service','reservice','abortion','farrowing','weaning')
 
 
 # statistical settings ----
