@@ -38,85 +38,100 @@ load('data/individual.sows.RData')
 
 ```{r}
 
-   indicator.label = "indicator"
-   ylabel = indicators.labels[i]
-      
-   if (isTRUE(indicators.sys[i])) {
-     
-      target = NULL
-      target.unit = NULL
-      vertical.line = NULL
-      vertical.line.label=NULL
+chose.arguments.plot <- function(i = index
+)
+{
+  
+indicator.label = "indicator"
+ylabel = indicators.labels[i]
 
-    if (indicators.limits[i]=="limit.upp") {
-      
-      UCL.EWMA = TRUE
-      LCL.EWMA = FALSE
-      UCL.SHEW = TRUE
-      LCL.SHEW = FALSE
-      alarms.EWMA.UPP = TRUE
-      alarms.EWMA.LW = FALSE
-      alarms.SHEW.UPP = TRUE
-      alarms.SHEW.LW = FALSE
-      
-    }
-    if (indicators.limits[i]=="both") {
-
-      UCL.EWMA = TRUE
-      LCL.EWMA = TRUE
-      UCL.SHEW = FALSE
-      LCL.SHEW = FALSE
-      alarms.EWMA.UPP = TRUE
-      alarms.EWMA.LW = TRUE
-      alarms.SHEW.UPP = TRUE
-      alarms.SHEW.LW = TRUE
-    }
+if (isTRUE(indicators.sys[i])) {
+  
+  target = NULL
+  target.unit = NULL
+  vertical.line = NULL
+  vertical.line.label=NULL
+  
+  if (indicators.limits[i]=="limit.upp") {
     
-    if (indicators.limits[i]=="limit.lw") {
-      
-      UCL.EWMA = FALSE
-      LCL.EWMA = TRUE
-      UCL.SHEW = FALSE
-      LCL.SHEW = TRUE
-      alarms.EWMA.UPP = FALSE
-      alarms.EWMA.LW = TRUE
-      alarms.SHEW.UPP = FALSE
-      alarms.SHEW.LW = TRUE
-    }
-     
-   }
-     if (isFALSE(indicators.sys[i])) {
-      
-      target = NULL
-      target.unit = NULL
-      vertical.line = NULL
-      vertical.line.label = NULL
-      UCL.EWMA = FALSE
-      LCL.EWMA = FALSE
-      UCL.SHEW = FALSE
-      LCL.SHEW = FALSE
-      alarms.EWMA.UPP = FALSE
-      alarms.EWMA.LW = FALSE
-      alarms.SHEW.UPP = FALSE
-      alarms.SHEW.LW = FALSE
-      
-     }
-   
-     if (indicators.type[i]=="W") {
-      
-      show.window = weeks.to.show
-      index.dates = index.dates.week
-      xlabel = 'Week'
-      
-     }
-   
-     if (indicators.type[i]=="C") {
-      
-      show.window = nonTS.to.show
-      index.dates = index.dates.days
-      xlabel = 'Events'
-      
-    }
+    UCL.EWMA = TRUE
+    LCL.EWMA = FALSE
+    UCL.SHEW = TRUE
+    LCL.SHEW = FALSE
+    alarms.EWMA.UPP = TRUE
+    alarms.EWMA.LW = FALSE
+    alarms.SHEW.UPP = TRUE
+    alarms.SHEW.LW = FALSE
+    
+  }
+  if (indicators.limits[i]=="both") {
+    
+    UCL.EWMA = TRUE
+    LCL.EWMA = TRUE
+    UCL.SHEW = FALSE
+    LCL.SHEW = FALSE
+    alarms.EWMA.UPP = TRUE
+    alarms.EWMA.LW = TRUE
+    alarms.SHEW.UPP = TRUE
+    alarms.SHEW.LW = TRUE
+  }
+  
+  if (indicators.limits[i]=="limit.lw") {
+    
+    UCL.EWMA = FALSE
+    LCL.EWMA = TRUE
+    UCL.SHEW = FALSE
+    LCL.SHEW = TRUE
+    alarms.EWMA.UPP = FALSE
+    alarms.EWMA.LW = TRUE
+    alarms.SHEW.UPP = FALSE
+    alarms.SHEW.LW = TRUE
+  }
+  
+}
+if (isFALSE(indicators.sys[i])) {
+  
+  target = NULL
+  target.unit = NULL
+  vertical.line = NULL
+  vertical.line.label = NULL
+  UCL.EWMA = FALSE
+  LCL.EWMA = FALSE
+  UCL.SHEW = FALSE
+  LCL.SHEW = FALSE
+  alarms.EWMA.UPP = FALSE
+  alarms.EWMA.LW = FALSE
+  alarms.SHEW.UPP = FALSE
+  alarms.SHEW.LW = FALSE
+  
+}
+
+if (indicators.type[i]=="W") {
+  
+  show.window = weeks.to.show
+  index.dates = index.dates.week
+  xlabel = 'Week'
+  
+}
+
+if (indicators.type[i]=="C") {
+  
+  show.window = nonTS.to.show
+  index.dates = index.dates.days
+  xlabel = 'Events'
+  
+}
+
+arguments <- list(indicator.label=indicator.label, ylabel=ylabel, target=target,
+                  target.unit=target.unit, vertical.line=vertical.line,
+                  vertical.line.label=vertical.line.label, UCL.EWMA=UCL.EWMA,
+                  LCL.EWMA=LCL.EWMA, UCL.SHEW=UCL.SHEW, LCL.SHEW=LCL.SHEW,
+                  alarms.EWMA.UPP=alarms.EWMA.UPP, alarms.EWMA.LW=alarms.EWMA.LW,
+                  alarms.SHEW.UPP=alarms.SHEW.UPP, alarms.SHEW.LW=alarms.SHEW.LW,
+                  show.window=show.window, index.dates=index.dates, xlabel=xlabel)
+
+return(arguments)
+}
   
 ```
 
@@ -140,21 +155,21 @@ if("empty.long.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="empty.long.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 
@@ -176,21 +191,21 @@ if("reservices.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="reservices.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 
@@ -208,23 +223,23 @@ if("time.to.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="time.to.reservice")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 
@@ -242,23 +257,23 @@ if("rereservices" %in% names(indicators.data) && isTRUE(indicators.sys[which(nam
   i = which(names(indicators.data)=="rereservices")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 
@@ -276,21 +291,21 @@ if("perc.failure" %in% names(indicators.data) && isTRUE(indicators.sys[which(nam
   i = which(names(indicators.data)=="perc.failure")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 
@@ -308,21 +323,21 @@ if("perc.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="perc.reservice")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 
@@ -344,21 +359,21 @@ if("perc.pregnancy" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="perc.pregnancy")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -375,21 +390,21 @@ if("abortions.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="abortions.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -406,23 +421,23 @@ if("services.to.farrow" %in% names(indicators.data) && isTRUE(indicators.sys[whi
   i = which(names(indicators.data)=="services.to.farrow")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -439,23 +454,23 @@ if("pregnancy.length" %in% names(indicators.data) && isTRUE(indicators.sys[which
   i = which(names(indicators.data)=="pregnancy.length")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -476,23 +491,23 @@ if("days.between.farrowings" %in% names(indicators.data) && isTRUE(indicators.sy
   i = which(names(indicators.data)=="days.between.farrowings")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -509,21 +524,21 @@ if("farrowings.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="farrowings.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -539,21 +554,21 @@ if("total.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="total.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 
@@ -571,21 +586,21 @@ if("live.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="live.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -602,21 +617,21 @@ if("dead.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="dead.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -633,21 +648,21 @@ if("small.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="small.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -664,21 +679,21 @@ if("weak.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="weak.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -695,21 +710,21 @@ if("mummi.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="mummi.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -726,21 +741,21 @@ if("perc.dead.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[wh
   i = which(names(indicators.data)=="perc.dead.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -757,21 +772,21 @@ if("perc.small.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[w
   i = which(names(indicators.data)=="perc.small.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -788,21 +803,21 @@ if("perc.weak.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[wh
   i = which(names(indicators.data)=="perc.weak.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -819,21 +834,21 @@ if("perc.mummi.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[w
   i = which(names(indicators.data)=="perc.mummi.born.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -850,23 +865,23 @@ if("total.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="total.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -883,23 +898,23 @@ if("live.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which
   i = which(names(indicators.data)=="live.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -916,23 +931,23 @@ if("dead.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which
   i = which(names(indicators.data)=="dead.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -949,23 +964,23 @@ if("perc.dead.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[
   i = which(names(indicators.data)=="perc.dead.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -982,23 +997,23 @@ if("small.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="small.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1015,23 +1030,23 @@ if("perc.small.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys
   i = which(names(indicators.data)=="perc.small.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1048,23 +1063,23 @@ if("weak.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which
   i = which(names(indicators.data)=="weak.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1081,23 +1096,23 @@ if("perc.weak.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[
   i = which(names(indicators.data)=="perc.weak.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1114,23 +1129,23 @@ if("mummi.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="mummi.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1147,23 +1162,23 @@ if("perc.mummi.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys
   i = which(names(indicators.data)=="perc.mummi.born.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1184,21 +1199,21 @@ if("total.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
   i = which(names(indicators.data)=="total.wean.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -1215,21 +1230,21 @@ if("diff.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
   i = which(names(indicators.data)=="diff.wean.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -1246,21 +1261,21 @@ if("negdiff.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="negdiff.wean.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
              series.label = "sows")
 }
 ```
@@ -1277,23 +1292,23 @@ if("total.wean.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="total.wean.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1310,23 +1325,23 @@ if("negdiff.weaned.litter" %in% names(indicators.data) && isTRUE(indicators.sys[
   i = which(names(indicators.data)=="negdiff.weaned.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1343,23 +1358,23 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data) && isTRUE(indicators
   i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1376,23 +1391,23 @@ if("weight.wean.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whi
   i = which(names(indicators.data)=="weight.wean.litter")
   
   nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
-                         indicator.label = indicator.label,
-                         show.window = show.window,
-                         index.dates = index.dates,
-                         vertical.line = vertical.line,
-                         vertical.line.label = vertical.line.label,
-                         ylabel = ylabel,
-                         xlabel = xlabel,
-                         target = target,
-                         target.unit = target.unit,
-                         UCL.EWMA = UCL.EWMA,
-                         LCL.EWMA = LCL.EWMA,
-                         UCL.SHEW = UCL.SHEW,
-                         LCL.SHEW = LCL.SHEW,
-                         alarms.EWMA.UPP = alarms.EWMA.UPP, 
-                         alarms.EWMA.LW = alarms.EWMA.LW,
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,
-                         alarms.SHEW.LW = alarms.SHEW.LW,
+                         indicator.label = chose.arguments.plot(i=i)$indicator.label,
+                         show.window = chose.arguments.plot(i=i)$show.window,
+                         index.dates = chose.arguments.plot(i=i)$index.dates,
+                         vertical.line = chose.arguments.plot(i=i)$vertical.line,
+                         vertical.line.label = chose.arguments.plot(i=i)$vertical.line.label,
+                         ylabel = chose.arguments.plot(i=i)$ylabel,
+                         xlabel = chose.arguments.plot(i=i)$xlabel,
+                         target = chose.arguments.plot(i=i)$target,
+                         target.unit = chose.arguments.plot(i=i)$target.unit,
+                         UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+                         LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+                         UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+                         LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+                         alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP, 
+                         alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+                         alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+                         alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
                          series.label = "sows")
 }
 ```
@@ -1413,22 +1428,22 @@ if("piglets.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[wh
   i = which(names(indicators.data)=="piglets.deaths.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
-             series.label = "weaned piglets")
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
+             series.label = "sows")
 }
 
 ```
@@ -1449,22 +1464,22 @@ if("number.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[whi
   i = which(names(indicators.data)=="number.deaths.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
-             series.label = "weaned piglets")
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
+             series.label = "sows")
 }
 
 ```
@@ -1481,22 +1496,22 @@ if("gilts.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="gilts.deaths.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
-             series.label = "weaned piglets")
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
+             series.label = "sows")
 }
 
 ```
@@ -1513,22 +1528,22 @@ if("number.exits.week" %in% names(indicators.data) && isTRUE(indicators.sys[whic
   i = which(names(indicators.data)=="number.exits.week")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
-             indicator.label = indicator.label,
-             show.window = show.window,
-             index.dates = index.dates,
-             ylabel = ylabel,
-             xlabel = xlabel,
-             target = target,
-             target.unit = target.unit,
-             UCL.EWMA = UCL.EWMA,
-             LCL.EWMA = LCL.EWMA,
-             UCL.SHEW = UCL.SHEW,
-             LCL.SHEW = LCL.SHEW,
-             alarms.EWMA.UPP = alarms.EWMA.UPP,
-             alarms.EWMA.LW = alarms.EWMA.LW,
-             alarms.SHEW.UPP = alarms.SHEW.UPP,
-             alarms.SHEW.LW = alarms.SHEW.LW,
-             series.label = "weaned piglets")
+             indicator.label = chose.arguments.plot(i=i)$indicator.label,
+             show.window = chose.arguments.plot(i=i)$show.window,
+             index.dates = chose.arguments.plot(i=i)$index.dates,
+             ylabel = chose.arguments.plot(i=i)$ylabel,
+             xlabel = chose.arguments.plot(i=i)$xlabel,
+             target = chose.arguments.plot(i=i)$target,
+             target.unit = chose.arguments.plot(i=i)$target.unit,
+             UCL.EWMA = chose.arguments.plot(i=i)$UCL.EWMA,
+             LCL.EWMA = chose.arguments.plot(i=i)$LCL.EWMA,
+             UCL.SHEW = chose.arguments.plot(i=i)$UCL.SHEW,
+             LCL.SHEW = chose.arguments.plot(i=i)$LCL.SHEW,
+             alarms.EWMA.UPP = chose.arguments.plot(i=i)$alarms.EWMA.UPP,
+             alarms.EWMA.LW = chose.arguments.plot(i=i)$alarms.EWMA.LW,
+             alarms.SHEW.UPP = chose.arguments.plot(i=i)$alarms.SHEW.UPP,
+             alarms.SHEW.LW = chose.arguments.plot(i=i)$alarms.SHEW.LW,
+             series.label = "sows")
 }
 
 ```
