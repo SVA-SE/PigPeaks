@@ -322,7 +322,6 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
   #if vector, convert to matrix so that the same functions can be applied.
   indicator <- as.matrix(indicator)
 
-
     observed <- rowSums(indicator)[range.weekly]
 
     table <- data.frame(observed, baseline,
@@ -356,8 +355,8 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   LCL.ewma <- c(rep(NA, length(range)))
   UCL.shew <- c(rep(NA, length(range)))
   LCL.shew <- c(rep(NA, length(range)))
-  alarms.ewma <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(0, length(range)))  ## change after choosing what algorithms will be used
+  alarms.ewma <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
 
   table <- data.frame(date, week, year,
                       sowINDEX, observed, baseline,
@@ -375,56 +374,59 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
 
 ## for non-sys indicators
 
-# non.sys.indicators <- function (indicator=indicator,
-#                                 range.weekly=range_weekly,
-#                                 continuous.window=continuous.window
-# )
-# {
-#   if (dim(indicator)[2]==15) {    # or length(parity.group2$parity)   #for weekly indicators with parity
-#
-#     observed <- rowSums(indicator)[range.weekly]
-#
-#     table <- data.frame(observed)
-#
-#     colnames(table) <- "observed"
-#
-#   }
-#   if (dim(indicator)[2]==4) {    #for continuous indicators
-#
-#     range.continuous <- max(1,(dim(indicator)[1]-continuous.window+1)):dim(indicator)[1]
-#
-#     date <- as.Date(indicator[,"date"],origin="1970-01-01")[range.continuous]
-#     week <- isoweek(as.Date(date,origin="1970-01-01"))
-#     year <- isoyear(as.Date(date,origin="1970-01-01"))
-#     sowINDEX <- indicator[,"sowINDEX"][range.continuous]
-#     observed <- indicator[,"indicator"][range.continuous]
-#
-#     table <- data.frame(date, week, year,
-#                         sowINDEX, observed)
-#
-#     colnames(table) <- c("date", "week", "year",
-#                          "sowINDEX", "observed")
-#
-#   }
-#   if (dim(indicator)[2]!=4 && dim(indicator)[2]!=15 && is.null(dim(indicator))==FALSE) {
-#     #for weekly indicators composed
-#
-#     observed <- indicator[range.weekly,]
-#
-#     table <- data.frame(observed)
-#
-#   }
-#   if (is.null(dim(indicator))==TRUE) {   #for weekly indicators without parity
-#
-#     observed <- indicator[range.weekly]
-#
-#     table <- data.frame(observed)
-#
-#     colnames(table) <- "observed"
-#
-#   }
-#   return(table)
-# }
+non.sys.indicators <- function (indicator=indicator,
+                                range.weekly=range.weekly,
+                                indicator.type="w"
+)
+{
+  if (indicator.type=="W") {
+
+    if (dim(indicator)[2]!=15) {    # or !=length(parity.group2$parity)
+    
+      #for weekly indicators composed
+      
+      observed <- indicator[range.weekly,]
+      
+      table <- data.frame(observed)
+      
+      }else{
+
+        #if array of dim=3, already do the percentage calculation, for weekly indicators with parity
+        if(length(dim(indicator))>2){
+
+          indicator <- round((rowSums(indicator[,,"numerator"])[range.weekly]) / (rowSums(indicator[,,"denominator"])[range.weekly])*100,2)
+          }
+  
+        #if vector, convert to matrix so that the same functions can be applied.
+        indicator <- as.matrix(indicator)
+  
+        observed <- rowSums(indicator)[range.weekly]
+  
+        table <- data.frame(observed)
+
+        colnames(table) <- "observed"
+      }
+  }
+  
+  if (indicator.type=="C") {    #for continuous indicators
+
+    range <- 1:dim(indicator)[1]   #apply range restriction only to detection
+
+    date <- as.Date(indicator[,"date"],origin="1970-01-01")[range]
+    week <- isoweek(as.Date(date,origin="1970-01-01"))
+    year <- isoyear(as.Date(date,origin="1970-01-01"))
+    sowINDEX <- indicator[,"sowINDEX"][range]
+    observed <- indicator[,"indicator"][range]
+
+    table <- data.frame(date, week, year,
+                        sowINDEX, observed)
+
+    colnames(table) <- c("date", "week", "year",
+                         "sowINDEX", "observed")
+  }
+
+  return(table)
+}
 
 
 # clean baseline non-parametric ----
@@ -436,16 +438,17 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
 ##' and substituted by the percentile itself.
 
 clean_baseline_perc <- function (df.indicator=df.indicator,
-                                 limit.upp=limit.upp,
-                                 limit.lw=limit.lw,
-                                 run.window.weekly=run.window.weekly,
-                                 nr.production.cycles=nr.production.cycles,
+                                 limit.upp=0.95,
+                                 limit.lw=0.05,
+                                 run.window.weekly=104,
+                                 median.days.production.cycles=NULL,
+                                 nr.production.cycles=2,
                                  range=range.weekly,
                                  indicator.type="W"
 )
 {
   if (indicator.type=="W") {     # for weekly indicators
-                                     #df.indicator=indicators.time.series$`time to abortion`
+                                     #df.indicator=indicators.time.series$`live born per farrowing`
 
       #require(caTools)
 
@@ -516,12 +519,13 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     
     i.date <- first(df.indicator[range, "date"])
     f.date <- last(df.indicator[range, "date"])
-
+    
+      if(is.null(median.days.production.cycles)){
     median.days.production.cycles <- median(indicators.time.series$`days between farrowings`[,"observed"])* nr.production.cycles
-
-    run.window.continuous <- round((median.days.production.cycles*dim(df.indicator)[1])/
+    }
+    
+    run.window.continuous <- round((median.days.production.cycles*continuous.window)/
       as.numeric(difftime(as.POSIXct(f.date), as.POSIXct(i.date, tz="UTC"), units="days")),0)
-
 
     #require(caTools)
 
@@ -597,15 +601,17 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 # apply EWMA control chart ----
 
 apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`% dead born per farrowing`
-                       evaluate.weekly.window=evaluate.weekly.window,
-                       baseline.weekly.window=baseline.weekly.window,
-                       lambda=lambda,
-                       limit.sd=limit.sd,
-                       guard.band.weekly=guard.band.weekly,
-                       correct.baseline.UCL.ewma=correct.baseline.UCL.ewma,
-                       correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
-                       UCL.ewma=UCL.ewma,
-                       LCL.ewma=LCL.ewma
+                       evaluate.weekly.window=165,
+                       baseline.weekly.window=104,
+                       continuous.window=5500,
+                       lambda=0.2,
+                       limit.sd=c(2.5,3,3.5),
+                       guard.band.weekly=2,
+                       correct.baseline.UCL.ewma=TRUE,
+                       correct.baseline.LCL.ewma=FALSE,
+                       UCL.ewma=2,
+                       LCL.ewma=2,
+                       indicator.type="W"
 )
 {
   if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
@@ -621,10 +627,10 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
       replace(df.indicator[,"observed"],
               which(is.na(df.indicator[, "observed"])), 0.00)
   }
-
-    if (dim(df.indicator)[2]==8) {         # for weekly indicators, prospective framework
-
-        if(guard.band.weekly<1)(guard.band.weekly<-1)
+  
+  if (indicator.type=="W") {         # for weekly indicators, prospective framework
+    
+    if(guard.band.weekly<1)(guard.band.weekly<-1)
 
         #require(abind)
 
@@ -710,9 +716,11 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
         }
     }
 
-  if (dim(df.indicator)[2]==12) {     # for continuous indicators, retrospective framework
+  if (indicator.type=="C") {     # for continuous indicators, retrospective framework
+    
+    range <- max(1,(dim(df.indicator)[1]-continuous.window+1)):dim(df.indicator)[1]
 
-    data <- df.indicator[,"observed"]
+    data <- df.indicator[range,"observed"]
 
     for (l in 1:length(limit.sd)){ #l=2
 
@@ -722,17 +730,17 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
       #choose UCL and LCL
 
       if (l==UCL.ewma){
-        df.indicator[,"UCL EWMA"] <- ceiling(ewma1$limits[,"UCL"])
+        df.indicator[range,"UCL EWMA"] <- ceiling(ewma1$limits[,"UCL"])
       }
 
       if (l==LCL.ewma){
-        df.indicator[,"LCL EWMA"] <- floor(ewma1$limits[,"LCL"])
+        df.indicator[range,"LCL EWMA"] <- floor(ewma1$limits[,"LCL"])
       }
 
       ##ADD one if the result of this loop was a detection
 
       if(l==1){
-        df.indicator[,"alarms EWMA"]<-0
+        df.indicator[range,"alarms EWMA"]<-0
       }
 
       df.indicator[ewma1$violations[ewma1$violations %in% which(ewma1$data>ewma1$center)], "alarms EWMA"]<-
@@ -752,14 +760,16 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
 # apply Shewhart control chart ----
 
 shew_apply <- function (df.indicator=df.indicator,
-                        evaluate.weekly.window=evaluate.weekly.window,
-                        baseline.weekly.window=baseline.weekly.window,
-                        limit.sd=limit.sd,
-                        guard.band.weekly=guard.band.weekly,
-                        correct.baseline.UCL.shew=correct.baseline.UCL.shew,
-                        correct.baseline.LCL.shew=correct.baseline.LCL.shew,
+                        evaluate.weekly.window=165,
+                        baseline.weekly.window=104,
+                        continuous.window=5500,
+                        limit.sd=c(2.5,3,3.5),
+                        guard.band.weekly=2,
+                        correct.baseline.UCL.shew=TRUE,
+                        correct.baseline.LCL.shew=FALSE,
                         UCL.shew=UCL.shew,
-                        LCL.shew=LCL.shew
+                        LCL.shew=LCL.shew,
+                        indicator.type="W"
 )
 {
   if (length(which(is.nan(df.indicator[,"observed"])))>0 | length(which(is.na(df.indicator[,"observed"])))>0){
@@ -776,7 +786,7 @@ shew_apply <- function (df.indicator=df.indicator,
               which(is.na(df.indicator[, "observed"])), 0.00)
   }
 
-  if (dim(df.indicator)[2]==8) {   # for weekly indicators, prospective framework
+  if (indicator.type=="W") {   # for weekly indicators, prospective framework
 
     if(guard.band.weekly<1)(guard.band.weekly<-1)
 
@@ -851,9 +861,11 @@ shew_apply <- function (df.indicator=df.indicator,
           }
   }
 
-  if (dim(df.indicator)[2]==12) {        # for continuous indicators, retrospective framework
+  if (indicator.type=="C") {        # for continuous indicators, retrospective framework
+    
+    range <- max(1,(dim(df.indicator)[1]-continuous.window+1)):dim(df.indicator)[1]
 
-    data <- df.indicator[,"observed"]
+    data <- df.indicator[range,"observed"]
 
     for (l in 1:length(limit.sd)){ #l=2
 
@@ -871,14 +883,14 @@ shew_apply <- function (df.indicator=df.indicator,
       #choose UCL and LCL
 
       if (l==UCL.shew){
-        df.indicator[,"UCL Shewhart"] <- UCL.value
-        df.indicator[,"LCL Shewhart"] <- LCL.value
+        df.indicator[range,"UCL Shewhart"] <- UCL.value
+        df.indicator[range,"LCL Shewhart"] <- LCL.value
       }
 
       ##ADD or SUBTRACT one if the result of this loop was a detection
 
       if(l==1){
-        df.indicator[,"alarms Shewhart"]<-0
+        df.indicator[range,"alarms Shewhart"]<-0
       }
 
       df.indicator[data>shew[,"UCL"],"alarms Shewhart"] <- df.indicator[data>shew[,"UCL"],"alarms Shewhart"] +1

@@ -46,14 +46,17 @@ c3 <- c(rep("gilt",2),
 
 # functions arguments ----
 
-weekly.window <- 271            #weeks to see in each indicator
-continuous.window <- 5500       #observations to see in each indicator
+weekly.window <- 271               #weeks to see in each indicator
+continuous.window <- 5500          #observations to see in each indicator
 
-limit.upp <- 0.95               #upper limit (upper percentile) to clean baseline non-parametric
-limit.lw <- 0.05                #lower limit (lower percentile) to clean baseline non-parametric
+limit.upp <- 0.95                  #upper limit (upper percentile) to clean baseline non-parametric
+limit.lw <- 0.05                   #lower limit (lower percentile) to clean baseline non-parametric
 
-run.window.weekly <- 104        #window of time points which will be used to calculate the percentile set (weekly indicators)
-nr.production.cycles <- 2       #number of production cycles to consider to construct a window of time points which will be used to calculate the percentile set (continuous indicators)
+run.window.weekly <- 104           #window of time points which will be used to calculate the percentile set (weekly indicators)
+nr.production.cycles <- 2          #number of production cycles to consider to construct a window of time points which will be used to calculate the percentile set (continuous indicators). Set to NULL, if median.days.production.cycles is a value (not NULL).
+median.days.production.cycles=NULL #if left as NULL, it will be calculated based on the median value in days of 1 production cycle, using the indicator days.between.farrowings, and multiplied by the nr.production.cycles chosen. Therefore, if set to NULL, the indicator days.between.farrowings has to belong to indicators.to.keep.
+                                   #if you want to set a fixed median value in days, set for instance: (note that the value chosen will not be multiplied by nr.production.cycles) 
+                                   #median.days.production.cycles <- 300
 
 evaluate.weekly.window=165      #number of time points to be evaluated by the algorithm for weekly indicators
 baseline.weekly.window=104      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
