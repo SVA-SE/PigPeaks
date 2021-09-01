@@ -4,37 +4,37 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 require(plotly)
 require(RColorBrewer)
 
+# Without parity ----
 
-#  For weekly time-series ----
+##  For weekly time-series
   
   TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indicators.time.series$`abortions per week`
-                         indicator.label = indicator.label,
+                         indicator.label = indicators.labels[i],
                          show.window = weeks.to.show,
                          index.dates = index.dates.week,
-                         ylabel = "Number of sows",
+                         ylabel = indicators.labels[i],
                          xlabel = "Week",
-                         target = target,  
-                         target.unit = target.unit,             #c("value","vector"), defaults to vector
-                         UCL.EWMA = UCL.EWMA,                   #Added
-                         LCL.EWMA = LCL.EWMA,                   #Added
-                         UCL.SHEW = UCL.SHEW,                   #Added
-                         LCL.SHEW = LCL.SHEW,                   #Added
-                         alarms.EWMA.UPP = alarms.EWMA.UPP,     #Added
-                         alarms.EWMA.LW = alarms.EWMA.LW,       #Added
-                         alarms.SHEW.UPP = alarms.SHEW.UPP,     #Added
-                         alarms.SHEW.LW = alarms.SHEW.LW,       #Added
-                         series.label = series.label
+                         target = NULL,
+                         target.unit = NULL,                    #c("value","vector"), defaults to vector
+                         UCL.EWMA = TRUE,                       #Added
+                         LCL.EWMA = FALSE,                      #Added
+                         UCL.SHEW = TRUE,                       #Added
+                         LCL.SHEW = FALSE,                      #Added
+                         alarms.EWMA.UPP = TRUE,                #Added
+                         alarms.EWMA.LW = FALSE,                #Added
+                         alarms.SHEW.UPP = TRUE,                #Added
+                         alarms.SHEW.LW = FALSE,                #Added
+                         series.label = "sows",
+                         argument.list=NULL
   ){
+    
+    if(!is.null(argument.list)){
+      call(argument.list)
+    }
 
     series <- df.indicator$observed
     
-    #data.weekly.removed <- dim(indicator)[1]-dim(df.indicator)[1]
-    
     plot.range <- max(1,(length(series)-show.window+1)):length(series)
-    
-    #index.dates <- index.dates[data.weekly.removed:(dim(indicator)[1]),]
-    
-    #plot.range.dates <- (data.weekly.removed)+(max(1,(length(series)-show.window+1)):length(series))
     
     y = series[plot.range]
     
@@ -255,7 +255,7 @@ require(RColorBrewer)
   
 
 
-#  For continuous time-series ----
+##  For continuous time-series
 
 nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indicator=indicators.time.series$`days between farrowings`
                                    indicator.label = indicator.label, 
@@ -522,7 +522,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
 
 
 
-# For exit category weekly indicators non-sys ----
+## For exit category weekly indicators non-sys
 
 TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`exit after event, weekly`
                     indicator.label = indicator.label,
@@ -710,26 +710,364 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
 
 
 
-# parity colouring ----
-#parity.group <- data.frame(parity = c1, group=c2, group.name = c3)
-parity.group <- data.frame(parity = c1, group.name = ordered(c3,levels=c("gilt","young","prime","mature")))
+# With parity ----
+
+##  For weekly time-series
+
+TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Sows empty longer than target, weekly`
+                          indicator.label="indicator",
+                          show.window = weeks.to.show,
+                          index.dates = index.dates.week,
+                          ylabel = 'Number of sows',
+                          xlabel = 'Week',
+                          target = NULL,
+                          target.unit = NULL,                 #c("value","vector"), defaults to vector
+                          shading.matrix = NULL,
+                          limits = NULL,
+                          UCL.EWMA = TRUE,                       #Added
+                          LCL.EWMA = FALSE,                      #Added
+                          UCL.SHEW = TRUE,                       #Added
+                          LCL.SHEW = FALSE,                      #Added
+                          alarms.EWMA.UPP = TRUE,                #Added
+                          alarms.EWMA.LW = FALSE,                #Added
+                          alarms.SHEW.UPP = TRUE,                #Added
+                          alarms.SHEW.LW = FALSE,                #Added
+                          group.labels=c('gilts','young','prime','mature')
+                          
+){
+  series <- df.indicator
+  
+  plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
+  
+  data = as.data.frame(series[plot.range,])
+  
+  
+  x=index.dates.week$start[plot.range]
+  x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
+  y1 = data$gilt
+  y2 = data$young
+  y3 = data$prime
+  y4 = data$mature
+  y = y1+y2+y3+y4
+  
+  #labels
+  t1 = group.labels[1]
+  t2 = group.labels[2]
+  t3 = group.labels[3]
+  t4 = group.labels[4]
+  
+  text1=str_c("Parity group:",t1,
+              "<br>",indicator.label,":",y1,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text2=str_c("Parity group:",t2,
+              "<br>",indicator.label,":",y2,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text3=str_c("Parity group:",t3,
+              "<br>",indicator.label,":",y3,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  text4=str_c("Parity group:",t4,
+              "<br>",indicator.label,":",y4,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
+  
+  
+  # target.vector = target.vector[plot.range]
+  
+  target.vector = target
+  if(!is.null(target.unit)){
+    if(target.unit=="value"){
+      target.vector <- rep(target,length(x))
+    }}
+  
+  
+  if(!is.null(shading.matrix)){
+    shading.matrix=shading.matrix[plot.range,]
+  }
+
+  if(!is.null(shading.matrix)){
+    LL3 <- shading.matrix[,1]
+    LL2 <- shading.matrix[,2]  
+    LL1 <- shading.matrix[,3]  
+    UL1 <- shading.matrix[,4]  
+    UL2 <- shading.matrix[,5]  
+    UL3 <- shading.matrix[,6]  
+  }
+  
+  if(!is.null(limits)){
+    if(limits=="low"){
+      UL1 <- max(y)
+      UL2 <- max(y)
+      UL3 <- max(y)
+    }
+    if(limits=="high"){
+      LL1 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL2 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL3 <- min(0,min(data,na.rm=T),na.rm=T)
+    }
+  }
+  
+  color1=color.pg[1]
+  color2=color.pg[2]
+  color3=color.pg[3]
+  color4=color.pg[4]
+  
+  
+  plot <-
+    plot_ly()
+  
+  if(!is.null(shading.matrix)){
+    plot <- plot %>%
+      add_trace(x=x,y = rep(max(y,na.rm=T),show.window),
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL3,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL2,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL1,
+                name = 'normal', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='lightgreen',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = LL1,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%   
+      add_trace(x=x,y = LL2,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%    
+      add_trace(x=x,y = LL3,
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE)
+    
+  }
+  
+  
+  
+  plot <- plot %>%
+    add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar',yaxis="y2",
+              text = text1, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y2,name=t2,marker=list(color=color2),type='bar',yaxis="y2",
+              text = text2, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y3,name=t3,marker=list(color=color3),type='bar',yaxis="y2",
+              text = text3, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
+              text = text4, hoverinfo = 'text') %>%
+    layout(yaxis = list(side = 'right', title = "", range=  c(max(0,min(data,na.rm=T)), max(data,na.rm=T))),
+           yaxis2 = list(side = 'left', title = ylabel,overlaying = "y",range = c(max(0,min(data,na.rm=T)), max(data,na.rm=T))),
+           xaxis = list(title = xlabel),
+           barmode = 'stack',
+           legend=list(orientation="h",
+                       x=0.25,y=max(y,na.rm=T),
+                       traceorder='normal'))
+  
+  
+  # 
+  # if(!is.null(target.vector)){
+  #   plot <- plot %>%
+  #     add_lines(
+  #       x=x,
+  #       y=target.vector,
+  #       name='indicator target',yaxis="y2",
+  #       line=list(color = '#fc2821'), showlegend = FALSE
+  #     )
+  # }
+  
+  if(!is.null(target)){
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=target.vector,
+        name='Target', yaxis="y2",
+        line=list(color = '#FFFF00'), showlegend = FALSE
+      )
+  }
+  
+  if(isTRUE(UCL.EWMA)){          #Added 
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=df.indicator$`UCL EWMA`[plot.range],
+        name='UCL EWMA', yaxis="y2",
+        line=list(color = '#ff0000'), showlegend = TRUE
+      )
+  }
+  
+  if(isTRUE(LCL.EWMA)){          #Added 
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=df.indicator$`LCL EWMA`[plot.range],
+        name='LCL EWMA', yaxis="y2",
+        line=list(color = '#800080'), showlegend = TRUE
+      )
+  }
+  
+  
+  if(isTRUE(UCL.SHEW)){          #Added
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=df.indicator$`UCL Shewhart`[plot.range],
+        name='UCL SHEW', yaxis="y2",
+        line=list(color = '#ff0000', dash="dot"), showlegend = TRUE
+      )
+  }
+  
+  if(isTRUE(LCL.SHEW)){          #Added
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=df.indicator$`LCL Shewhart`[plot.range],
+        name='LCL SHEW', yaxis="y2",
+        line=list(color = '#800080',dash="dot"), showlegend = TRUE
+      )
+  }
+  
+  
+  alarms.ewma <- tail(df.indicator$`alarms EWMA`, show.window)
+  alarms.shew <- tail(df.indicator$`alarms Shewhart`, show.window)
+  
+  
+  if(isTRUE(alarms.EWMA.UPP)){          #Added
+    
+    for(a in 1:length(alarms.ewma)) {           
+      if(alarms.ewma[a]==1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+    }
+  }
+  
+  if (isTRUE(alarms.EWMA.LW)) {
+    
+    for(a in 1:length(alarms.ewma)) {           
+      if(alarms.ewma[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+        
+      }
+    }
+  } 
+  
+  if(isTRUE(alarms.SHEW.UPP)){          #Added
+    
+    for(a in 1:length(alarms.shew)) {
+      if(alarms.shew[a]==1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+    }
+  }
+  if (isTRUE(alarms.SHEW.LW)) {
+    
+    for(a in 1:length(alarms.shew)) {
+      if(alarms.shew[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+        
+      }
+    }
+  }
+  
+  return(plot)    
+}
 
 
-qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
-col_parity = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
-
-parity.group$color1 <- col_parity[as.numeric(as.factor(parity.group$group.name))]
-parity.group$color2 <- col_parity[as.numeric(as.factor(parity.group$parity))]
-
-parity.group2 <- parity.group[-1,]
-
-colors.custom<- c(rep("#4287f5",1),
-                  rep("#28ab1f",2),
-                  rep("#f5942c",3),
-                  rep("#a15a4c",9)
-)
-parity.group2 <-cbind(parity.group2,colors.custom)
-parity.group2$colors.custom<-colors.custom
-
-color.pg <- c("#4287f5","#28ab1f","#f5942c","#a15a4c")
 
