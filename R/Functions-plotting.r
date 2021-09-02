@@ -4,6 +4,8 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 require(plotly)
 require(RColorBrewer)
 
+
+
 # Without parity ----
 
 ##  For weekly time-series
@@ -25,11 +27,25 @@ require(RColorBrewer)
                          alarms.SHEW.UPP = TRUE,                #Added
                          alarms.SHEW.LW = FALSE,                #Added
                          series.label = "sows",
-                         argument.list=NULL
+                         argument.list=TRUE
   ){
     
-    if(!is.null(argument.list)){
-      call(argument.list)
+    if(isTRUE(argument.list)){
+      assign(c("argument.list"),chose.arguments.plot(i=i))
+      
+      indicator.label = argument.list$indicator.label
+      show.window = argument.list$show.window
+      index.dates = argument.list$index.dates
+      ylabel = argument.list$ylabel
+      xlabel = argument.list$xlabel
+      UCL.EWMA = argument.list$UCL.EWMA
+      LCL.EWMA = argument.list$LCL.EWMA
+      UCL.SHEW = argument.list$UCL.SHEW
+      LCL.SHEW = argument.list$LCL.SHEW
+      alarms.EWMA.UPP = argument.list$alarms.EWMA.UPP
+      alarms.EWMA.LW = argument.list$alarms.EWMA.LW
+      alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
+      alarms.SHEW.LW = argument.list$alarms.SHEW.LW
     }
 
     series <- df.indicator$observed
@@ -275,9 +291,30 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
                                    alarms.SHEW.LW = alarms.SHEW.LW,            #Added
                                    series.label = series.label,
                                    vertical.line = vertical.line,              #vector of dates
-                                   vertical.line.label= vertical.line.label
+                                   vertical.line.label = vertical.line.label,
+                                   argument.list = TRUE
                                    
 ){
+  if(isTRUE(argument.list)){
+    assign(c("argument.list"), chose.arguments.plot(i=i))
+    
+    indicator.label = argument.list$indicator.label
+    show.window = argument.list$show.window
+    index.dates = argument.list$index.dates
+    ylabel = argument.list$ylabel
+    xlabel = argument.list$xlabel
+    UCL.EWMA = argument.list$UCL.EWMA
+    LCL.EWMA = argument.list$LCL.EWMA
+    UCL.SHEW = argument.list$UCL.SHEW
+    LCL.SHEW = argument.list$LCL.SHEW
+    alarms.EWMA.UPP = argument.list$alarms.EWMA.UPP
+    alarms.EWMA.LW = argument.list$alarms.EWMA.LW
+    alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
+    alarms.SHEW.LW = argument.list$alarms.SHEW.LW
+    vertical.line = argument.list$vertical.line
+    vertical.line.label = argument.list$vertical.line.label
+  }
+  
   range <- max((dim(df.indicator)[1]-show.window+1),1,na.rm=T):(dim(df.indicator)[1])
   
   series.range <- df.indicator[range,] 
@@ -732,9 +769,31 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
                           alarms.EWMA.LW = FALSE,                #Added
                           alarms.SHEW.UPP = TRUE,                #Added
                           alarms.SHEW.LW = FALSE,                #Added
-                          group.labels=c('gilts','young','prime','mature')
+                          group.labels=c('gilts','young','prime','mature'),
+                          argument.list=TRUE
                           
 ){
+  if(isTRUE(argument.list)){
+    assign(c("argument.list"),chose.arguments.plot(i=i))
+    
+    indicator.label = argument.list$indicator.label
+    show.window = argument.list$show.window
+    index.dates = argument.list$index.dates
+    ylabel = argument.list$ylabel
+    xlabel = argument.list$xlabel
+    shading.matrix = argument.list$shading.matrix
+    limits = argument.list$limits
+    UCL.EWMA = argument.list$UCL.EWMA
+    LCL.EWMA = argument.list$LCL.EWMA
+    UCL.SHEW = argument.list$UCL.SHEW
+    LCL.SHEW = argument.list$LCL.SHEW
+    alarms.EWMA.UPP = argument.list$alarms.EWMA.UPP
+    alarms.EWMA.LW = argument.list$alarms.EWMA.LW
+    alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
+    alarms.SHEW.LW = argument.list$alarms.SHEW.LW
+    group.labels = argument.list$group.labels
+  }
+  
   series <- df.indicator
   
   plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
@@ -809,11 +868,20 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
     }
   }
   
-  color1=color.pg[1]
-  color2=color.pg[2]
-  color3=color.pg[3]
-  color4=color.pg[4]
+  color1="#91b9f9"
+  color2="#7dc478"
+  color3="#f7b165"
+  color4="#be857a"
   
+  # color1="#d2e5f1"
+  # color2="#d6f1d2"
+  # color3="#ffe195"
+  # color4="#dad0b8"
+  
+  # color1=color.pg[1]
+  # color2=color.pg[2]
+  # color3=color.pg[3]
+  # color4=color.pg[4]
   
   plot <-
     plot_ly()
@@ -869,25 +937,13 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
               text = text3, hoverinfo = 'text') %>%
     add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
               text = text4, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", range=  c(max(0,min(data,na.rm=T)), max(data,na.rm=T))),
-           yaxis2 = list(side = 'left', title = ylabel,overlaying = "y",range = c(max(0,min(data,na.rm=T)), max(data,na.rm=T))),
-           xaxis = list(title = xlabel),
+    layout(yaxis = list(side = 'right', title = "", autorange = TRUE),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE),
+           xaxis = list(title = xlabel, autorange = TRUE),
            barmode = 'stack',
            legend=list(orientation="h",
                        x=0.25,y=max(y,na.rm=T),
                        traceorder='normal'))
-  
-  
-  # 
-  # if(!is.null(target.vector)){
-  #   plot <- plot %>%
-  #     add_lines(
-  #       x=x,
-  #       y=target.vector,
-  #       name='indicator target',yaxis="y2",
-  #       line=list(color = '#fc2821'), showlegend = FALSE
-  #     )
-  # }
   
   if(!is.null(target)){
     plot <- plot %>%
@@ -950,6 +1006,380 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
     for(a in 1:length(alarms.ewma)) {           
       if(alarms.ewma[a]==1){
         plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+    }
+  }
+  
+  if (isTRUE(alarms.EWMA.LW)) {
+    
+    for(a in 1:length(alarms.ewma)) {           
+      if(alarms.ewma[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+      }
+      if(alarms.ewma[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]),
+                      name ='Alarm EWMA',
+                      showlegend = FALSE)
+        
+      }
+    }
+  } 
+  
+  if(isTRUE(alarms.SHEW.UPP)){          #Added
+    
+    for(a in 1:length(alarms.shew)) {
+      if(alarms.shew[a]==1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+    }
+  }
+  if (isTRUE(alarms.SHEW.LW)) {
+    
+    for(a in 1:length(alarms.shew)) {
+      if(alarms.shew[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+      }
+      if(alarms.shew[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]),
+                      name ='Alarm Shewhart',
+                      showlegend = FALSE)
+        
+      }
+    }
+  }
+  
+  return(plot)    
+}
+
+
+
+##  For continuous time-series
+
+nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`days between farrowings`
+                                      indicator.label = indicator.label,
+                                      series.line = NULL,
+                                      show.window = nonTS.to.show,                #always as number of events
+                                      vertical.line = NULL,                       #VECTOR OF DATES
+                                      vertical.line.label=NULL,
+                                      index.dates = index.dates.days,
+                                      ylabel = 'Time between events',
+                                      xlabel = 'Date of event',
+                                      y2label = '% of',
+                                      y2range = c(0,1),
+                                      target = NULL,
+                                      target.unit="value",                        #c("value","vector), defaults to vector
+                                      UCL.EWMA = UCL.EWMA,                        #Added
+                                      LCL.EWMA = LCL.EWMA,                        #Added
+                                      UCL.SHEW = UCL.SHEW,                        #Added
+                                      LCL.SHEW = LCL.SHEW,                        #Added
+                                      alarms.EWMA.UPP = alarms.EWMA.UPP,          #Added
+                                      alarms.EWMA.LW = alarms.EWMA.LW,            #Added
+                                      alarms.SHEW.UPP = alarms.SHEW.UPP,          #Added
+                                      alarms.SHEW.LW = alarms.SHEW.LW,            #Added
+                                      use.minimum.y="min",                        #"zero"
+                                      barmode = 'group',                          #"overlay"
+                                      argument.list = TRUE
+                                      
+                                      
+){
+  if(isTRUE(argument.list)){
+    assign(c("argument.list"), chose.arguments.plot(i=i))
+    
+    indicator.label = argument.list$indicator.label
+    series.line = argument.list$series.line
+    show.window = argument.list$show.window
+    index.dates = argument.list$index.dates
+    ylabel = argument.list$ylabel
+    xlabel = argument.list$xlabel
+    y2label = argument.list$y2label
+    y2range = argument.list$y2range
+    UCL.EWMA = argument.list$UCL.EWMA
+    LCL.EWMA = argument.list$LCL.EWMA
+    UCL.SHEW = argument.list$UCL.SHEW
+    LCL.SHEW = argument.list$LCL.SHEW
+    alarms.EWMA.UPP = argument.list$alarms.EWMA.UPP
+    alarms.EWMA.LW = argument.list$alarms.EWMA.LW
+    alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
+    alarms.SHEW.LW = argument.list$alarms.SHEW.LW
+    vertical.line = argument.list$vertical.line
+    vertical.line.label = argument.list$vertical.line.label
+  }
+  
+  range <- max((dim(df.indicator)[1]-show.window+1),1,na.rm=T):(dim(df.indicator)[1])
+    
+  series.range <- df.indicator[range,] 
+  
+  y = series.range[,"observed"]
+  
+  x = 1:min(dim(series.range)[1],show.window)
+  
+  x.dates = series.range[,"date"]
+  
+  parity.group = series.range[,"parity"]
+  
+  series.range <- as.data.frame(series.range)
+  series.range <- as.data.frame(cbind(series.range,x))
+  
+  series.pg <- split(series.range,series.range$parity)
+  
+  #labels
+  t1 = names(series.pg)[1]
+  t2 = names(series.pg)[2]
+  t3 = names(series.pg)[3]
+  t4 = names(series.pg)[4]
+  
+  y1 = series.pg[[1]][,"observed"]
+  y2 = series.pg[[2]][,"observed"]
+  y3 = series.pg[[3]][,"observed"]
+  y4 = series.pg[[4]][,"observed"]
+  y.all=c(y1,y2,y3,y4)
+  
+  min.y=0
+  if(use.minimum.y=="min")(min.y=min(y.all,na.rm=T)-1)
+  
+  
+  #colors
+  
+  text1=str_c("Parity group:",t1,
+              "<br>",indicator.label,":",y1,
+              "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
+              "<br>date:",series.pg[[1]][,"date"],
+              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[1]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+  text2=str_c("Parity group:",t2,
+              "<br>",indicator.label,":",y2,
+              "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
+              "<br>date:",series.pg[[2]][,"date"],
+              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[2]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+  text3=str_c("Parity group:",t3,
+              "<br>",indicator.label,":",y3,
+              "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
+              "<br>date:",series.pg[[3]][,"date"],
+              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[3]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+  text4=str_c("Parity group:",t4,
+              "<br>",indicator.label,":",y4,
+              "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
+              "<br>date:",series.pg[[4]][,"date"],
+              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[4]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+  
+  
+  target.vector = target
+  if(!is.null(target.unit)){
+    if(target.unit=="value"){
+      target.vector <- rep(target,length(x))
+    }}
+  
+  
+  series.line = series.line[range]
+  
+  # color1=color.pg[1]
+  # color2=color.pg[2]
+  # color3=color.pg[3]
+  # color4=color.pg[4]
+  
+  color1="#91b9f9"
+  color2="#7dc478"
+  color3="#f7b165"
+  color4="#be857a"
+  
+  plot <-
+    plot_ly(x=x)
+  
+  
+  plot <- plot %>%
+    add_trace(x=series.pg[[1]][,"x"],y = y1,name=t1,marker=list(color=color1),type='bar',
+              text = text1, hoverinfo = 'text') %>%
+    add_trace(x=series.pg[[2]][,"x"],y = y2,name=t2,marker=list(color=color2),type='bar',
+              text = text2, hoverinfo = 'text') %>%
+    add_trace(x=series.pg[[3]][,"x"],y = y3,name=t3,marker=list(color=color3),type='bar',
+              text = text3, hoverinfo = 'text') %>%
+    add_trace(x=series.pg[[4]][,"x"],y = y4,name=t4,marker=list(color=color4),type='bar',
+              text = text4, hoverinfo = 'text')  
+  
+  if(!is.null(series.line)){
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=series.line,
+        name=y2label,yaxis="y2",
+        line=list(color = 'black'), showlegend = TRUE
+      )%>%
+      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
+             yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range,showgrid = FALSE),
+             xaxis = list(title = xlabel),
+             barmode = barmode,
+             legend=list(orientation="h",
+                         
+                         x=0.25,y=max(y.all,na.rm=T),
+                         traceorder='normal'))
+    
+  }else{
+    plot <- plot %>%
+      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
+             xaxis = list(title = xlabel),
+             barmode = barmode,
+             legend=list(orientation="h",
+                         
+                         x=0.25,y=max(y.all,na.rm=T),
+                         traceorder='normal'))
+  }
+  
+  
+  if(!is.null(target)){
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=target.vector,
+        name='Target',
+        line=list(color = '#32cd32'), showlegend = TRUE
+      )
+  }
+  
+
+  
+  if(isTRUE(UCL.EWMA)){          #Added 
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=series.range[,"UCL EWMA"],
+        name='UCL EWMA',
+        line=list(color = '#ff0000'), showlegend = TRUE
+      )
+  }
+  
+  
+  if(isTRUE(LCL.EWMA)){          #Added 
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=series.range[,"LCL EWMA"],
+        name='LCL EWMA',
+        line=list(color = '#800080'), showlegend = TRUE
+      )
+  }
+  
+  
+  if(isTRUE(UCL.SHEW)){          #Added
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=series.range[,"UCL Shewhart"],
+        name='UCL SHEW',
+        line=list(color = '#ff0000', dash="dot"), showlegend = TRUE
+      )
+  }
+  
+  if(isTRUE(LCL.SHEW)){          #Added
+    plot <- plot %>%
+      add_lines(
+        x=x,
+        y=series.range[,"LCL Shewhart"],
+        name='LCL SHEW',
+        line=list(color = '#800080',dash="dot"), showlegend = TRUE
+      )
+  }
+  
+  
+  if(!is.null(vertical.line)){
+    for(vl in 1:length(vertical.line)){
+      
+      x.vl <- which.min(abs(series.range[,"date"]-vertical.line[vl]))
+      
+      if(is.null(vertical.line.label)|vl>1){
+        plot <- plot %>%
+          add_segments(x = x.vl, xend = x.vl, y = 0, yend = max(y.all,na.rm=T),
+                       line=list(color = '#F320D7'),showlegend = FALSE)
+      }else{
+        plot <- plot %>%
+          add_segments(x = x.vl, xend = x.vl, y = 0, yend = max(y.all,na.rm=T),
+                       name=vertical.line.label[vl],
+                       line=list(color = '#F320D7'))
+      }
+    }
+  }
+  
+  alarms.ewma <- tail(df.indicator$`alarms EWMA`, show.window)
+  alarms.shew <- tail(df.indicator$`alarms Shewhart`, show.window)
+  
+  
+  if(isTRUE(alarms.EWMA.UPP)){          #Added
+    
+    for(a in 1:length(alarms.ewma)) {
+      if(alarms.ewma[a]==1){
+        plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
@@ -975,9 +1405,9 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
     }
   }
   
-  if (isTRUE(alarms.EWMA.LW)) {
+  if(isTRUE(alarms.EWMA.LW)){          #Added
     
-    for(a in 1:length(alarms.ewma)) {           
+    for(a in 1:length(alarms.ewma)) {
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -1004,7 +1434,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
         
       }
     }
-  } 
+  }
   
   if(isTRUE(alarms.SHEW.UPP)){          #Added
     
@@ -1012,7 +1442,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1020,7 +1450,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       if(alarms.shew[a]==2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1028,20 +1458,21 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       if(alarms.shew[a]==3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
     }
   }
-  if (isTRUE(alarms.SHEW.LW)) {
+  
+  if(isTRUE(alarms.SHEW.LW)){          #Added
     
     for(a in 1:length(alarms.shew)) {
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1049,7 +1480,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       if(alarms.shew[a]==-2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1057,7 +1488,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       if(alarms.shew[a]==-3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
-                      marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1068,6 +1499,5 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
   
   return(plot)    
 }
-
 
 
