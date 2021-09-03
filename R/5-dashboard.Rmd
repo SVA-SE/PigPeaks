@@ -7,7 +7,7 @@ output:
     social: menu
     orientation: rows
     df_print: paged
-  # logo: SVA_logo.png
+    logo: ../SVA_logo.png
 ---
 
 <style type="text/css">
@@ -20,7 +20,6 @@ output:
 
 ```{r message=FALSE, warning=FALSE}
 library(flexdashboard)
-require(RColorBrewer)
 library(plotly)
 library(ggplot2)
 library(stringr)
@@ -40,11 +39,11 @@ load('data/indicators.RData')
 
 ```{r}
 
+# function that chose the correct arguments for each indicator plot
 chose.arguments.plot <- function(i = index
 ){
   
-indicator.label = "indicator"
-ylabel = indicators.labels[i]
+indicator.label = "Observed"
 
 if (isTRUE(indicators.sys[i])) {
   
@@ -131,7 +130,7 @@ if (indicators.type[i]=="C") {
   
 }
 
-arguments <- list(indicator.label=indicator.label, ylabel=ylabel, vertical.line=vertical.line,
+arguments <- list(indicator.label=indicator.label, vertical.line=vertical.line,
                   vertical.line.label=vertical.line.label, shading.matrix=shading.matrix,
                   limits=limits, series.line=series.line, group.labels=group.labels, UCL.EWMA=UCL.EWMA,
                   LCL.EWMA=LCL.EWMA, UCL.SHEW=UCL.SHEW, LCL.SHEW=LCL.SHEW,
@@ -146,47 +145,50 @@ return(arguments)
   
 ```
 
+# Overview {.sidebar}
+
+```{r}
+
+```
+
 
 Gilts
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Time to first service
+if("time.to.first.service" %in% names(indicators.data)) {
 
-```{r}
-
-if("time.to.first.service" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="time.to.first.service")])) {
-  
   i = which(names(indicators.data)=="time.to.first.service")
   
-  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
-                            argument.list = TRUE,
-                            target = NULL,
-                            target.unit = NULL,                     
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+
+  nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
+                         argument.list = TRUE,
+                         target = NULL,
+                         target.unit= NULL, 
+                         ylabel = "time (in days)",
+                         series.label = "gilts")
 }
 ```
 
-Row
--------------------------------------
 
-### Time to first farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("time.to.first.farrowing" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="time.to.first.farrowing")])) {
+if("time.to.first.farrowing" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="time.to.first.farrowing")
   
-  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
-                            argument.list = TRUE,
-                            target = NULL,
-                            target.unit = NULL,                     
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  nonTS.barplot.timeless(df.indicator = indicators.time.series[[i]],
+                         argument.list = TRUE,
+                         target = NULL,
+                         target.unit= NULL,
+                         ylabel = "time (in days)",
+                         series.label = "gilts")
 }
 
 ```
@@ -195,21 +197,20 @@ if("time.to.first.farrowing" %in% names(indicators.data) && isTRUE(indicators.sy
 Empty Sows
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Sows empty longer than target, weekly
-
-```{r}
-
-if("empty.long.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="empty.long.week")])) {
+if("empty.long.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="empty.long.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "sows")
 }
 ```
 
@@ -217,59 +218,57 @@ if("empty.long.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(
 Services
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Services per week
+if("services.week" %in% names(indicators.data)) {
 
-```{r}
-
-if("services.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="services.week")])) {
-  
   i = which(names(indicators.data)=="services.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "services")
 }
 ```
 
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Reservices per week
-
-```{r}
-
-if("reservices.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="reservices.week")])) {
+if("reservices.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="reservices.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "reservices")
 }
 
 ```
 
-Row
--------------------------------------
 
-### Time to reservice
+```{r, results='asis'}
 
-```{r}
+if("time.to.reservice" %in% names(indicators.data)) {
 
-if("time.to.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="time.to.reservice")])) {
-  
   i = which(names(indicators.data)=="time.to.reservice")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "time (in days)",
                             use.minimum.y = "min",                     
                             barmode = 'group')
   
@@ -277,63 +276,61 @@ if("time.to.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[whic
 
 ```
 
-Row
--------------------------------------
 
-### Sows re-serviced twice
+```{r, results='asis'}
 
-```{r}
+if("rereservices" %in% names(indicators.data)) {
 
-if("rereservices" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="rereservices")])) {
-  
   i = which(names(indicators.data)=="rereservices")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "sows", 
                             use.minimum.y = "min",                     
                             barmode = 'group')
-  
-  #cat("### Sows re-serviced twice")
 }
 
 ```
 
-Row
--------------------------------------
 
-### % failure, weekly
+```{r, results='asis'}
 
-```{r}
-
-if("perc.failure" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.failure")])) {
+if("perc.failure" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.failure")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
     TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                   argument.list = TRUE,
                   target = NULL,
-                  target.unit = NULL)
+                  target.unit = NULL,
+                  ylabel = "% failure")
 }
 
 ```
 
-Row
--------------------------------------
 
-### % reservice, weekly
+```{r, results='asis'}
 
-```{r}
+if("perc.reservice" %in% names(indicators.data)) {
 
-if("perc.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.reservice")])) {
-  
   i = which(names(indicators.data)=="perc.reservice")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% reservice")
 }
 
 ```
@@ -342,98 +339,96 @@ if("perc.reservice" %in% names(indicators.data) && isTRUE(indicators.sys[which(n
 Pregnancy
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### % pregnancy, weekly
-
-```{r}
-
-if("perc.pregnancy" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.pregnancy")])) {
+if("perc.pregnancy" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.pregnancy")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% pregnancy")
 }
 ```
 
-Row
--------------------------------------
 
-### Abortions per week
+```{r, results='asis'}
 
-```{r}
+if("abortions.week" %in% names(indicators.data)) {
 
-if("abortions.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="abortions.week")])) {
-  
   i = which(names(indicators.data)=="abortions.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "abortions")
 }
 ```
 
-Row
--------------------------------------
 
-### Time to abortion
+```{r, results='asis'}
 
-```{r}
+if("time.to.abortion" %in% names(indicators.data)) {
 
-if("time.to.abortion" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="time.to.abortion")])) {
-  
   i = which(names(indicators.data)=="time.to.abortion")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "time (in days)",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### services to farrow
-
-```{r}
-
-if("services.to.farrow" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="services.to.farrow")])) {
+if("services.to.farrow" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="services.to.farrow")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "sows",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### Pregnancy length
+```{r, results='asis'}
 
-```{r}
-
-if("pregnancy.length" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="pregnancy.length")])) {
+if("pregnancy.length" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="pregnancy.length")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,  
+                            ylabel = "pregnancy length (in days)",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
@@ -443,419 +438,419 @@ if("pregnancy.length" %in% names(indicators.data) && isTRUE(indicators.sys[which
 Farrowing
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Days between farrowings
-
-```{r}
-
-if("days.between.farrowings" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="days.between.farrowings")])) {
+if("days.between.farrowings" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="days.between.farrowings")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "days",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### farrowings per week
+```{r, results='asis'}
 
-```{r}
-
-if("farrowings.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="farrowings.week")])) {
+if("farrowings.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="farrowings.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "farrowings")
 }
 ```
 
-Row
--------------------------------------
 
-### total born per week
+```{r, results='asis'}
 
-```{r}
-if("total.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="total.born.week")])) {
+if("total.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 
 ```
 
-Row
--------------------------------------
 
-### live born per week
+```{r, results='asis'}
 
-```{r}
-
-if("live.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="live.born.week")])) {
+if("live.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="live.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### dead born per week
+```{r, results='asis'}
 
-```{r}
+if("dead.born.week" %in% names(indicators.data)) {
 
-if("dead.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="dead.born.week")])) {
-  
   i = which(names(indicators.data)=="dead.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### small born per week
+```{r, results='asis'}
 
-```{r}
+if("small.born.week" %in% names(indicators.data)) {
 
-if("small.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="small.born.week")])) {
-  
   i = which(names(indicators.data)=="small.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### weak born per week
+```{r, results='asis'}
 
-```{r}
-
-if("weak.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="weak.born.week")])) {
+if("weak.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weak.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### mummified born per week
+```{r, results='asis'}
 
-```{r}
-
-if("mummi.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="mummi.born.week")])) {
+if("mummi.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="mummi.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### % born dead, weekly
+```{r, results='asis'}
 
-```{r}
-
-if("perc.dead.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.dead.born.week")])) {
+if("perc.dead.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.dead.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### % small born, weekly
+```{r, results='asis'}
 
-```{r}
-
-if("perc.small.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.small.born.week")])) {
+if("perc.small.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.small.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### % weak born, weekly
+```{r, results='asis'}
 
-```{r}
-
-if("perc.weak.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.weak.born.week")])) {
+if("perc.weak.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.weak.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### % mummified, weekly
+```{r, results='asis'}
 
-```{r}
-
-if("perc.mummi.born.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.mummi.born.week")])) {
+if("perc.mummi.born.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.mummi.born.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "% piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### piglets per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("total.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="total.born.litter")])) {
+if("total.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### live born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("live.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="live.born.litter")])) {
+if("live.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="live.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### dead born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("dead.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="dead.born.litter")])) {
+if("dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="dead.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,  
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### % dead born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("perc.dead.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.dead.born.litter")])) {
+if("perc.dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.dead.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "% piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### small born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("small.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="small.born.litter")])) {
+if("small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="small.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,  
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### % small born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("perc.small.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.small.born.litter")])) {
+if("perc.small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.small.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "% piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### weak born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("weak.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="weak.born.litter")])) {
+if("weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weak.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### % weak born per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("perc.weak.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.weak.born.litter")])) {
+if("perc.weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.weak.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "% piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### mummified per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("mummi.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="mummi.born.litter")])) {
+if("mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="mummi.born.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### % mummified per farrowing
+```{r, results='asis'}
 
-```{r}
-
-if("perc.mummi.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.mummi.born.litter")])) {
+if("perc.mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.mummi.born.litter")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,   
+                            ylabel = "% piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
@@ -865,174 +860,172 @@ if("perc.mummi.born.litter" %in% names(indicators.data) && isTRUE(indicators.sys
 Weaning
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### Weanings per week
-
-```{r}
-
-if("weanings.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="weanings.week")])) {
+if("weanings.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weanings.week")
+
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "weanings")
 }
 ```
 
-Row
--------------------------------------
 
-### piglets weaned per week
+```{r, results='asis'}
 
-```{r}
-
-if("total.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="total.wean.week")])) {
+if("total.wean.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.wean.week")
+
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### weaned-expected weaned per week
+```{r, results='asis'}
 
-```{r}
-
-if("diff.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="diff.wean.week")])) {
+if("diff.wean.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="diff.wean.week")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### expected-weaned weaned per week
+```{r, results='asis'}
 
-```{r}
-
-if("negdiff.wean.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="negdiff.wean.week")])) {
+if("negdiff.wean.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="negdiff.wean.week")
-    
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "piglets")
 }
 ```
 
-Row
--------------------------------------
 
-### days to weaning
+```{r, results='asis'}
 
-```{r}
-
-if("weaning.length" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="weaning.length")])) {
+if("weaning.length" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weaning.length")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "days",                     
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### piglets weaned per weaning
-
-```{r}
-
-if("total.wean.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="total.wean.litter")])) {
+if("total.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.wean.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,
+                            ylabel = "piglets",                    
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### weaned-expected weaned per weaning
+```{r, results='asis'}
 
-```{r}
-
-if("negdiff.weaned.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="negdiff.weaned.litter")])) {
+if("negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="negdiff.weaned.litter")
   
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### % weaned-expected weaned per weaning
+```{r, results='asis'}
 
-```{r}
-
-if("perc.negdiff.weaned.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="perc.negdiff.weaned.litter")])) {
+if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
 
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
     nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL, 
+                            ylabel = "% piglets",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
 ```
 
-Row
--------------------------------------
 
-### average weight at weaning
+```{r, results='asis'}
 
-```{r}
-
-if("weight.wean.litter" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="weight.wean.litter")])) {
+if("weight.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weight.wean.litter")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
                             argument.list = TRUE,
                             target = NULL,
-                            target.unit = NULL,                     
+                            target.unit = NULL,  
+                            ylabel = "weight (in kg)",
                             use.minimum.y = "min",                     
                             barmode = 'group')
 }
@@ -1042,22 +1035,21 @@ if("weight.wean.litter" %in% names(indicators.data) && isTRUE(indicators.sys[whi
 Post-Weaning
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### weaned piglet deaths per week
-
-```{r}
-
-if("piglets.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="piglets.deaths.week")])) {
+if("piglets.deaths.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="piglets.deaths.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot(df.indicator = indicators.time.series[[i]],
              argument.list = TRUE,
              target = NULL,
              target.unit = NULL, 
-             series.label = "piglets")
+             series.label = "weaned piglets",
+             ylabel = "deaths")
 }
 
 ```
@@ -1066,60 +1058,131 @@ if("piglets.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[wh
 Exit
 ====================================
 
-Row
--------------------------------------
+```{r, results='asis'}
 
-### sow deaths per week
-
-```{r}
-
-if("number.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="number.deaths.week")])) {
+if("number.deaths.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="number.deaths.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "sows")
 }
 
 ```
 
-Row
--------------------------------------
 
-### gilt deaths per week
+```{r, results='asis'}
 
-```{r}
-
-if("gilts.deaths.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="gilts.deaths.week")])) {
+if("gilts.deaths.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="gilts.deaths.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
 
   TS.barplot(df.indicator = indicators.time.series[[i]],
              argument.list = TRUE,
              target = NULL,
              target.unit = NULL, 
-             series.label = "gilts")
+             series.label = "gilts",
+             ylabel = "gilts")
 }
 
 ```
 
-Row
--------------------------------------
 
-### number of exits per week
+```{r, results='asis'}
 
-```{r}
+if("death.after.event.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="death.after.event.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
 
-if("number.exits.week" %in% names(indicators.data) && isTRUE(indicators.sys[which(names(indicators.data)=="number.exits.week")])) {
+  TS.exit(df.indicator=indicators.time.series[[i]],
+          indicator.label="Number of sows",
+          show.window = weeks.to.show,
+          index.dates = index.dates.week,
+          ylabel = "death after event",
+          xlabel = 'Week',
+          target = NULL,
+          target.unit = NULL,
+          shading.matrix = NULL,
+          limits = NULL,
+          group.labels = c('birth','service','reservice','abortion','farrowing','weaning'))
+}
+```
+
+
+```{r, results='asis'}
+
+if("number.exits.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="number.exits.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
   
   TS.barplot.pg(df.indicator = indicators.time.series[[i]],
                 argument.list = TRUE,
                 target = NULL,
-                target.unit = NULL)
+                target.unit = NULL,
+                ylabel = "exits")
 }
 
+```
+
+
+```{r, results='asis'}
+
+if("exit.type.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="exit.type.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+
+  TS.exit(df.indicator=indicators.time.series[[i]],
+          indicator.label="Number of sows",
+          show.window = weeks.to.show,
+          index.dates = index.dates.week,
+          ylabel = "exit type",
+          xlabel = 'Week',
+          target = NULL,
+          target.unit = NULL,
+          shading.matrix = NULL,
+          limits = NULL,
+          group.labels = c('slaughtered','sold','euthanized','dead','sold.pregnant','missing','exported'))
+}
+```
+
+
+```{r, results='asis'}
+
+if("exit.after.event.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="exit.after.event.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+
+  TS.exit(df.indicator=indicators.time.series[[i]],
+          indicator.label="Number of sows",
+          show.window = weeks.to.show,
+          index.dates = index.dates.week,
+          ylabel = "exit after event",
+          xlabel = 'Week',
+          target = NULL,
+          target.unit = NULL,
+          shading.matrix = NULL,
+          limits = NULL,
+          group.labels = c('birth','service','reservice','abortion','farrowing','weaning'))
+}
 ```
