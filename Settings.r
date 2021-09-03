@@ -1,7 +1,8 @@
-packages <- c("utils")
+packages <- c("utils", "RColorBrewer")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(utils)
+require(RColorBrewer)
 
 source("Definitions.r")
 
