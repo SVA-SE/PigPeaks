@@ -747,7 +747,7 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
 
 ##  For weekly time-series
 
-TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Sows empty longer than target, weekly`
+TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Time to reservice`
                           indicator.label="indicator",
                           show.window = weeks.to.show,
                           index.dates = index.dates.week,
@@ -1494,85 +1494,38 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
 
 
 
+##  For continuous to weekly time-series
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`piglets per farrowing`
-                                      indicator.label = indicator.label,
-                                      series.line = NULL,
-                                      show.window = nonTS.to.show,                #always as number of events
-                                      vertical.line = NULL,                       #VECTOR OF DATES
-                                      vertical.line.label=NULL,
-                                      index.dates = index.dates.days,
-                                      ylabel = 'Time between events',
-                                      xlabel = 'Date of event',
-                                      y2label = '% of',
-                                      y2range = c(0,1),
-                                      target = NULL,
-                                      target.unit="value",                        #c("value","vector), defaults to vector
-                                      UCL.EWMA = UCL.EWMA,                        #Added
-                                      LCL.EWMA = LCL.EWMA,                        #Added
-                                      UCL.SHEW = UCL.SHEW,                        #Added
-                                      LCL.SHEW = LCL.SHEW,                        #Added
-                                      alarms.EWMA.UPP = alarms.EWMA.UPP,          #Added
-                                      alarms.EWMA.LW = alarms.EWMA.LW,            #Added
-                                      alarms.SHEW.UPP = alarms.SHEW.UPP,          #Added
-                                      alarms.SHEW.LW = alarms.SHEW.LW,            #Added
-                                      use.minimum.y="min",                        #"zero"
-                                      barmode = 'group',                          #"overlay"
-                                      argument.list = TRUE
-                                      
-                                      
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Time to reservice`
+                                     indicator.label="indicator",
+                                     show.window = weeks.to.show,
+                                     index.dates = index.dates.week,
+                                     ylabel = 'Number of sows',
+                                     xlabel = 'Week',
+                                     target = NULL,
+                                     target.unit = NULL,                 #c("value","vector"), defaults to vector
+                                     shading.matrix = NULL,
+                                     limits = NULL,
+                                     UCL.EWMA = TRUE,                       #Added
+                                     LCL.EWMA = FALSE,                      #Added
+                                     UCL.SHEW = TRUE,                       #Added
+                                     LCL.SHEW = FALSE,                      #Added
+                                     alarms.EWMA.UPP = TRUE,                #Added
+                                     alarms.EWMA.LW = FALSE,                #Added
+                                     alarms.SHEW.UPP = TRUE,                #Added
+                                     alarms.SHEW.LW = FALSE,                #Added
+                                     group.labels=c('gilts','young','prime','mature'),
+                                     argument.list=TRUE
 ){
   if(isTRUE(argument.list)){
-    assign(c("argument.list"), chose.arguments.plot(i=i))
+    assign(c("argument.list"),chose.arguments.plot(i=i))
     
     indicator.label = argument.list$indicator.label
-    series.line = argument.list$series.line
     show.window = argument.list$show.window
     index.dates = argument.list$index.dates
     xlabel = argument.list$xlabel
-    y2label = argument.list$y2label
-    y2range = argument.list$y2range
+    shading.matrix = argument.list$shading.matrix
+    limits = argument.list$limits
     UCL.EWMA = argument.list$UCL.EWMA
     LCL.EWMA = argument.list$LCL.EWMA
     UCL.SHEW = argument.list$UCL.SHEW
@@ -1581,68 +1534,49 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
     alarms.EWMA.LW = argument.list$alarms.EWMA.LW
     alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
     alarms.SHEW.LW = argument.list$alarms.SHEW.LW
-    vertical.line = argument.list$vertical.line
-    vertical.line.label = argument.list$vertical.line.label
+    group.labels = argument.list$group.labels
   }
   
-  range <- max((dim(df.indicator)[1]-show.window+1),1,na.rm=T):(dim(df.indicator)[1])
+  series <- df.indicator
   
-  series.range <- df.indicator[range,] 
+  plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
   
-  y = series.range[,"observed"]
+  data = as.data.frame(series[plot.range,])
   
-  x = 1:min(dim(series.range)[1],show.window)
   
-  x.dates = series.range[,"date"]
-  
-  x.weeks = index.dates.days$ISOweek[index.dates.days$dates %in% x.dates]
-  
-  parity.group = series.range[,"parity"]
-  
-  series.range <- as.data.frame(series.range)
-  series.range <- as.data.frame(cbind(series.range,x))
-  
-  series.pg <- split(series.range,series.range$parity)
+  x=index.dates.week$start[plot.range]
+  x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
+  y1 = data$gilt
+  y2 = data$young
+  y3 = data$prime
+  y4 = data$mature
+  y = y1+y2+y3+y4
   
   #labels
-  t1 = names(series.pg)[1]
-  t2 = names(series.pg)[2]
-  t3 = names(series.pg)[3]
-  t4 = names(series.pg)[4]
-  
-  y1 = series.pg[[1]][,"observed"]
-  y2 = series.pg[[2]][,"observed"]
-  y3 = series.pg[[3]][,"observed"]
-  y4 = series.pg[[4]][,"observed"]
-  y.all=c(y1,y2,y3,y4)
-  
-  min.y=0
-  if(use.minimum.y=="min")(min.y=min(y.all,na.rm=T)-1)
-  
-  
-  #colors
+  t1 = group.labels[1]
+  t2 = group.labels[2]
+  t3 = group.labels[3]
+  t4 = group.labels[4]
   
   text1=str_c("Parity group:",t1,
               "<br>",indicator.label,":",y1,
-              "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
-              "<br>date:",series.pg[[1]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[1]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
   text2=str_c("Parity group:",t2,
               "<br>",indicator.label,":",y2,
-              "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
-              "<br>date:",series.pg[[2]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[2]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
   text3=str_c("Parity group:",t3,
               "<br>",indicator.label,":",y3,
-              "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
-              "<br>date:",series.pg[[3]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[3]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
   text4=str_c("Parity group:",t4,
               "<br>",indicator.label,":",y4,
-              "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
-              "<br>date:",series.pg[[4]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[4]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
   
+  
+  # target.vector = target.vector[plot.range]
   
   target.vector = target
   if(!is.null(target.unit)){
@@ -1651,91 +1585,133 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
     }}
   
   
-  series.line = series.line[range]
+  if(!is.null(shading.matrix)){
+    shading.matrix=shading.matrix[plot.range,]
+  }
   
-  # color1=color.pg[1]
-  # color2=color.pg[2]
-  # color3=color.pg[3]
-  # color4=color.pg[4]
+  if(!is.null(shading.matrix)){
+    LL3 <- shading.matrix[,1]
+    LL2 <- shading.matrix[,2]  
+    LL1 <- shading.matrix[,3]  
+    UL1 <- shading.matrix[,4]  
+    UL2 <- shading.matrix[,5]  
+    UL3 <- shading.matrix[,6]  
+  }
+  
+  if(!is.null(limits)){
+    if(limits=="low"){
+      UL1 <- max(y)
+      UL2 <- max(y)
+      UL3 <- max(y)
+    }
+    if(limits=="high"){
+      LL1 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL2 <- min(0,min(data,na.rm=T),na.rm=T)
+      LL3 <- min(0,min(data,na.rm=T),na.rm=T)
+    }
+  }
   
   color1="#91b9f9"
   color2="#7dc478"
   color3="#f7b165"
   color4="#be857a"
   
+  # color1="#d2e5f1"
+  # color2="#d6f1d2"
+  # color3="#ffe195"
+  # color4="#dad0b8"
+  
+  # color1=color.pg[1]
+  # color2=color.pg[2]
+  # color3=color.pg[3]
+  # color4=color.pg[4]
+  
   plot <-
-    plot_ly(x=x)
+    plot_ly()
   
-  
-  plot <- plot %>%
-    add_trace(x=series.pg[[1]][,"x"],y = y1,name=t1,marker=list(color=color1),type='bar',
-              text = text1, hoverinfo = 'text') %>%
-    add_trace(x=series.pg[[2]][,"x"],y = y2,name=t2,marker=list(color=color2),type='bar',
-              text = text2, hoverinfo = 'text') %>%
-    add_trace(x=series.pg[[3]][,"x"],y = y3,name=t3,marker=list(color=color3),type='bar',
-              text = text3, hoverinfo = 'text') %>%
-    add_trace(x=series.pg[[4]][,"x"],y = y4,name=t4,marker=list(color=color4),type='bar',
-              text = text4, hoverinfo = 'text')  
-  
-  
-  if(!is.null(series.line)){
+  if(!is.null(shading.matrix)){
     plot <- plot %>%
-      add_lines(
-        x=x,
-        y=series.line,
-        name=y2label,yaxis="y2",
-        line=list(color = 'black'), showlegend = TRUE
-      )%>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
-             yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range,showgrid = FALSE),
-             xaxis = list(title = xlabel),
-             barmode = barmode,
-             legend=list(orientation="h",
-                         
-                         x=0.25,y=max(y.all,na.rm=T),
-                         traceorder='normal'))
+      add_trace(x=x,y = rep(max(y,na.rm=T),show.window),
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL3,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL2,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = UL1,
+                name = 'normal', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='lightgreen',
+                fill = 'tozeroy',showlegend = FALSE) %>%
+      add_trace(x=x,y = LL1,
+                name = '90%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='yellow',
+                fill = 'tozeroy',showlegend = FALSE) %>%   
+      add_trace(x=x,y = LL2,
+                name = '95%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='orange',
+                fill = 'tozeroy',showlegend = FALSE) %>%    
+      add_trace(x=x,y = LL3,
+                name = '99%', type = 'scatter', mode = 'lines',
+                line = list(color = 'transparent'),
+                fillcolor='tomato',
+                fill = 'tozeroy',showlegend = FALSE)
     
-  }else{
-    plot <- plot %>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
-             xaxis = list(title = xlabel),
-             barmode = barmode,
-             legend=list(orientation="h",
-                         
-                         x=0.25,y=max(y.all,na.rm=T),
-                         traceorder='normal'))
   }
   
+  plot <- plot %>%
+    add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar',yaxis="y2",
+              text = text1, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y2,name=t2,marker=list(color=color2),type='bar',yaxis="y2",
+              text = text2, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y3,name=t3,marker=list(color=color3),type='bar',yaxis="y2",
+              text = text3, hoverinfo = 'text') %>%
+    add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
+              text = text4, hoverinfo = 'text') %>%
+    layout(yaxis = list(side = 'right', title = "", autorange = TRUE),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE),
+           xaxis = list(title = xlabel, autorange = TRUE),
+           barmode = 'overlay',
+           legend=list(orientation="h",
+                       x=0.25,y=max(y,na.rm=T),
+                       traceorder='normal'))
   
   if(!is.null(target)){
     plot <- plot %>%
       add_lines(
         x=x,
         y=target.vector,
-        name='Target',
-        line=list(color = '#32cd32'), showlegend = TRUE
+        name='Target', yaxis="y2",
+        line=list(color = '#FFFF00'), showlegend = FALSE
       )
   }
-  
-  
   
   if(isTRUE(UCL.EWMA)){          #Added 
     plot <- plot %>%
       add_lines(
         x=x,
-        y=series.range[,"UCL EWMA"],
-        name='UCL EWMA',
+        y=df.indicator$`UCL EWMA`[plot.range],
+        name='UCL EWMA', yaxis="y2",
         line=list(color = '#ff0000'), showlegend = TRUE
       )
   }
-  
   
   if(isTRUE(LCL.EWMA)){          #Added 
     plot <- plot %>%
       add_lines(
         x=x,
-        y=series.range[,"LCL EWMA"],
-        name='LCL EWMA',
+        y=df.indicator$`LCL EWMA`[plot.range],
+        name='LCL EWMA', yaxis="y2",
         line=list(color = '#800080'), showlegend = TRUE
       )
   }
@@ -1745,8 +1721,8 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
     plot <- plot %>%
       add_lines(
         x=x,
-        y=series.range[,"UCL Shewhart"],
-        name='UCL SHEW',
+        y=df.indicator$`UCL Shewhart`[plot.range],
+        name='UCL SHEW', yaxis="y2",
         line=list(color = '#ff0000', dash="dot"), showlegend = TRUE
       )
   }
@@ -1755,30 +1731,12 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
     plot <- plot %>%
       add_lines(
         x=x,
-        y=series.range[,"LCL Shewhart"],
-        name='LCL SHEW',
+        y=df.indicator$`LCL Shewhart`[plot.range],
+        name='LCL SHEW', yaxis="y2",
         line=list(color = '#800080',dash="dot"), showlegend = TRUE
       )
   }
   
-  
-  if(!is.null(vertical.line)){
-    for(vl in 1:length(vertical.line)){
-      
-      x.vl <- which.min(abs(series.range[,"date"]-vertical.line[vl]))
-      
-      if(is.null(vertical.line.label)|vl>1){
-        plot <- plot %>%
-          add_segments(x = x.vl, xend = x.vl, y = 0, yend = max(y.all,na.rm=T),
-                       line=list(color = '#F320D7'),showlegend = FALSE)
-      }else{
-        plot <- plot %>%
-          add_segments(x = x.vl, xend = x.vl, y = 0, yend = max(y.all,na.rm=T),
-                       name=vertical.line.label[vl],
-                       line=list(color = '#F320D7'))
-      }
-    }
-  }
   
   alarms.ewma <- tail(df.indicator$`alarms EWMA`, show.window)
   alarms.shew <- tail(df.indicator$`alarms Shewhart`, show.window)
@@ -1786,10 +1744,10 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
   
   if(isTRUE(alarms.EWMA.UPP)){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in 1:length(alarms.ewma)) {           
       if(alarms.ewma[a]==1){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1797,7 +1755,7 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
       }
       if(alarms.ewma[a]==2){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1805,7 +1763,7 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
       }
       if(alarms.ewma[a]==3){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1814,12 +1772,12 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
     }
   }
   
-  if(isTRUE(alarms.EWMA.LW)){          #Added
+  if (isTRUE(alarms.EWMA.LW)) {
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in 1:length(alarms.ewma)) {           
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1827,7 +1785,7 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
       }
       if(alarms.ewma[a]==-2){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1835,7 +1793,7 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
       }
       if(alarms.ewma[a]==-3){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
+          add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.ewma[a]),
                       name ='Alarm EWMA',
@@ -1843,61 +1801,60 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
         
       }
     }
-  }
+  } 
   
   if(isTRUE(alarms.SHEW.UPP)){          #Added
     
     for(a in 1:length(alarms.shew)) {
       if(alarms.shew[a]==1){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
       if(alarms.shew[a]==2){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
       if(alarms.shew[a]==3){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
     }
   }
-  
-  if(isTRUE(alarms.SHEW.LW)){          #Added
+  if (isTRUE(alarms.SHEW.LW)) {
     
     for(a in 1:length(alarms.shew)) {
       if(alarms.shew[a]==-1){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
       if(alarms.shew[a]==-2){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
       }
       if(alarms.shew[a]==-3){
         plot <- plot %>%
-          add_markers(x = x[a], y = y[a],
-                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+          add_markers(x = x[a], y = y[a], yaxis="y2",
+                      marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
                       text = str_c('Score:', alarms.shew[a]),
                       name ='Alarm Shewhart',
                       showlegend = FALSE)
@@ -1908,5 +1865,4 @@ nonTS.barplot.pg.timeless.week <- function(df.indicator = df.indicator,      #df
   
   return(plot)    
 }
-
 
