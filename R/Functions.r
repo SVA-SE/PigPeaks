@@ -549,6 +549,85 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 }
 
 
+## continuous indicators to weekly
+
+
+continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicators.time.series$`Time to reservice`
+                                 #indicator=indicators.data$time.to.reservice
+){
+  
+  
+  range <- 1:dim(index.dates.week)[1]   #apply range restriction only to detection
+  
+  date <- index.dates.week$start
+  
+  parity.count = 0
+  
+  for (l in levels(parity.group2$group.name)) { #l="gilt"   l="mature"
+    
+    parity.count = parity.count+1
+    
+    assign(paste0(noquote(l)), c(rep(0, length(range))))
+    
+    if (parity.count==1){
+      parity <- noquote(l)
+    }else{
+      parity <- cbind(parity, noquote(l))
+    }
+  }
+  
+  observed <- c(rep(NA, length(range)))
+  baseline <- c(rep(NA, length(range)))
+  UCL.ewma <- c(rep(NA, length(range)))
+  LCL.ewma <- c(rep(NA, length(range)))
+  UCL.shew <- c(rep(NA, length(range)))
+  LCL.shew <- c(rep(NA, length(range)))
+  alarms.ewma <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
+  alarms.shew <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
+  
+  table <- data.frame(date, mget(parity), observed, baseline,
+                      UCL.ewma, LCL.ewma, alarms.ewma,
+                      UCL.shew, LCL.shew, alarms.shew)
+  
+  colnames(table) <- c("date", parity,"observed", "baseline",
+                       "UCL EWMA", "LCL EWMA", "alarms EWMA",
+                       "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
+  
+  
+  parity.name <- parity.group2$group.name[indicator[, "parity"]]
+  monday.date <- lastmon(indicator[,"date"])
+  
+  indicator.more <- data.frame(indicator[, "indicator"], parity.name, indicator[, "date"], indicator[, "sowINDEX"],
+                               as.Date(indicator[,"date"],origin="1970-01-01"), monday.date)
+  colnames(indicator.more) <- c("indicator", "parity", "date", "sowINDEX", "date format", "monday date")
+  
+  
+  for (d in table$date){
+    
+    if (d %in% indicator.more$`monday date`){  #d=as.Date("2010-12-27")
+      #d=as.Date("2011-04-11")
+      #d=as.Date("2016-01-04")
+      #d=as.Date("2013-01-14")
+      
+      for (p in unique(as.character(indicator.more$parity[indicator.more$`monday date`==d]))) { #p="prime"
+        
+        table[which(table$date %in% d), p] <- table[which(table$date %in% d), p] +
+          round(mean(indicator.more$indicator[indicator.more$`monday date`==d & indicator.more$parity==p]),1)
+        
+      }
+    }else{
+      next
+    }
+    
+    table[which(table$date %in% d), "observed"] <- round(mean(indicator.more$indicator[indicator.more$`monday date`==d]),1)
+    
+  }
+  return(table)
+  
+}
+
+
+
 # clean baseline non-parametric ----
 
 ##'The cleaning is non-parametric, based on moving
@@ -1023,32 +1102,3 @@ shew_apply <- function (df.indicator=df.indicator,
   return(df.indicator)
   }
 
-
-
-
-# for (l in levels(parity.group2$group.name)) { #l="gilt"   l="prime"
-#
-#   parity.count = parity.count+1
-#
-#
-#   if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-#
-#     observed <- i[,(parity.group2$parity[parity.group2$group.name==l])][range]
-#
-#   }
-#
-#   if (length(parity.group2$parity[parity.group2$group.name==l]) > 1) {
-#
-#     observed <- rowSums(i[,(parity.group2$parity[parity.group2$group.name==l])])[range]
-#
-#   }
-#
-#   parity.name <- c(rep(l, length(range)))
-#
-
-
-# for (l in levels(parity.group2$group.name)) { #l="gilt"   l="mature"
-#
-#   matrices.count = matrices.count+1
-#
-#   matrix <- i[i[, "parity"] %in% c(parity.group2$parity[parity.group2$group.name==l]),]
