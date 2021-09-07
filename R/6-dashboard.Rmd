@@ -152,7 +152,7 @@ return(arguments)
 ```
 
 
-Gilts
+Management {data-navmenu="Gilts"}
 ====================================
 
 ```{r, results='asis'}
@@ -194,7 +194,7 @@ if("time.to.first.farrowing" %in% names(indicators.data)) {
 ```
 
 
-Empty Sows
+Health {data-navmenu="Empty Sows"}
 ====================================
 
 ```{r, results='asis'}
@@ -215,26 +215,8 @@ if("empty.long.week" %in% names(indicators.data)) {
 ```
 
 
-Services
+Health {data-navmenu="Services"}
 ====================================
-
-```{r, results='asis'}
-
-if("services.week" %in% names(indicators.data)) {
-
-  i = which(names(indicators.data)=="services.week")
-  
-  cat("  \n##")
-  cat("  \n###", indicators.labels[i],"  \n")
-  
-  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
-                argument.list = TRUE,
-                target = NULL,
-                target.unit = NULL,
-                ylabel = "services")
-}
-```
-
 
 ```{r, results='asis'}
 
@@ -336,7 +318,28 @@ if("perc.reservice" %in% names(indicators.data)) {
 ```
 
 
-Pregnancy
+Management {data-navmenu="Services"}
+====================================
+
+```{r, results='asis'}
+
+if("services.week" %in% names(indicators.data)) {
+
+  i = which(names(indicators.data)=="services.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "services")
+}
+```
+
+
+Health {data-navmenu="Pregnancy"}
 ====================================
 
 ```{r, results='asis'}
@@ -371,26 +374,6 @@ if("abortions.week" %in% names(indicators.data)) {
                 target = NULL,
                 target.unit = NULL,
                 ylabel = "abortions")
-}
-```
-
-
-```{r, results='asis'}
-
-if("time.to.abortion" %in% names(indicators.data)) {
-
-  i = which(names(indicators.data)=="time.to.abortion")
-  
-  cat("  \n##")
-  cat("  \n###", indicators.labels[i],"  \n")
-  
-  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
-                            argument.list = TRUE,
-                            target = NULL,
-                            target.unit = NULL,
-                            ylabel = "time (in days)",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
 }
 ```
 
@@ -435,7 +418,30 @@ if("pregnancy.length" %in% names(indicators.data)) {
 ```
 
 
-Farrowing
+Management {data-navmenu="Pregnancy"}
+====================================
+
+```{r, results='asis'}
+
+if("time.to.abortion" %in% names(indicators.data)) {
+
+  i = which(names(indicators.data)=="time.to.abortion")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
+                            argument.list = TRUE,
+                            target = NULL,
+                            target.unit = NULL,
+                            ylabel = "time (in days)",
+                            use.minimum.y = "min",                     
+                            barmode = 'group')
+}
+```
+
+
+Health {data-navmenu="Farrowing"}
 ====================================
 
 ```{r, results='asis'}
@@ -857,26 +863,8 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
 ```
 
 
-Weaning
+Health {data-navmenu="Weaning"}
 ====================================
-
-```{r, results='asis'}
-
-if("weanings.week" %in% names(indicators.data)) {
-  
-  i = which(names(indicators.data)=="weanings.week")
-
-  cat("  \n##")
-  cat("  \n###", indicators.labels[i],"  \n")
-  
-  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
-                argument.list = TRUE,
-                target = NULL,
-                target.unit = NULL,
-                ylabel = "weanings")
-}
-```
-
 
 ```{r, results='asis'}
 
@@ -928,26 +916,6 @@ if("negdiff.wean.week" %in% names(indicators.data)) {
                 target = NULL,
                 target.unit = NULL,
                 ylabel = "piglets")
-}
-```
-
-
-```{r, results='asis'}
-
-if("weaning.length" %in% names(indicators.data)) {
-  
-  i = which(names(indicators.data)=="weaning.length")
-  
-  cat("  \n##")
-  cat("  \n###", indicators.labels[i],"  \n")
-  
-  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
-                            argument.list = TRUE,
-                            target = NULL,
-                            target.unit = NULL,
-                            ylabel = "days",                     
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
 }
 ```
 
@@ -1032,7 +1000,48 @@ if("weight.wean.litter" %in% names(indicators.data)) {
 ```
 
 
-Post-Weaning
+Management {data-navmenu="Weaning"}
+====================================
+
+```{r, results='asis'}
+
+if("weanings.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weanings.week")
+
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "weanings")
+}
+```
+
+
+```{r, results='asis'}
+
+if("weaning.length" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weaning.length")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
+                            argument.list = TRUE,
+                            target = NULL,
+                            target.unit = NULL,
+                            ylabel = "days",                     
+                            use.minimum.y = "min",                     
+                            barmode = 'group')
+}
+```
+
+
+Health {data-navmenu="Post-Weaning"}
 ====================================
 
 ```{r, results='asis'}
@@ -1055,7 +1064,7 @@ if("piglets.deaths.week" %in% names(indicators.data)) {
 ```
 
 
-Exit
+Health {data-navmenu="Exit"}
 ====================================
 
 ```{r, results='asis'}
@@ -1099,6 +1108,28 @@ if("gilts.deaths.week" %in% names(indicators.data)) {
 
 ```{r, results='asis'}
 
+if("number.exits.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="number.exits.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "exits")
+}
+
+```
+
+
+Management {data-navmenu="Exit"}
+====================================
+
+```{r, results='asis'}
+
 if("death.after.event.week" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="death.after.event.week")
@@ -1118,25 +1149,6 @@ if("death.after.event.week" %in% names(indicators.data)) {
           limits = NULL,
           group.labels = c('birth','service','reservice','abortion','farrowing','weaning'))
 }
-```
-
-
-```{r, results='asis'}
-
-if("number.exits.week" %in% names(indicators.data)) {
-  
-  i = which(names(indicators.data)=="number.exits.week")
-  
-  cat("  \n##")
-  cat("  \n###", indicators.labels[i],"  \n")
-  
-  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
-                argument.list = TRUE,
-                target = NULL,
-                target.unit = NULL,
-                ylabel = "exits")
-}
-
 ```
 
 
