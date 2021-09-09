@@ -31,6 +31,7 @@ source('Settings.r')
 source('R/Functions.r') 
 source('R/Functions-plotting.r')
 source('R/4-detection.R')
+source('R/5-continuous.to.weekly.R')
 load('data/individual.sows.RData')
 load('data/indicators.RData')
 
@@ -251,11 +252,32 @@ if("time.to.reservice" %in% names(indicators.data)) {
                             target = NULL,
                             target.unit = NULL,
                             ylabel = "time (in days)",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            use.minimum.y = "min")
   
 }
 
+```
+
+```{r, results='asis'}
+
+if("time.to.reservice" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="time.to.reservice")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           LCL.EWMA = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.UPP = TRUE,
+                           alarms.SHEW.LW = TRUE)
+}
 ```
 
 
@@ -272,11 +294,30 @@ if("rereservices" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "sows", 
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of sows", 
+                            use.minimum.y = "min")
 }
 
+```
+
+```{r, results='asis'}
+
+if("rereservices" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="rereservices")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of sows",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
+}
 ```
 
 
@@ -391,9 +432,30 @@ if("services.to.farrow" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "sows",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of services to farrow",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("services.to.farrow" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="services.to.farrow")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of services to farrow",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           LCL.EWMA = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.UPP = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -412,9 +474,31 @@ if("pregnancy.length" %in% names(indicators.data)) {
                             target = NULL,
                             target.unit = NULL,  
                             ylabel = "pregnancy length (in days)",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            use.minimum.y = "min")
 }
+```
+
+```{r, results='asis'}
+
+if("pregnancy.length" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="pregnancy.length")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average pregnancy length (in days)",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           LCL.EWMA = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.UPP = TRUE,
+                           alarms.SHEW.LW = TRUE)
+}
+
 ```
 
 
@@ -435,8 +519,7 @@ if("time.to.abortion" %in% names(indicators.data)) {
                             target = NULL,
                             target.unit = NULL,
                             ylabel = "time (in days)",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            use.minimum.y = "min")
 }
 ```
 
@@ -457,9 +540,30 @@ if("days.between.farrowings" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "days",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of days",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("days.between.farrowings" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="days.between.farrowings")
+  
+  cat("  \n###", "average", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of days",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           LCL.EWMA = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.UPP = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -477,7 +581,7 @@ if("farrowings.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "farrowings")
+                ylabel = "nº of farrowings")
 }
 ```
 
@@ -495,7 +599,7 @@ if("total.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 
 ```
@@ -514,7 +618,7 @@ if("live.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 ```
 
@@ -532,7 +636,7 @@ if("dead.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 ```
 
@@ -550,7 +654,7 @@ if("small.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 ```
 
@@ -568,7 +672,7 @@ if("weak.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 ```
 
@@ -586,7 +690,7 @@ if("mummi.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "nº of piglets")
 }
 ```
 
@@ -604,7 +708,7 @@ if("perc.dead.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% piglets")
+                ylabel = "% of piglets")
 }
 ```
 
@@ -622,7 +726,7 @@ if("perc.small.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% piglets")
+                ylabel = "% of piglets")
 }
 ```
 
@@ -640,7 +744,7 @@ if("perc.weak.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% piglets")
+                ylabel = "% of piglets")
 }
 ```
 
@@ -658,7 +762,7 @@ if("perc.mummi.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% piglets")
+                ylabel = "% of piglets")
 }
 ```
 
@@ -676,9 +780,30 @@ if("total.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("total.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="total.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           LCL.EWMA = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.UPP = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -696,9 +821,28 @@ if("live.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("live.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="live.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           LCL.EWMA = TRUE,
+                           LCL.SHEW = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -716,9 +860,28 @@ if("dead.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,  
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("dead.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="dead.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -736,9 +899,28 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "% piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "% of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("perc.dead.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.dead.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average % of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -756,9 +938,28 @@ if("small.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,  
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("small.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="small.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -776,9 +977,28 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "% piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "% of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("perc.small.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.small.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average % of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -796,9 +1016,28 @@ if("weak.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("weak.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weak.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -816,9 +1055,28 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "% piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "% of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("perc.weak.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.weak.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average % of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -836,9 +1094,28 @@ if("mummi.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("mummi.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="mummi.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "zero",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
 }
 ```
 
@@ -856,11 +1133,31 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,   
-                            ylabel = "% piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "% of piglets",
+                            use.minimum.y = "min")
 }
 ```
+
+```{r, results='asis'}
+
+if("perc.mummi.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.mummi.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average % of piglets",
+                           use.minimum.y = "min",
+                           UCL.EWMA = TRUE,
+                           UCL.SHEW = TRUE,
+                           alarms.EWMA.UPP = TRUE,
+                           alarms.SHEW.UPP = TRUE)
+}
+```
+
 
 
 Health {data-navmenu="Weaning"}
@@ -933,9 +1230,28 @@ if("total.wean.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL,
-                            ylabel = "piglets",                    
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",                    
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("total.wean.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="total.wean.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           LCL.EWMA = TRUE,
+                           LCL.SHEW = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -953,9 +1269,28 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "nº of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("negdiff.weaned.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="negdiff.weaned.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average nº of piglets",
+                           use.minimum.y = "min",
+                           LCL.EWMA = TRUE,
+                           LCL.SHEW = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -973,9 +1308,28 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
                             argument.list = TRUE,
                             target = NULL,
                             target.unit = NULL, 
-                            ylabel = "% piglets",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            ylabel = "% of piglets",
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average % of piglets",
+                           use.minimum.y = "min",
+                           LCL.EWMA = TRUE,
+                           LCL.SHEW = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -994,8 +1348,27 @@ if("weight.wean.litter" %in% names(indicators.data)) {
                             target = NULL,
                             target.unit = NULL,  
                             ylabel = "weight (in kg)",
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            use.minimum.y = "min")
+}
+```
+
+```{r, results='asis'}
+
+if("weight.wean.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weight.wean.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average weight (in kg)",
+                           use.minimum.y = "min",
+                           LCL.EWMA = TRUE,
+                           LCL.SHEW = TRUE,
+                           alarms.EWMA.LW = TRUE,
+                           alarms.SHEW.LW = TRUE)
 }
 ```
 
@@ -1035,8 +1408,7 @@ if("weaning.length" %in% names(indicators.data)) {
                             target = NULL,
                             target.unit = NULL,
                             ylabel = "days",                     
-                            use.minimum.y = "min",                     
-                            barmode = 'group')
+                            use.minimum.y = "min")
 }
 ```
 
