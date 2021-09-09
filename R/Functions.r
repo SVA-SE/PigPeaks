@@ -621,7 +621,12 @@ continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicato
     
     table[which(table$date %in% d), "observed"] <- round(mean(indicator.more$indicator[indicator.more$`monday date`==d]),1)
     
+    # if (isTRUE(table[which(table$date %in% d), "observed"]==0.0)){
+    #   
+    #   table[which(table$date %in% d), "observed"] <- NA
+    # }
   }
+  
   return(table)
   
 }
@@ -799,7 +804,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
 # apply EWMA control chart ----
 
-apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`% dead born per farrowing`
+apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.continuous.to.weekly$`% dead born per farrowing`
                        evaluate.weekly.window=165,
                        baseline.weekly.window=104,
                        continuous.window=5500,

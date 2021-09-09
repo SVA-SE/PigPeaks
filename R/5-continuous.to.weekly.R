@@ -66,7 +66,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                                        median.days.production.cycles=median.days.production.cycles,
                                                        nr.production.cycles=nr.production.cycles,
                                                        range=range.indicator,
-                                                       indicator.type=indicators.type[i])
+                                                       indicator.type="W")
   }
   
   if (indicators.limits[i]=="limit.lw") {
@@ -78,7 +78,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                                        median.days.production.cycles=median.days.production.cycles,
                                                        nr.production.cycles=nr.production.cycles,
                                                        range=range.indicator,
-                                                       indicator.type=indicators.type[i])
+                                                       indicator.type="W")
   }
   
   if (indicators.limits[i]=="both") {
@@ -90,7 +90,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                                        median.days.production.cycles=median.days.production.cycles,
                                                        nr.production.cycles=nr.production.cycles,
                                                        range=range.indicator,
-                                                       indicator.type=indicators.type[i])
+                                                       indicator.type="W")
   }
 }
 
@@ -128,7 +128,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                             correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
                                             UCL.ewma=UCL.ewma,
                                             LCL.ewma=LCL.ewma,
-                                            indicator.type=indicators.type[i])
+                                            indicator.type="W")
 }
 
 
@@ -164,29 +164,5 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                             correct.baseline.LCL.shew=correct.baseline.LCL.shew,
                                             UCL.shew=UCL.shew,
                                             LCL.shew=LCL.shew,
-                                            indicator.type=indicators.type[i])
+                                            indicator.type="W")
 }
-
-
-
-# 
-# TS.barplot.pg.continuous (df.indicator = indicators.continuous.to.weekly$`piglets per farrowing`,
-#                indicator.label="indicator",
-#                show.window = 52,
-#                index.dates = index.dates.week,
-#                ylabel = 'Number of sows',
-#                xlabel = 'Week',
-#                target = NULL,
-#                target.unit = NULL,                 #c("value","vector"), defaults to vector
-#                shading.matrix = NULL,
-#                limits = NULL,
-#                UCL.EWMA = FALSE,                       #Added
-#                LCL.EWMA = FALSE,                      #Added
-#                UCL.SHEW = FALSE,                       #Added
-#                LCL.SHEW = FALSE,                      #Added
-#                alarms.EWMA.UPP = FALSE,                #Added
-#                alarms.EWMA.LW = FALSE,                #Added
-#                alarms.SHEW.UPP = FALSE,                #Added
-#                alarms.SHEW.LW = FALSE,                #Added
-#                argument.list = FALSE,
-#                group.labels=c('gilts','young','prime','mature'))

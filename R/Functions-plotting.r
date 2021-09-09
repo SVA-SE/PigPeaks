@@ -1496,9 +1496,9 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
 
 ##  For continuous to weekly time-series
 
-TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Time to reservice`
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`days between farrowings`
                                      indicator.label="indicator",
-                                     show.window = weeks.to.show,
+                                     show.window = 52,
                                      index.dates = index.dates.week,
                                      ylabel = 'Number of sows',
                                      xlabel = 'Week',
@@ -1506,37 +1506,18 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
                                      target.unit = NULL,                 #c("value","vector"), defaults to vector
                                      shading.matrix = NULL,
                                      limits = NULL,
-                                     UCL.EWMA = TRUE,                       #Added
+                                     UCL.EWMA = FALSE,                       #Added
                                      LCL.EWMA = FALSE,                      #Added
-                                     UCL.SHEW = TRUE,                       #Added
+                                     UCL.SHEW = FALSE,                       #Added
                                      LCL.SHEW = FALSE,                      #Added
-                                     alarms.EWMA.UPP = TRUE,                #Added
+                                     alarms.EWMA.UPP = FALSE,                #Added
                                      alarms.EWMA.LW = FALSE,                #Added
-                                     alarms.SHEW.UPP = TRUE,                #Added
+                                     alarms.SHEW.UPP = FALSE,                #Added
                                      alarms.SHEW.LW = FALSE,                #Added
                                      group.labels=c('gilts','young','prime','mature'),
-                                     argument.list=TRUE
+                                     use.minimum.y="min"                    #"zero"
 ){
-  if(isTRUE(argument.list)){
-    assign(c("argument.list"),chose.arguments.plot(i=i))
-    
-    indicator.label = argument.list$indicator.label
-    show.window = argument.list$show.window
-    index.dates = argument.list$index.dates
-    xlabel = argument.list$xlabel
-    shading.matrix = argument.list$shading.matrix
-    limits = argument.list$limits
-    UCL.EWMA = argument.list$UCL.EWMA
-    LCL.EWMA = argument.list$LCL.EWMA
-    UCL.SHEW = argument.list$UCL.SHEW
-    LCL.SHEW = argument.list$LCL.SHEW
-    alarms.EWMA.UPP = argument.list$alarms.EWMA.UPP
-    alarms.EWMA.LW = argument.list$alarms.EWMA.LW
-    alarms.SHEW.UPP = argument.list$alarms.SHEW.UPP
-    alarms.SHEW.LW = argument.list$alarms.SHEW.LW
-    group.labels = argument.list$group.labels
-  }
-  
+
   series <- df.indicator
   
   plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
@@ -1550,14 +1531,23 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
   y2 = data$young
   y3 = data$prime
   y4 = data$mature
-  y = y1+y2+y3+y4
+  y = data$observed
+  
+  y.all=c(y,y1,y2,y3,y4)
+  
+  min.y=0
+  if(use.minimum.y=="min")(min.y=min(y.all[y.all>0],na.rm=T)-1)
   
   #labels
+  t = "Average observed"
   t1 = group.labels[1]
   t2 = group.labels[2]
   t3 = group.labels[3]
   t4 = group.labels[4]
   
+  text=str_c(t,":",y,
+              "<br>Week:",x.week,
+              "<br>WeekMonday:",x)
   text1=str_c("Parity group:",t1,
               "<br>",indicator.label,":",y1,
               "<br>Week:",x.week,
@@ -1574,8 +1564,8 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
               "<br>",indicator.label,":",y4,
               "<br>Week:",x.week,
               "<br>WeekMonday:",x)
-  
-  
+
+
   # target.vector = target.vector[plot.range]
   
   target.vector = target
@@ -1611,6 +1601,7 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
     }
   }
   
+  color="#C8C5C8"
   color1="#91b9f9"
   color2="#7dc478"
   color3="#f7b165"
@@ -1670,7 +1661,7 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
   }
   
   plot <- plot %>%
-    add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar',yaxis="y2",
+    add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar', yaxis="y2",
               text = text1, hoverinfo = 'text') %>%
     add_trace(x=x,y = y2,name=t2,marker=list(color=color2),type='bar',yaxis="y2",
               text = text2, hoverinfo = 'text') %>%
@@ -1678,8 +1669,10 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
               text = text3, hoverinfo = 'text') %>%
     add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
               text = text4, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", autorange = TRUE),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE),
+    add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
+              text = text, hoverinfo = 'text') %>%
+    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T))),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T))),
            xaxis = list(title = xlabel, autorange = TRUE),
            barmode = 'overlay',
            legend=list(orientation="h",
