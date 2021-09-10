@@ -1,4 +1,4 @@
-packages <- c("ISOweek", "caTools", "lubridate", "abind", "qcc", "dplyr")
+packages <- c("ISOweek", "caTools", "lubridate", "abind", "qcc", "dplyr", "tibbletime")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(ISOweek)
@@ -7,6 +7,7 @@ require(lubridate)
 require(abind)
 require(qcc)
 require(dplyr)
+require(tibbletime)
 
 # background functions ----
 
@@ -1107,3 +1108,44 @@ shew_apply <- function (df.indicator=df.indicator,
   return(df.indicator)
   }
 
+
+
+# count alarms ----
+
+count.ewma.alarms <- function (df.indicator=df.indicator,   #df.indicator=indicators.continuous.to.weekly$`Time to reservice`
+                               years.to.see=3
+){
+  
+  last.date <- last(df.indicator$date)
+  
+  year.to.start <- year(ymd(last.date) - years(years.to.see)) + 1
+  year.to.end <- year(last.date)
+  
+  alarms <- matrix(NA, ncol = 52, nrow = years.to.see)
+  year.count = 0
+  
+  for (y in year.to.start:year.to.end) {   #y=2018
+    
+    year.count = year.count + 1
+    
+    year.alarm <- df.indicator[format(as.Date(df.indicator$date),"%Y")==y, "alarms EWMA"]
+    
+    if (length(year.alarm)<52) {
+      
+      year.alarm <- c(year.alarm, rep(NA, 52-length(year.alarm)))
+    }
+    
+    if (length(year.alarm)>52) {
+      
+      year.alarm <- c(year.alarm[1:51], sum(year.alarm[52:length(year.alarm)]))
+    }
+    
+    alarms[year.count,] <- year.alarm
+  }
+  
+  years.name <- c(as.character(year.to.start:year.to.end))
+  
+  output <- list(alarms, years.name)
+  
+  return(output)
+}
