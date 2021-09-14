@@ -264,28 +264,6 @@ if("time.to.reservice" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="time.to.reservice")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
-  
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average time (in days)",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           LCL.EWMA = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.UPP = TRUE,
-                           alarms.SHEW.LW = TRUE)
-}
-```
-
-```{r, results='asis'}
-
-if("time.to.reservice" %in% names(indicators.data)) {
-  
-  i = which(names(indicators.data)=="time.to.reservice")
-  
     cat("  \n###", indicators.labels[i],", alarms per year","  \n")
   
 plot_ly(alpha=0.8)%>%
@@ -305,6 +283,60 @@ plot_ly(alpha=0.8)%>%
          yaxis = list(dtick = 1))
 
 }
+```
+
+
+```{r, results='asis'}
+
+if("time.to.reservice" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="time.to.reservice")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           barmode='overlay')
+}
+```
+
+```{r, results='asis'}
+
+if("time.to.reservice" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="time.to.reservice")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL,  
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           barmode='group')
+}
+```
+
+```{r, results='asis'}
+
+if("time.to.reservice" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="time.to.reservice")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.signals.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                                   target = NULL,
+                                   target.unit = NULL, 
+                                   ylabel = "average time (in days)",
+                                   use.minimum.y = "min"
+)
+}
+
 ```
 
 
@@ -339,11 +371,7 @@ if("rereservices" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of sows",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -503,13 +531,7 @@ if("services.to.farrow" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of services to farrow",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           LCL.EWMA = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.UPP = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -571,13 +593,7 @@ if("pregnancy.length" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average pregnancy length (in days)",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           LCL.EWMA = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.UPP = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 
 ```
@@ -665,13 +681,7 @@ if("days.between.farrowings" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of days",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           LCL.EWMA = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.UPP = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -932,13 +942,7 @@ if("total.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           LCL.EWMA = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.UPP = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1000,11 +1004,7 @@ if("live.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           LCL.EWMA = TRUE,
-                           LCL.SHEW = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1066,11 +1066,7 @@ if("dead.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1132,11 +1128,7 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average % of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1198,11 +1190,7 @@ if("small.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1264,11 +1252,7 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average % of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1330,11 +1314,7 @@ if("weak.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1396,11 +1376,7 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average % of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1462,11 +1438,7 @@ if("mummi.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "zero",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "zero")
 }
 ```
 
@@ -1528,11 +1500,7 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average % of piglets",
-                           use.minimum.y = "min",
-                           UCL.EWMA = TRUE,
-                           UCL.SHEW = TRUE,
-                           alarms.EWMA.UPP = TRUE,
-                           alarms.SHEW.UPP = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1651,11 +1619,7 @@ if("total.wean.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           LCL.EWMA = TRUE,
-                           LCL.SHEW = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1717,11 +1681,7 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average nº of piglets",
-                           use.minimum.y = "min",
-                           LCL.EWMA = TRUE,
-                           LCL.SHEW = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1783,11 +1743,7 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average % of piglets",
-                           use.minimum.y = "min",
-                           LCL.EWMA = TRUE,
-                           LCL.SHEW = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
@@ -1849,11 +1805,7 @@ if("weight.wean.litter" %in% names(indicators.data)) {
                            target = NULL,
                            target.unit = NULL,  
                            ylabel = "average weight (in kg)",
-                           use.minimum.y = "min",
-                           LCL.EWMA = TRUE,
-                           LCL.SHEW = TRUE,
-                           alarms.EWMA.LW = TRUE,
-                           alarms.SHEW.LW = TRUE)
+                           use.minimum.y = "min")
 }
 ```
 
