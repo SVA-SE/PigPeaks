@@ -553,8 +553,8 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 ## continuous indicators to weekly
 
 
-continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicators.time.series$`Time to reservice`
-                                 #indicator=indicators.data$time.to.reservice
+continuous.to.weekly <- function(df.indicator=df.indicator
+                                 #df.indicator=indicators.time.series$`Time to reservice`
 ){
   
   
@@ -568,7 +568,7 @@ continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicato
     
     parity.count = parity.count+1
     
-    assign(paste0(noquote(l)), c(rep(0, length(range))))
+    assign(paste0(noquote(l)), c(rep(NA, length(range))))
     
     if (parity.count==1){
       parity <- noquote(l)
@@ -578,32 +578,45 @@ continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicato
   }
   
   observed <- c(rep(NA, length(range)))
-  baseline <- c(rep(NA, length(range)))
-  UCL.ewma <- c(rep(NA, length(range)))
-  LCL.ewma <- c(rep(NA, length(range)))
-  UCL.shew <- c(rep(NA, length(range)))
-  LCL.shew <- c(rep(NA, length(range)))
-  alarms.ewma <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
-  alarms.shew <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
+  n.events.week <- c(rep(NA, length(range)))
+  n.alarms.1 <- c(rep(NA, length(range)))
+  n.alarms.2 <- c(rep(NA, length(range)))
+  n.alarms.3 <- c(rep(NA, length(range)))
   
-  table <- data.frame(date, mget(parity), observed, baseline,
-                      UCL.ewma, LCL.ewma, alarms.ewma,
-                      UCL.shew, LCL.shew, alarms.shew)
+  table <- data.frame(date, mget(parity), observed, n.events.week, 
+                      n.alarms.1, n.alarms.2, n.alarms.3)
   
-  colnames(table) <- c("date", parity,"observed", "baseline",
-                       "UCL EWMA", "LCL EWMA", "alarms EWMA",
-                       "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
+  colnames(table) <- c("date", parity,"observed", "nº events",
+                       "nº alarms 1/-1", "nº alarms 2/-2","nº alarms 3/-3")
   
+  parity.name <- parity.group2$group.name[df.indicator[, "parity"]]
+  monday.date <- lastmon(df.indicator[,"date"])
+  alarms.ewma <- df.indicator$`alarms EWMA`
+  alarms.shew <- df.indicator$`alarms Shewhart`
   
-  parity.name <- parity.group2$group.name[indicator[, "parity"]]
-  monday.date <- lastmon(indicator[,"date"])
+  indicator.more <- data.frame(df.indicator[, "observed"], parity.name, df.indicator[, "sowINDEX"],
+                               as.Date(df.indicator[,"date"], origin="1970-01-01"), monday.date,
+                               alarms.ewma, alarms.shew)
   
-  indicator.more <- data.frame(indicator[, "indicator"], parity.name, indicator[, "date"], indicator[, "sowINDEX"],
-                               as.Date(indicator[,"date"],origin="1970-01-01"), monday.date)
-  colnames(indicator.more) <- c("indicator", "parity", "date", "sowINDEX", "date format", "monday date")
+  colnames(indicator.more) <- c("indicator", "parity", "sowINDEX", "date", "monday date",
+                                "alarms EWMA", "alarms Shewhart")
   
   
   for (d in table$date){
+    
+    table[which(table$date %in% d), "nº events"] <- sum(match(indicator.more$`monday date`,d), na.rm=T)
+    
+    table[which(table$date %in% d), "nº alarms 1/-1"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==1 | indicator.more[, "alarms EWMA"]==-1)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==1 | indicator.more[, "alarms Shewhart"]==-1)]))
+    
+    table[which(table$date %in% d), "nº alarms 2/-2"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==2 | indicator.more[, "alarms EWMA"]==-2)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==2 | indicator.more[, "alarms Shewhart"]==-2)]))
+    
+    table[which(table$date %in% d), "nº alarms 3/-3"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==3 | indicator.more[, "alarms EWMA"]==-3)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==3 | indicator.more[, "alarms Shewhart"]==-3)]))
     
     if (d %in% indicator.more$`monday date`){  #d=as.Date("2010-12-27")
       #d=as.Date("2011-04-11")
@@ -612,8 +625,8 @@ continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicato
       
       for (p in unique(as.character(indicator.more$parity[indicator.more$`monday date`==d]))) { #p="prime"
         
-        table[which(table$date %in% d), p] <- table[which(table$date %in% d), p] +
-          round(mean(indicator.more$indicator[indicator.more$`monday date`==d & indicator.more$parity==p]),1)
+        table[which(table$date %in% d), p] <- sum(table[which(table$date %in% d), p],
+          round(mean(indicator.more$indicator[indicator.more$`monday date`==d & indicator.more$parity==p], na.rm =T),1), na.rm = T)
         
       }
     }else{
@@ -621,11 +634,7 @@ continuous.to.weekly <- function(indicator=indicator    #df.indicator = indicato
     }
     
     table[which(table$date %in% d), "observed"] <- round(mean(indicator.more$indicator[indicator.more$`monday date`==d]),1)
-    
-    # if (isTRUE(table[which(table$date %in% d), "observed"]==0.0)){
-    #   
-    #   table[which(table$date %in% d), "observed"] <- NA
-    # }
+
   }
   
   return(table)
