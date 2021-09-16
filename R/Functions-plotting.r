@@ -1873,8 +1873,7 @@ TS.barplot.pg.signals.continuous <- function(df.indicator = df.indicator,   #df.
 TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.indicator = indicators.continuous.to.weekly$`Time to reservice`
                                          years.to.see = 3,
                                          index.dates = index.dates.week,
-                                         ylabel = 'Number of sows',
-                                         xlabel = 'Week'
+                                         limits = "both"
 ){
   
   series <- df.indicator
@@ -1905,21 +1904,56 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
   x.week.year=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
   x.week=index.dates$week[plot.range]
   
-  
-  y = data$`nº events`
-  y1 = data$`nº alarms 1/-1`
-  y2 = data$`nº alarms 2/-2`
-  y3 = data$`nº alarms 3/-3`
+  if (limits=="both") {
+  y = data$`no events`
+  y1 = data$`no alarms 1/-1`
+  y2 = data$`no alarms 2/-2`
+  y3 = data$`no alarms 3/-3`
 
   y.all=c(y,y1,y2,y3)
   
   #labels
-  t = "Nº of events"
-  t1 = "Nº of alarms 1/-1"
-  t2 = "Nº of alarms 2/-2"
-  t3 = "Nº of alarms 3/-3"
+  t = "No of events"
+  t1 = "No of alarms 1/-1"
+  t2 = "No of alarms 2/-2"
+  t3 = "No of alarms 3/-3"
   
   t.all=c(t,t1,t2,t3)
+  }
+  
+  if (limits=="limit.upp") {
+    y = data$`no events`
+    y1 = data$`no alarms 1`
+    y2 = data$`no alarms 2`
+    y3 = data$`no alarms 3`
+    
+    y.all=c(y,y1,y2,y3)
+    
+    #labels
+    t = "No of events"
+    t1 = "No of alarms 1"
+    t2 = "No of alarms 2"
+    t3 = "No of alarms 3"
+    
+    t.all=c(t,t1,t2,t3)
+  }
+  
+  if (limits=="limit.lw") {
+    y = data$`no events`
+    y1 = data$`no alarms -1`
+    y2 = data$`no alarms -2`
+    y3 = data$`no alarms -3`
+    
+    y.all=c(y,y1,y2,y3)
+    
+    #labels
+    t = "No of events"
+    t1 = "No of alarms -1"
+    t2 = "No of alarms -2"
+    t3 = "No of alarms -3"
+    
+    t.all=c(t,t1,t2,t3)
+  }
 
   text=str_c(t,":",y,
              "<br>Week:",x.week.year,
@@ -1957,8 +1991,8 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
               text = text3, hoverinfo = 'text', legendgroup="group3") %>%
     layout(yaxis = list(side = 'right', title = "", range = c(0, max(y,na.rm=T))),
            yaxis2 = list(side = 'left', title = i, overlaying = "y2", range = c(0, max(y,na.rm=T))),
-           xaxis = list(title = xlabel, autorange = TRUE),
-           barmode = 'overlay', legend=list(orientation="h",
+           xaxis = list(title = "Week", autorange = TRUE),
+           barmode = 'stack', legend=list(orientation="h",
                                             x=0.25,y=max(y,na.rm=T),
                                             traceorder='normal'))
 
@@ -1974,9 +2008,10 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
                     titleY = TRUE,
                     margin = 0.05,
                     which_layout = 1) %>% 
-    layout(xaxis=list(anchor="y6"))
+    layout(xaxis=list(anchor=paste0("y",2*years.to.see)))
 
   
   return(output) 
   
 }
+

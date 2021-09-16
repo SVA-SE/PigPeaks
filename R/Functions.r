@@ -553,8 +553,9 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 ## continuous indicators to weekly
 
 
-continuous.to.weekly <- function(df.indicator=df.indicator
-                                 #df.indicator=indicators.time.series$`Time to reservice`
+continuous.to.weekly <- function(df.indicator=df.indicator,
+                                 limits="both"
+                                #df.indicator=indicators.time.series$`live born per farrowing`
 ){
   
   
@@ -586,8 +587,20 @@ continuous.to.weekly <- function(df.indicator=df.indicator
   table <- data.frame(date, mget(parity), observed, n.events.week, 
                       n.alarms.1, n.alarms.2, n.alarms.3)
   
-  colnames(table) <- c("date", parity,"observed", "nº events",
-                       "nº alarms 1/-1", "nº alarms 2/-2","nº alarms 3/-3")
+  if (limits=="both") {
+  colnames(table) <- c("date", parity,"observed", "no events",
+                       "no alarms 1/-1", "no alarms 2/-2","no alarms 3/-3")
+  }
+  
+  if (limits=="limit.upp") {
+    colnames(table) <- c("date", parity,"observed", "no events",
+                         "no alarms 1", "no alarms 2","no alarms 3")
+  }
+  
+  if (limits=="limit.lw") {
+    colnames(table) <- c("date", parity,"observed", "no events",
+                         "no alarms -1", "no alarms -2","no alarms -3")
+  }
   
   parity.name <- parity.group2$group.name[df.indicator[, "parity"]]
   monday.date <- lastmon(df.indicator[,"date"])
@@ -604,24 +617,59 @@ continuous.to.weekly <- function(df.indicator=df.indicator
   
   for (d in table$date){
     
-    table[which(table$date %in% d), "nº events"] <- sum(match(indicator.more$`monday date`,d), na.rm=T)
+    table[which(table$date %in% d), "no events"] <- sum(match(indicator.more$`monday date`,d), na.rm=T)
     
-    table[which(table$date %in% d), "nº alarms 1/-1"] <- 
-      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==1 | indicator.more[, "alarms EWMA"]==-1)]),
-          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==1 | indicator.more[, "alarms Shewhart"]==-1)]))
+    if (limits=="both") {
+
+    table[which(table$date %in% d), "no alarms 1/-1"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==1 | indicator.more[, "alarms EWMA"]==-1)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==1 | indicator.more[, "alarms Shewhart"]==-1)]))
     
-    table[which(table$date %in% d), "nº alarms 2/-2"] <- 
-      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==2 | indicator.more[, "alarms EWMA"]==-2)]),
-          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==2 | indicator.more[, "alarms Shewhart"]==-2)]))
+    table[which(table$date %in% d), "no alarms 2/-2"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==2 | indicator.more[, "alarms EWMA"]==-2)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==2 | indicator.more[, "alarms Shewhart"]==-2)]))
     
-    table[which(table$date %in% d), "nº alarms 3/-3"] <- 
-      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms EWMA"]==3 | indicator.more[, "alarms EWMA"]==-3)]),
-          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & (indicator.more[, "alarms Shewhart"]==3 | indicator.more[, "alarms Shewhart"]==-3)]))
+    table[which(table$date %in% d), "no alarms 3/-3"] <- 
+      sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==3 | indicator.more[, "alarms EWMA"]==-3)]),
+          length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==3 | indicator.more[, "alarms Shewhart"]==-3)]))
+    }
+    
+    if (limits=="limit.upp") {
+      
+      table[which(table$date %in% d), "no alarms 1"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==1)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==1)]))
+      
+      table[which(table$date %in% d), "no alarms 2"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==2)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==2)]))
+      
+      table[which(table$date %in% d), "no alarms 3"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==3)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==3)]))
+    }
+    
+    if (limits=="limit.lw") {
+      
+      table[which(table$date %in% d), "no alarms -1"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==-1)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==-1)]))
+      
+      table[which(table$date %in% d), "no alarms -2"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==-2)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==-2)]))
+      
+      table[which(table$date %in% d), "no alarms -3"] <- 
+        sum(length(indicator.more$`alarms EWMA`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms EWMA"]) & (indicator.more[, "alarms EWMA"]==-3)]),
+            length(indicator.more$`alarms Shewhart`[(indicator.more[,"monday date"]==d) & !is.na(indicator.more[, "alarms Shewhart"]) & (indicator.more[, "alarms Shewhart"]==-3)]))
+    }
     
     if (d %in% indicator.more$`monday date`){  #d=as.Date("2010-12-27")
       #d=as.Date("2011-04-11")
       #d=as.Date("2016-01-04")
       #d=as.Date("2013-01-14")
+      #d=as.Date("2015-06-15")
+      
       
       for (p in unique(as.character(indicator.more$parity[indicator.more$`monday date`==d]))) { #p="prime"
         

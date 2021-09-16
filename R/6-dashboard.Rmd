@@ -20,6 +20,8 @@ output:
 
 ```{r message=FALSE, warning=FALSE}
 library(flexdashboard)
+library(shiny)
+library(dplyr)
 library(plotly)
 library(ggplot2)
 library(stringr)
@@ -146,9 +148,12 @@ return(arguments)
   
 ```
 
-# Overview {.sidebar}
+# Overview
+
+# Overview {.sidebar data-width=200}
 
 ```{r}
+
 
 ```
 
@@ -264,24 +269,11 @@ if("time.to.reservice" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="time.to.reservice")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue", "red")),
-    colorbar=list(tickvals = c(-3:3), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -381,24 +373,11 @@ if("rereservices" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="rereservices")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -541,23 +520,11 @@ if("services.to.farrow" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="services.to.farrow")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue", "red")),
-    colorbar=list(tickvals = c(-3:3), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 
 }
 ```
@@ -604,23 +571,11 @@ if("pregnancy.length" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="pregnancy.length")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue", "red")),
-    colorbar=list(tickvals = c(-3:3), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 
 }
 ```
@@ -691,24 +646,11 @@ if("days.between.farrowings" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="days.between.farrowings")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue", "red")),
-    colorbar=list(tickvals = c(-3:3), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -952,24 +894,11 @@ if("total.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue", "red")),
-    colorbar=list(tickvals = c(-3:3), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1014,24 +943,11 @@ if("live.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="live.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue")),
-    colorbar=list(tickvals = c(-3:0), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 0,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1076,24 +992,11 @@ if("dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="dead.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1138,24 +1041,11 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.dead.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1200,24 +1090,11 @@ if("small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="small.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1262,24 +1139,11 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.small.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1324,24 +1188,11 @@ if("weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weak.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1386,24 +1237,11 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.weak.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1448,24 +1286,11 @@ if("mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="mummi.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1510,24 +1335,11 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.mummi.born.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("lightblue", "red")),
-    colorbar=list(tickvals = c(0:3), len = 0.7),
-    zauto = FALSE, zmin = 0, zmax = 3,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                              years.to.see = 3,
+                              limits=indicators.limits[[i]])
 }
 ```
 
@@ -1629,24 +1441,11 @@ if("total.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.wean.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue")),
-    colorbar=list(tickvals = c(-3:0), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 0,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1691,24 +1490,11 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="negdiff.weaned.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue")),
-    colorbar=list(tickvals = c(-3:0), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 0,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1753,24 +1539,11 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue")),
-    colorbar=list(tickvals = c(-3:0), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 0,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 
@@ -1815,24 +1588,11 @@ if("weight.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weight.wean.litter")
   
-    cat("  \n###", indicators.labels[i],", alarms per year","  \n")
+  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-plot_ly(alpha=0.8)%>%
-  add_heatmap(
-    type = "heatmap",
-    y=count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                        years.to.see = 3)[[2]],
-    z = count.ewma.alarms(df.indicator = indicators.continuous.to.weekly[[i]],
-                          years.to.see=3)[[1]],
-    x=c(1:52),
-    colors = colorRamp(c("purple", "lightblue")),
-    colorbar=list(tickvals = c(-3:0), len = 0.7),
-    zauto = FALSE, zmin = -3, zmax = 0,
-    ygap=7,
-    showscale=TRUE) %>% 
-  layout(xaxis = list(dtick = 4),
-         yaxis = list(dtick = 1))
-
+  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                               years.to.see = 3,
+                               limits=indicators.limits[[i]])
 }
 ```
 

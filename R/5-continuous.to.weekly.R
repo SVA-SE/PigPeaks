@@ -46,7 +46,8 @@ range.weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.date
 
 for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
   
-  indicators.continuous.to.weekly[[i]] <- continuous.to.weekly(df.indicator=indicators.time.series[[i]]
+  indicators.continuous.to.weekly[[i]] <- continuous.to.weekly(df.indicator=indicators.time.series[[i]],
+                                                               limits=indicators.limits[[i]]
                                                                )
 }
 
