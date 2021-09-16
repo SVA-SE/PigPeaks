@@ -82,6 +82,7 @@ weeks.to.show <- 78
 nonTS.to.show <- 100
 #days.ago.nonTS <- 114
 group.window <- 114
+years.to.see <- 3
 
 indicator.label = "indicator"
 target = NULL
