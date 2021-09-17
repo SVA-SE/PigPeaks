@@ -79,7 +79,7 @@ require(RColorBrewer)
     plot <- plot %>%
       add_trace(x=x,y = y,type='bar', name=series.label,
                 text = text, hoverinfo = 'text') %>%
-      layout(yaxis = list(title = ylabel, overlaying = "y", range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T))), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
+      layout(yaxis = list(title = ylabel, overlaying = "y", range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)), tickformat=',d'), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
              xaxis = list(title = xlabel),
              barmode = 'stack',
              legend=list(orientation="h",
@@ -146,124 +146,157 @@ require(RColorBrewer)
     
     if(isTRUE(alarms.EWMA.UPP)){          #Added
       
-      for(a in 1:length(alarms.ewma)) {           
-          if(alarms.ewma[a]==1){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-          }
-          if(alarms.ewma[a]==2){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-          }
-          if(alarms.ewma[a]==3){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-          }
+      for(a in 1:length(alarms.ewma)) {
+        
+        if (a==first(which(alarms.ewma>0)) & !is.na(first(which(alarms.ewma>0)))){
+          
+          show_legend <- TRUE
+        }else{
+          show_legend <- FALSE
+        }
+        
+        if(alarms.ewma[a]==1){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                        name ='Alarm EWMA UCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.ewma[a]==2){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                        name ='Alarm EWMA UCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.ewma[a]==3){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                        name ='Alarm EWMA UCL',
+                        showlegend = show_legend)
+        }
       }
     }
     
-        if (isTRUE(alarms.EWMA.LW)) {
+    if(isTRUE(alarms.EWMA.LW)){          #Added
+      
+      for(a in 1:length(alarms.ewma)) {
+        
+        if (a==first(which(alarms.ewma<0)) & !is.na(first(which(alarms.ewma<0)))){
           
-          for(a in 1:length(alarms.ewma)) {           
-          if(alarms.ewma[a]==-1){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-          }
-          if(alarms.ewma[a]==-2){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-          }
-          if(alarms.ewma[a]==-3){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                          text = str_c('Score:', alarms.ewma[a]),
-                          name ='Alarm EWMA',
-                          showlegend = FALSE)
-            
-          }
+          show_legend <- TRUE
+        }else{
+          show_legend <- FALSE
         }
-      } 
+        
+        if(alarms.ewma[a]==-1){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                        name ='Alarm EWMA LCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.ewma[a]==-2){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                        name ='Alarm EWMA LCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.ewma[a]==-3){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                        text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                        name ='Alarm EWMA LCL',
+                        showlegend = show_legend)
+          
+        }
+      }
+    }
     
     if(isTRUE(alarms.SHEW.UPP)){          #Added
       
       for(a in 1:length(alarms.shew)) {
-          if(alarms.shew[a]==1){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-          }
-          if(alarms.shew[a]==2){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-          }
-          if(alarms.shew[a]==3){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-          }
-      }
-    }
-        if (isTRUE(alarms.SHEW.LW)) {
+        
+        if (a==first(which(alarms.shew>0)) & !is.na(first(which(alarms.shew>0)))){
           
-          for(a in 1:length(alarms.shew)) {
-          if(alarms.shew[a]==-1){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-          }
-          if(alarms.shew[a]==-2){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-          }
-          if(alarms.shew[a]==-3){
-            plot <- plot %>%
-              add_markers(x = x[a], y = y[a],
-                          marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                          text = str_c('Score:', alarms.shew[a]),
-                          name ='Alarm Shewhart',
-                          showlegend = FALSE)
-            
-          }
+          show_legend <- TRUE
+        }else{
+          show_legend <- FALSE
+        }
+        
+        if(alarms.shew[a]==1){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                        name ='Alarm Shewhart UCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.shew[a]==2){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                        name ='Alarm Shewhart UCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.shew[a]==3){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                        name ='Alarm Shewhart UCL',
+                        showlegend = show_legend)
         }
       }
+    }
+    
+    if(isTRUE(alarms.SHEW.LW)){          #Added
+      
+      for(a in 1:length(alarms.shew)) {
+        
+        if (a==first(which(alarms.shew<0)) & !is.na(first(which(alarms.shew<0)))){
+          
+          show_legend <- TRUE
+        }else{
+          show_legend <- FALSE
+        }
+        
+        if(alarms.shew[a]==-1){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                        name ='Alarm Shewhart LCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.shew[a]==-2){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                        name ='Alarm Shewhart LCL',
+                        showlegend = show_legend)
+        }
+        if(alarms.shew[a]==-3){
+          plot <- plot %>%
+            add_markers(x = x[a], y = y[a],
+                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                        text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                        name ='Alarm Shewhart LCL',
+                        showlegend = show_legend)
+          
+        }
+      }
+    }
     
     return(plot)    
   }
@@ -344,7 +377,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   plot <- plot %>%
     add_trace(x=x,y = y, type='bar', name=series.label,
               text = text, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'left', title = ylabel, range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T))), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T))),
+    layout(yaxis = list(side = 'left', title = ylabel, range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)), tickformat=',d'), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T))),
            xaxis = list(title = xlabel),
            barmode = 'group',
            legend=list(orientation="h",
@@ -432,124 +465,156 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   if(isTRUE(alarms.EWMA.UPP)){          #Added
     
     for(a in 1:length(alarms.ewma)) {
-        if(alarms.ewma[a]==1){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-        }
-        if(alarms.ewma[a]==2){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-        }
-        if(alarms.ewma[a]==3){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-        }
+      
+      if (a==first(which(alarms.ewma>0)) & !is.na(first(which(alarms.ewma>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
+      if(alarms.ewma[a]==1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.ewma[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.ewma[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
+      }
     }
   }
   
   if(isTRUE(alarms.EWMA.LW)){          #Added
     
-        for(a in 1:length(alarms.ewma)) {
-        if(alarms.ewma[a]==-1){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-        }
-        if(alarms.ewma[a]==-2){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-        }
-        if(alarms.ewma[a]==-3){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                        text = str_c('Score:', alarms.ewma[a]),
-                        name ='Alarm EWMA',
-                        showlegend = FALSE)
-          
-        }
+    for(a in 1:length(alarms.ewma)) {
+      
+      if (a==first(which(alarms.ewma<0)) & !is.na(first(which(alarms.ewma<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
+      if(alarms.ewma[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.ewma[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.ewma[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
+        
       }
     }
- 
+  }
+  
   if(isTRUE(alarms.SHEW.UPP)){          #Added
     
     for(a in 1:length(alarms.shew)) {
-        if(alarms.shew[a]==1){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-        }
-        if(alarms.shew[a]==2){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-        }
-        if(alarms.shew[a]==3){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-        }
+      
+      if (a==first(which(alarms.shew>0)) & !is.na(first(which(alarms.shew>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
+      if(alarms.shew[a]==1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.shew[a]==2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.shew[a]==3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
+      }
     }
   }
   
   if(isTRUE(alarms.SHEW.LW)){          #Added
     
     for(a in 1:length(alarms.shew)) {
-        if(alarms.shew[a]==-1){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-        }
-        if(alarms.shew[a]==-2){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-        }
-        if(alarms.shew[a]==-3){
-          plot <- plot %>%
-            add_markers(x = x[a], y = y[a],
-                        marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                        text = str_c('Score:', alarms.shew[a]),
-                        name ='Alarm Shewhart',
-                        showlegend = FALSE)
-          
-        }
+      
+      if (a==first(which(alarms.shew<0)) & !is.na(first(which(alarms.shew<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
+      if(alarms.shew[a]==-1){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.shew[a]==-2){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
+      }
+      if(alarms.shew[a]==-3){
+        plot <- plot %>%
+          add_markers(x = x[a], y = y[a],
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
+        
       }
     }
+  }
   
   return(plot)    
 }
@@ -718,8 +783,8 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
               text = text5, hoverinfo = 'text') %>%
     add_trace(x=x,y = y6,name=t6,marker=list(color=color6),type='bar',yaxis="y2",
               text = text6, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", range = c(min(data,na.rm=T), max(y,na.rm=T))),
-           yaxis2 = list(side = 'left', title = ylabel,overlaying = "y",range = c(min(data,na.rm=T), max(y,na.rm=T))),
+    layout(yaxis = list(side = 'right', title = "", range = c(min(data,na.rm=T), max(y,na.rm=T)), tickformat=',d'),
+           yaxis2 = list(side = 'left', title = ylabel,overlaying = "y",range = c(min(data,na.rm=T), max(y,na.rm=T)), tickformat=',d'),
            xaxis = list(title = xlabel),
            barmode = 'stack',
            legend=list(orientation="h",
@@ -747,7 +812,7 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
 
 ##  For weekly time-series
 
-TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`Time to reservice`
+TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`abortions per week`
                           indicator.label="indicator",
                           show.window = weeks.to.show,
                           index.dates = index.dates.week,
@@ -930,8 +995,8 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
               text = text3, hoverinfo = 'text') %>%
     add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
               text = text4, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", autorange = TRUE),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE),
+    layout(yaxis = list(side = 'right', title = "", autorange = TRUE, tickformat=',d'),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE, tickformat=',d'),
            xaxis = list(title = xlabel, autorange = TRUE),
            barmode = 'stack',
            legend=list(orientation="h",
@@ -996,120 +1061,153 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
   
   if(isTRUE(alarms.EWMA.UPP)){          #Added
     
-    for(a in 1:length(alarms.ewma)) {           
+    for(a in 1:length(alarms.ewma)) {
+      
+      if (a==first(which(alarms.ewma>0)) & !is.na(first(which(alarms.ewma>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
     }
   }
   
-  if (isTRUE(alarms.EWMA.LW)) {
+  if(isTRUE(alarms.EWMA.LW)){          #Added
     
-    for(a in 1:length(alarms.ewma)) {           
+    for(a in 1:length(alarms.ewma)) {
+      
+      if (a==first(which(alarms.ewma<0)) & !is.na(first(which(alarms.ewma<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==-2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==-3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
                       marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
         
       }
     }
-  } 
+  }
   
   if(isTRUE(alarms.SHEW.UPP)){          #Added
     
     for(a in 1:length(alarms.shew)) {
+      
+      if (a==first(which(alarms.shew>0)) & !is.na(first(which(alarms.shew>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
     }
   }
-  if (isTRUE(alarms.SHEW.LW)) {
+  
+  if(isTRUE(alarms.SHEW.LW)){          #Added
     
     for(a in 1:length(alarms.shew)) {
+      
+      if (a==first(which(alarms.shew<0)) & !is.na(first(which(alarms.shew<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==-2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==-3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
-                      marker = list(symbol ='asterisk-open',opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
         
       }
     }
@@ -1122,7 +1220,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
 
 ##  For continuous time-series
 
-nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`days between farrowings`
+  nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`Time to reservice`
                                       indicator.label = indicator.label,
                                       series.line = NULL,
                                       show.window = nonTS.to.show,                #always as number of events
@@ -1269,8 +1367,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
         name=y2label,yaxis="y2",
         line=list(color = 'black'), showlegend = TRUE
       )%>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
-             yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range,showgrid = FALSE),
+      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T)), tickformat=',d'),
+             yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range, showgrid = FALSE, tickformat=',d'),
              xaxis = list(title = xlabel),
              barmode = barmode,
              legend=list(orientation="h",
@@ -1370,29 +1468,37 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   if(isTRUE(alarms.EWMA.UPP)){          #Added
     
     for(a in 1:length(alarms.ewma)) {
+      
+      if (a==first(which(alarms.ewma>0)) & !is.na(first(which(alarms.ewma>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
+                      name ='Alarm EWMA UCL',
+                      showlegend = show_legend)
       }
     }
   }
@@ -1400,29 +1506,37 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   if(isTRUE(alarms.EWMA.LW)){          #Added
     
     for(a in 1:length(alarms.ewma)) {
+      
+      if (a==first(which(alarms.ewma<0)) & !is.na(first(which(alarms.ewma<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==-2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
       }
       if(alarms.ewma[a]==-3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list(opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.ewma[a]),
-                      name ='Alarm EWMA',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.ewma[a]), legendgroup="group1",
+                      name ='Alarm EWMA LCL',
+                      showlegend = show_legend)
         
       }
     }
@@ -1431,29 +1545,37 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   if(isTRUE(alarms.SHEW.UPP)){          #Added
     
     for(a in 1:length(alarms.shew)) {
+      
+      if (a==first(which(alarms.shew>0)) & !is.na(first(which(alarms.shew>0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#ff0000', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
+                      name ='Alarm Shewhart UCL',
+                      showlegend = show_legend)
       }
     }
   }
@@ -1461,29 +1583,37 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   if(isTRUE(alarms.SHEW.LW)){          #Added
     
     for(a in 1:length(alarms.shew)) {
+      
+      if (a==first(which(alarms.shew<0)) & !is.na(first(which(alarms.shew<0)))){
+        
+        show_legend <- TRUE
+      }else{
+        show_legend <- FALSE
+      }
+      
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080',  size = 10, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==-2){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 20, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
       }
       if(alarms.shew[a]==-3){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
                       marker = list( symbol ='asterisk-open', opacity = 0.5, color = '#800080', size = 30, sizemode = 'area'),
-                      text = str_c('Score:', alarms.shew[a]),
-                      name ='Alarm Shewhart',
-                      showlegend = FALSE)
+                      text = str_c('Score:', alarms.shew[a]), legendgroup="group3",
+                      name ='Alarm Shewhart LCL',
+                      showlegend = show_legend)
         
       }
     }
@@ -1496,7 +1626,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
 
 ##  For continuous to weekly time-series
 
-TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indicator = indicators.continuous.to.weekly$`days between farrowings`
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indicator = indicators.continuous.to.weekly$`dead born per farrowing`
                                      indicator.label="Indicator",
                                      show.window = 52,
                                      index.dates = index.dates.week,
@@ -1529,7 +1659,7 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indica
   y.all=c(y,y1,y2,y3,y4)
   
   min.y=0
-  if(use.minimum.y=="min")(min.y=min(y.all[y.all>0],na.rm=T)-1)
+  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
   
   #labels
   t = "Average observed"
@@ -1659,8 +1789,8 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indica
               text = text4, hoverinfo = 'text') %>%
     add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
               text = text, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1)),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1)),
+    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
            xaxis = list(title = xlabel, autorange = TRUE),
            barmode = barmode,
            legend=list(orientation="h",
@@ -1716,7 +1846,7 @@ TS.barplot.pg.signals.continuous <- function(df.indicator = df.indicator,   #df.
   y.all=c(y,y1,y2,y3,y4)
   
   min.y=0
-  if(use.minimum.y=="min")(min.y=min(y.all[y.all>0],na.rm=T)-1)
+  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
   
   #labels
   t = "Average observed"
@@ -1846,8 +1976,8 @@ TS.barplot.pg.signals.continuous <- function(df.indicator = df.indicator,   #df.
                 yaxis="y2",text = text4, hoverinfo = 'text') %>%
     add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
               text = text, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1)),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1)),
+    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
            xaxis = list(title = xlabel, autorange = TRUE),
            legend=list(orientation="h",
                        x=0.25,y=max(y,na.rm=T),
@@ -1989,8 +2119,8 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
               text = text2, hoverinfo = 'text', legendgroup="group2") %>%
     add_trace(x=x.week,y = y3,name=t3,marker=list(color=color3),type='bar',yaxis="y2",
               text = text3, hoverinfo = 'text', legendgroup="group3") %>%
-    layout(yaxis = list(side = 'right', title = "", range = c(0, max(y,na.rm=T))),
-           yaxis2 = list(side = 'left', title = i, overlaying = "y2", range = c(0, max(y,na.rm=T))),
+    layout(yaxis = list(side = 'right', title = "", range = c(0, max(y,na.rm=T)), tickformat=',d'),
+           yaxis2 = list(side = 'left', title = i, overlaying = "y2", range = c(0, max(y,na.rm=T)), tickformat=',d'),
            xaxis = list(title = "Week", autorange = TRUE),
            barmode = 'stack', legend=list(orientation="h",
                                             x=0.25,y=max(y,na.rm=T),
