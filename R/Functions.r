@@ -555,7 +555,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 
 continuous.to.weekly <- function(df.indicator=df.indicator,
                                  limits="both"
-                                #df.indicator=indicators.time.series$`live born per farrowing`
+                                #df.indicator=indicators.time.series$`Time to reservice`
 ){
   
   
@@ -602,7 +602,7 @@ continuous.to.weekly <- function(df.indicator=df.indicator,
                          "no alarms -1", "no alarms -2","no alarms -3")
   }
   
-  parity.name <- parity.group2$group.name[df.indicator[, "parity"]]
+  parity.name <- df.indicator[, "parity"]
   monday.date <- lastmon(df.indicator[,"date"])
   alarms.ewma <- df.indicator$`alarms EWMA`
   alarms.shew <- df.indicator$`alarms Shewhart`
