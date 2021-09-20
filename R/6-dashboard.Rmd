@@ -277,23 +277,17 @@ if("time.to.reservice" %in% names(indicators.data)) {
 }
 ```
 
-
 ```{r, results='asis'}
 
 if("time.to.reservice" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="time.to.reservice")
   
-  cat("  \n##")
+  cat("  \n## {data-height=450}")
   cat("  \n###", indicators.labels[i],", per week","  \n")
-  
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average time (in days)",
-                           use.minimum.y = "min",
-                           barmode='overlay')
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
 }
+  
 ```
 
 ```{r, results='asis'}
@@ -306,29 +300,11 @@ if("time.to.reservice" %in% names(indicators.data)) {
   
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
-                           target.unit = NULL,  
+                           target.unit = NULL, 
                            ylabel = "average time (in days)",
                            use.minimum.y = "min",
-                           barmode='group')
+                           moving_average = moving_average)
 }
-```
-
-```{r, results='asis'}
-
-if("time.to.reservice" %in% names(indicators.data)) {
-  
-  i = which(names(indicators.data)=="time.to.reservice")
-  
-  cat("  \n###", indicators.labels[i],", per week","  \n")
-  
-  TS.barplot.pg.signals.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                                   target = NULL,
-                                   target.unit = NULL, 
-                                   ylabel = "average time (in days)",
-                                   use.minimum.y = "min"
-)
-}
-
 ```
 
 
@@ -357,13 +333,11 @@ if("rereservices" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="rereservices")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of sows",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -373,11 +347,27 @@ if("rereservices" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="rereservices")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("rereservices" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="rereservices")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -504,13 +494,11 @@ if("services.to.farrow" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="services.to.farrow")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of services to farrow",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -520,12 +508,27 @@ if("services.to.farrow" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="services.to.farrow")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
 
+```{r, results='asis'}
+
+if("services.to.farrow" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="services.to.farrow")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -554,15 +557,12 @@ if("pregnancy.length" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="pregnancy.length")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average pregnancy length (in days)",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
-
 ```
 
 ```{r, results='asis'}
@@ -571,12 +571,27 @@ if("pregnancy.length" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="pregnancy.length")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
 
+```{r, results='asis'}
+
+if("pregnancy.length" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="pregnancy.length")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -630,13 +645,11 @@ if("days.between.farrowings" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="days.between.farrowings")
   
-  cat("  \n###", "average", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of days",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -646,11 +659,27 @@ if("days.between.farrowings" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="days.between.farrowings")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("days.between.farrowings" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="days.between.farrowings")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -878,13 +907,11 @@ if("total.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -894,11 +921,27 @@ if("total.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("total.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="total.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -927,13 +970,11 @@ if("live.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="live.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -943,11 +984,27 @@ if("live.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="live.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("live.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="live.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -976,13 +1033,11 @@ if("dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="dead.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -992,11 +1047,27 @@ if("dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="dead.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("dead.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="dead.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1025,13 +1096,11 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.dead.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average % of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1041,11 +1110,27 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.dead.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("perc.dead.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.dead.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1074,13 +1159,11 @@ if("small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="small.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1090,11 +1173,27 @@ if("small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="small.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("small.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="small.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1123,13 +1222,11 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.small.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average % of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1139,11 +1236,27 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.small.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("perc.small.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.small.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1172,13 +1285,11 @@ if("weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weak.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1188,11 +1299,27 @@ if("weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weak.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("weak.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weak.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1221,13 +1348,11 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.weak.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average % of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1237,11 +1362,27 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.weak.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("perc.weak.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.weak.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1270,13 +1411,11 @@ if("mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="mummi.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "zero")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1286,11 +1425,27 @@ if("mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="mummi.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("mummi.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="mummi.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1319,13 +1474,11 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.mummi.born.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average % of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1335,11 +1488,27 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.mummi.born.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                              years.to.see = 3,
-                              limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("perc.mummi.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.mummi.born.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1425,13 +1594,11 @@ if("total.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.wean.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1441,11 +1608,27 @@ if("total.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="total.wean.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("total.wean.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="total.wean.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1474,13 +1657,11 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="negdiff.weaned.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average nº of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1490,11 +1671,27 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="negdiff.weaned.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("negdiff.weaned.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="negdiff.weaned.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1523,13 +1720,11 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average % of piglets",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1539,11 +1734,27 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.negdiff.weaned.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
@@ -1572,13 +1783,11 @@ if("weight.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weight.wean.litter")
   
-  cat("  \n###", indicators.labels[i],", per week","  \n")
+    cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
   
-  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
-                           target = NULL,
-                           target.unit = NULL,  
-                           ylabel = "average weight (in kg)",
-                           use.minimum.y = "min")
+    TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
+                                 years.to.see = 3,
+                                 limits=indicators.limits[[i]])
 }
 ```
 
@@ -1588,11 +1797,27 @@ if("weight.wean.litter" %in% names(indicators.data)) {
   
   i = which(names(indicators.data)=="weight.wean.litter")
   
-  cat("  \n###", indicators.labels[i],", number of events and alarms per year","  \n")
+  cat("  \n## {data-height=450}")
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  cat("In the graph on the side, parity is represented as a moving average of",moving_average, "weeks, used to identify trend direction.")
+}
   
-  TS.barplot.continuous.events(df.indicator=indicators.continuous.to.weekly[[i]],
-                               years.to.see = 3,
-                               limits=indicators.limits[[i]])
+```
+
+```{r, results='asis'}
+
+if("weight.wean.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="weight.wean.litter")
+  
+  cat("  \n###", indicators.labels[i],", per week","  \n")
+  
+  TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
+                           target = NULL,
+                           target.unit = NULL, 
+                           ylabel = "average time (in days)",
+                           use.minimum.y = "min",
+                           moving_average = moving_average)
 }
 ```
 
