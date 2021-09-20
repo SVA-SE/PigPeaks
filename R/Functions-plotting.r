@@ -1,9 +1,9 @@
-packages <- c("plotly", "RColorBrewer")
+packages <- c("plotly", "RColorBrewer", "zoo")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(plotly)
 require(RColorBrewer)
-
+require(zoo)
 
 
 # Without parity ----
@@ -1220,7 +1220,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
 
 ##  For continuous time-series
 
-  nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`Time to reservice`
+nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`mummified per farrowing`
                                       indicator.label = indicator.label,
                                       series.line = NULL,
                                       show.window = nonTS.to.show,                #always as number of events
@@ -1242,7 +1242,6 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
                                       alarms.SHEW.UPP = alarms.SHEW.UPP,          #Added
                                       alarms.SHEW.LW = alarms.SHEW.LW,            #Added
                                       use.minimum.y="min",                        #"zero"
-                                      barmode = 'group',                          #"overlay"
                                       argument.list = TRUE
                                       
                                       
@@ -1299,7 +1298,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
   y.all=c(y1,y2,y3,y4)
   
   min.y=0
-  if(use.minimum.y=="min")(min.y=min(y.all,na.rm=T)-1)
+  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
   
   
   #colors
@@ -1370,7 +1369,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
       layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T)), tickformat=',d'),
              yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range, showgrid = FALSE, tickformat=',d'),
              xaxis = list(title = xlabel),
-             barmode = barmode,
+             barmode = "group",
              legend=list(orientation="h",
                          
                          x=0.25,y=max(y.all,na.rm=T),
@@ -1378,9 +1377,9 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
     
   }else{
     plot <- plot %>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T))),
+      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T)), tickformat=',d'),
              xaxis = list(title = xlabel),
-             barmode = barmode,
+             barmode = "group",
              legend=list(orientation="h",
                          
                          x=0.25,y=max(y.all,na.rm=T),
@@ -1626,221 +1625,218 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
 
 ##  For continuous to weekly time-series
 
-TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indicator = indicators.continuous.to.weekly$`dead born per farrowing`
+# TS.barplot.pg.continuous <- function(df.indicator = df.indicator,     #df.indicator = indicators.continuous.to.weekly$`dead born per farrowing`
+#                                      indicator.label="Indicator",
+#                                      show.window = 52,
+#                                      index.dates = index.dates.week,
+#                                      ylabel = 'Number of sows',
+#                                      xlabel = 'Week',
+#                                      target = NULL,
+#                                      target.unit = NULL,              #c("value","vector"), defaults to vector
+#                                      shading.matrix = NULL,
+#                                      limits = NULL,
+#                                      group.labels=c('gilts','young','prime','mature'),
+#                                      use.minimum.y="min",             #"zero"
+#                                      barmode = 'overlay'              #escolher qual queremos
+# ){
+# 
+#   series <- df.indicator
+#   
+#   plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
+#   
+#   data = as.data.frame(series[plot.range,])
+#   
+#   
+#   x=index.dates.week$start[plot.range]
+#   x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
+#   y1 = data$gilt
+#   y2 = data$young
+#   y3 = data$prime
+#   y4 = data$mature
+#   y = data$observed
+#   
+#   y.all=c(y,y1,y2,y3,y4)
+#   
+#   min.y=0
+#   if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
+#   
+#   #labels
+#   t = "Average observed"
+#   t1 = group.labels[1]
+#   t2 = group.labels[2]
+#   t3 = group.labels[3]
+#   t4 = group.labels[4]
+#   
+#   text=str_c(t,":",y,
+#               "<br>Week:",x.week,
+#               "<br>WeekMonday:",x)
+#   text1=str_c("Parity group:",t1,
+#               "<br>",indicator.label,":",y1,
+#               "<br>Week:",x.week,
+#               "<br>WeekMonday:",x)
+#   text2=str_c("Parity group:",t2,
+#               "<br>",indicator.label,":",y2,
+#               "<br>Week:",x.week,
+#               "<br>WeekMonday:",x)
+#   text3=str_c("Parity group:",t3,
+#               "<br>",indicator.label,":",y3,
+#               "<br>Week:",x.week,
+#               "<br>WeekMonday:",x)
+#   text4=str_c("Parity group:",t4,
+#               "<br>",indicator.label,":",y4,
+#               "<br>Week:",x.week,
+#               "<br>WeekMonday:",x)
+# 
+# 
+#   # target.vector = target.vector[plot.range]
+#   
+#   target.vector = target
+#   if(!is.null(target.unit)){
+#     if(target.unit=="value"){
+#       target.vector <- rep(target,length(x))
+#     }}
+#   
+#   
+#   if(!is.null(shading.matrix)){
+#     shading.matrix=shading.matrix[plot.range,]
+#   }
+#   
+#   if(!is.null(shading.matrix)){
+#     LL3 <- shading.matrix[,1]
+#     LL2 <- shading.matrix[,2]  
+#     LL1 <- shading.matrix[,3]  
+#     UL1 <- shading.matrix[,4]  
+#     UL2 <- shading.matrix[,5]  
+#     UL3 <- shading.matrix[,6]  
+#   }
+#   
+#   if(!is.null(limits)){
+#     if(limits=="low"){
+#       UL1 <- max(y)
+#       UL2 <- max(y)
+#       UL3 <- max(y)
+#     }
+#     if(limits=="high"){
+#       LL1 <- min(0,min(data,na.rm=T),na.rm=T)
+#       LL2 <- min(0,min(data,na.rm=T),na.rm=T)
+#       LL3 <- min(0,min(data,na.rm=T),na.rm=T)
+#     }
+#   }
+#   
+#   color="#C8C5C8"
+#   color1="#91b9f9"
+#   color2="#7dc478"
+#   color3="#f7b165"
+#   color4="#be857a"
+# 
+#   # color1=color.pg[1]
+#   # color2=color.pg[2]
+#   # color3=color.pg[3]
+#   # color4=color.pg[4]
+#   
+#   plot <-
+#     plot_ly()
+#   
+#   if(!is.null(shading.matrix)){
+#     plot <- plot %>%
+#       add_trace(x=x,y = rep(max(y,na.rm=T),show.window),
+#                 name = '99%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='tomato',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%
+#       add_trace(x=x,y = UL3,
+#                 name = '95%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='orange',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%
+#       add_trace(x=x,y = UL2,
+#                 name = '90%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='yellow',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%
+#       add_trace(x=x,y = UL1,
+#                 name = 'normal', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='lightgreen',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%
+#       add_trace(x=x,y = LL1,
+#                 name = '90%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='yellow',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%   
+#       add_trace(x=x,y = LL2,
+#                 name = '95%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='orange',
+#                 fill = 'tozeroy',showlegend = FALSE) %>%    
+#       add_trace(x=x,y = LL3,
+#                 name = '99%', type = 'scatter', mode = 'lines',
+#                 line = list(color = 'transparent'),
+#                 fillcolor='tomato',
+#                 fill = 'tozeroy',showlegend = FALSE)
+#     
+#   }
+#   
+#   plot <- plot %>%
+#     add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar', yaxis="y2",
+#               text = text1, hoverinfo = 'text') %>%
+#     add_trace(x=x,y = y2,name=t2,marker=list(color=color2),type='bar',yaxis="y2",
+#               text = text2, hoverinfo = 'text') %>%
+#     add_trace(x=x,y = y3,name=t3,marker=list(color=color3),type='bar',yaxis="y2",
+#               text = text3, hoverinfo = 'text') %>%
+#     add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
+#               text = text4, hoverinfo = 'text') %>%
+#     add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
+#               text = text, hoverinfo = 'text') %>%
+#     layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
+#            yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
+#            xaxis = list(title = xlabel, autorange = TRUE),
+#            barmode = barmode,
+#            legend=list(orientation="h",
+#                        x=0.25,y=max(y,na.rm=T),
+#                        traceorder='normal'))
+#   
+#   if(!is.null(target)){
+#     plot <- plot %>%
+#       add_lines(
+#         x=x,
+#         y=target.vector,
+#         name='Target', yaxis="y2",
+#         line=list(color = '#FFFF00'), showlegend = FALSE
+#       )
+#   }
+# 
+#   return(plot)    
+# }
+
+
+
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`dead born per farrowing`
                                      indicator.label="Indicator",
                                      show.window = 52,
                                      index.dates = index.dates.week,
                                      ylabel = 'Number of sows',
                                      xlabel = 'Week',
                                      target = NULL,
-                                     target.unit = NULL,              #c("value","vector"), defaults to vector
+                                     target.unit = NULL,            #c("value","vector"), defaults to vector
                                      shading.matrix = NULL,
                                      limits = NULL,
-                                     group.labels=c('gilts','young','prime','mature'),
-                                     use.minimum.y="min",             #"zero"
-                                     barmode = 'overlay'              #escolher qual queremos
+                                     group.labels=c('gilts','young','prime','mature'),                                        use.minimum.y="min",            #"zero"
+                                     moving_average = 3
 ){
-
   series <- df.indicator
   
   plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
   
   data = as.data.frame(series[plot.range,])
   
-  
   x=index.dates.week$start[plot.range]
   x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
-  y1 = data$gilt
-  y2 = data$young
-  y3 = data$prime
-  y4 = data$mature
-  y = data$observed
   
-  y.all=c(y,y1,y2,y3,y4)
-  
-  min.y=0
-  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
-  
-  #labels
-  t = "Average observed"
-  t1 = group.labels[1]
-  t2 = group.labels[2]
-  t3 = group.labels[3]
-  t4 = group.labels[4]
-  
-  text=str_c(t,":",y,
-              "<br>Week:",x.week,
-              "<br>WeekMonday:",x)
-  text1=str_c("Parity group:",t1,
-              "<br>",indicator.label,":",y1,
-              "<br>Week:",x.week,
-              "<br>WeekMonday:",x)
-  text2=str_c("Parity group:",t2,
-              "<br>",indicator.label,":",y2,
-              "<br>Week:",x.week,
-              "<br>WeekMonday:",x)
-  text3=str_c("Parity group:",t3,
-              "<br>",indicator.label,":",y3,
-              "<br>Week:",x.week,
-              "<br>WeekMonday:",x)
-  text4=str_c("Parity group:",t4,
-              "<br>",indicator.label,":",y4,
-              "<br>Week:",x.week,
-              "<br>WeekMonday:",x)
-
-
-  # target.vector = target.vector[plot.range]
-  
-  target.vector = target
-  if(!is.null(target.unit)){
-    if(target.unit=="value"){
-      target.vector <- rep(target,length(x))
-    }}
-  
-  
-  if(!is.null(shading.matrix)){
-    shading.matrix=shading.matrix[plot.range,]
-  }
-  
-  if(!is.null(shading.matrix)){
-    LL3 <- shading.matrix[,1]
-    LL2 <- shading.matrix[,2]  
-    LL1 <- shading.matrix[,3]  
-    UL1 <- shading.matrix[,4]  
-    UL2 <- shading.matrix[,5]  
-    UL3 <- shading.matrix[,6]  
-  }
-  
-  if(!is.null(limits)){
-    if(limits=="low"){
-      UL1 <- max(y)
-      UL2 <- max(y)
-      UL3 <- max(y)
-    }
-    if(limits=="high"){
-      LL1 <- min(0,min(data,na.rm=T),na.rm=T)
-      LL2 <- min(0,min(data,na.rm=T),na.rm=T)
-      LL3 <- min(0,min(data,na.rm=T),na.rm=T)
-    }
-  }
-  
-  color="#C8C5C8"
-  color1="#91b9f9"
-  color2="#7dc478"
-  color3="#f7b165"
-  color4="#be857a"
-
-  # color1=color.pg[1]
-  # color2=color.pg[2]
-  # color3=color.pg[3]
-  # color4=color.pg[4]
-  
-  plot <-
-    plot_ly()
-  
-  if(!is.null(shading.matrix)){
-    plot <- plot %>%
-      add_trace(x=x,y = rep(max(y,na.rm=T),show.window),
-                name = '99%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='tomato',
-                fill = 'tozeroy',showlegend = FALSE) %>%
-      add_trace(x=x,y = UL3,
-                name = '95%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='orange',
-                fill = 'tozeroy',showlegend = FALSE) %>%
-      add_trace(x=x,y = UL2,
-                name = '90%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='yellow',
-                fill = 'tozeroy',showlegend = FALSE) %>%
-      add_trace(x=x,y = UL1,
-                name = 'normal', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='lightgreen',
-                fill = 'tozeroy',showlegend = FALSE) %>%
-      add_trace(x=x,y = LL1,
-                name = '90%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='yellow',
-                fill = 'tozeroy',showlegend = FALSE) %>%   
-      add_trace(x=x,y = LL2,
-                name = '95%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='orange',
-                fill = 'tozeroy',showlegend = FALSE) %>%    
-      add_trace(x=x,y = LL3,
-                name = '99%', type = 'scatter', mode = 'lines',
-                line = list(color = 'transparent'),
-                fillcolor='tomato',
-                fill = 'tozeroy',showlegend = FALSE)
-    
-  }
-  
-  plot <- plot %>%
-    add_trace(x=x,y = y1,name=t1,marker=list(color=color1),type='bar', yaxis="y2",
-              text = text1, hoverinfo = 'text') %>%
-    add_trace(x=x,y = y2,name=t2,marker=list(color=color2),type='bar',yaxis="y2",
-              text = text2, hoverinfo = 'text') %>%
-    add_trace(x=x,y = y3,name=t3,marker=list(color=color3),type='bar',yaxis="y2",
-              text = text3, hoverinfo = 'text') %>%
-    add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
-              text = text4, hoverinfo = 'text') %>%
-    add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
-              text = text, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
-           xaxis = list(title = xlabel, autorange = TRUE),
-           barmode = barmode,
-           legend=list(orientation="h",
-                       x=0.25,y=max(y,na.rm=T),
-                       traceorder='normal'))
-  
-  if(!is.null(target)){
-    plot <- plot %>%
-      add_lines(
-        x=x,
-        y=target.vector,
-        name='Target', yaxis="y2",
-        line=list(color = '#FFFF00'), showlegend = FALSE
-      )
-  }
-
-  return(plot)    
-}
-
-
-
-
-
-TS.barplot.pg.signals.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`days between farrowings`
-                                             indicator.label="Indicator",
-                                             show.window = 52,
-                                             index.dates = index.dates.week,
-                                             ylabel = 'Number of sows',
-                                             xlabel = 'Week',
-                                             target = NULL,
-                                             target.unit = NULL,            #c("value","vector"), defaults to vector
-                                             shading.matrix = NULL,
-                                             limits = NULL,
-                                             group.labels=c('gilts','young','prime','mature'),
-                                             use.minimum.y="min"            #"zero"
-){
-  
-  series <- df.indicator
-  
-  plot.range <- max(1,(dim(series)[1]-show.window+1)):dim(series)[1]
-  
-  data = as.data.frame(series[plot.range,])
-  
-  
-  x=index.dates.week$start[plot.range]
-  x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
-  y1 = data$gilt
-  y2 = data$young
-  y3 = data$prime
-  y4 = data$mature
+  y1 = c(na.fill(round(rollmean(data$gilt, moving_average, na.rm=TRUE),1), round(mean(data$gilt, na.rm=T),1)),rep(round(mean(data$gilt, na.rm=T),1),moving_average-1))
+  y2 = c(na.fill(round(rollmean(data$young, moving_average, na.rm=TRUE),1), round(mean(data$young, na.rm=T),1)),rep(round(mean(data$young, na.rm=T),1),moving_average-1))
+  y3 = c(na.fill(round(rollmean(data$prime, moving_average, na.rm=TRUE),1), round(mean(data$prime, na.rm=T),1)),rep(round(mean(data$prime, na.rm=T),1),moving_average-1))
+  y4 = c(na.fill(round(rollmean(data$mature, moving_average, na.rm=TRUE),1), round(mean(data$mature, na.rm=T),1)),rep(round(mean(data$mature, na.rm=T),1),moving_average-1))
   y = data$observed
   
   y.all=c(y,y1,y2,y3,y4)
@@ -1966,13 +1962,13 @@ TS.barplot.pg.signals.continuous <- function(df.indicator = df.indicator,   #df.
   }
   
   plot <- plot %>%
-    add_markers(x=x,y = y1,name=t1,marker=list(color=color1, symbol ='triangle-up', size = 10),
+    add_lines(x=x,y = y1, name=t1, line=list(color=color1),
                 yaxis="y2", text = text1, hoverinfo = 'text') %>%
-    add_markers(x=x,y = y2,name=t2,marker=list(color=color2, symbol ='square', size = 7),
+    add_lines(x=x,y = y2, name=t2,line=list(color=color2),
                 yaxis="y2",text = text2, hoverinfo = 'text') %>%
-    add_markers(x=x,y = y3,name=t3,marker=list(color=color3, symbol ='x', size = 10),
+    add_lines(x=x,y = y3, name=t3,line=list(color=color3),
                 yaxis="y2",text = text3, hoverinfo = 'text') %>%
-    add_markers(x=x,y = y4,name=t4,marker=list(color=color4, symbol ='star-triangle-up', size = 10),
+    add_lines(x=x,y = y4, name=t4,line=list(color=color4),
                 yaxis="y2",text = text4, hoverinfo = 'text') %>%
     add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
               text = text, hoverinfo = 'text') %>%
@@ -2005,14 +2001,24 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
                                          index.dates = index.dates.week,
                                          limits = "both"
 ){
-  
   series <- df.indicator
   
   last.date <- last(series$date)
-    
-  year.to.start <- year(ymd(last.date) - years(years.to.see)) + 1
+  first.year <- first(year(series$date))
   year.to.end <- year(last.date)
   
+  if (years.to.see==0){
+    warning("years to see is an argument of length 0, it's going to be replaced by the default (3)")
+    years.to.see <- 3
+  }
+  
+  if (years.to.see>(year.to.end-first.year+1) | years.to.see>5) {
+    warning("years to see too long in length, it's going to be replaced by the maximum (5)")
+    years.to.see <- 5
+  }
+  
+  year.to.start <- year(ymd(last.date) - years(years.to.see)) + 1
+
   plots.count=0
   
   plots <- list()
