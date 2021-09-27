@@ -79,11 +79,11 @@ require(zoo)
     plot <- plot %>%
       add_trace(x=x,y = y,type='bar', name=series.label,
                 text = text, hoverinfo = 'text') %>%
-      layout(yaxis = list(title = ylabel, overlaying = "y", range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)), tickformat=',d'), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
+      layout(yaxis = list(title = ylabel, overlaying = "y", range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)-0.5), tickformat=',d'), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
              xaxis = list(title = xlabel),
              barmode = 'stack',
              legend=list(orientation="h",
-                         x=0.25,y=max(y,na.rm=T),
+                         x=0.25,y=1.1,
                          traceorder='normal'))
     
     
@@ -381,7 +381,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
            xaxis = list(title = xlabel),
            barmode = 'group',
            legend=list(orientation="h",
-                       x=0.25,y=max(y,na.rm=T),
+                       x=0.25,y=1.1,
                        traceorder='normal'))
 
   
@@ -788,7 +788,7 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
            xaxis = list(title = xlabel),
            barmode = 'stack',
            legend=list(orientation="h",
-                       x=0.25,y=max(y,na.rm=T),
+                       x=0.25,y=1.1,
                        traceorder='normal'))
 
   
@@ -1000,7 +1000,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
            xaxis = list(title = xlabel, autorange = TRUE),
            barmode = 'stack',
            legend=list(orientation="h",
-                       x=0.25,y=max(y,na.rm=T),
+                       x=0.25,y=1.1,
                        traceorder='normal'))
   
   if(!is.null(target)){
@@ -1371,8 +1371,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
              xaxis = list(title = xlabel),
              barmode = "group",
              legend=list(orientation="h",
-                         
-                         x=0.25,y=max(y.all,na.rm=T),
+                         x=0.25,y=1.1,
                          traceorder='normal'))
     
   }else{
@@ -1381,8 +1380,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
              xaxis = list(title = xlabel),
              barmode = "group",
              legend=list(orientation="h",
-                         
-                         x=0.25,y=max(y.all,na.rm=T),
+                         x=0.25,y=1.1,
                          traceorder='normal'))
   }
   
@@ -1811,7 +1809,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
 
 
 
-TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`dead born per farrowing`
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`Time to reservice`
                                      indicator.label="Indicator",
                                      show.window = 52,
                                      index.dates = index.dates.week,
@@ -1822,7 +1820,7 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
                                      shading.matrix = NULL,
                                      limits = NULL,
                                      group.labels=c('gilts','young','prime','mature'),                                        use.minimum.y="min",            #"zero"
-                                     moving_average = 3
+                                     moving_average = 8
 ){
   series <- df.indicator
   
@@ -1833,10 +1831,10 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
   x=index.dates.week$start[plot.range]
   x.week=paste(index.dates$ISOweekYear[plot.range],index.dates$week[plot.range],sep="-")
   
-  y1 = c(na.fill(round(rollmean(data$gilt, moving_average, na.rm=TRUE),1), round(mean(data$gilt, na.rm=T),1)),rep(round(mean(data$gilt, na.rm=T),1),moving_average-1))
-  y2 = c(na.fill(round(rollmean(data$young, moving_average, na.rm=TRUE),1), round(mean(data$young, na.rm=T),1)),rep(round(mean(data$young, na.rm=T),1),moving_average-1))
-  y3 = c(na.fill(round(rollmean(data$prime, moving_average, na.rm=TRUE),1), round(mean(data$prime, na.rm=T),1)),rep(round(mean(data$prime, na.rm=T),1),moving_average-1))
-  y4 = c(na.fill(round(rollmean(data$mature, moving_average, na.rm=TRUE),1), round(mean(data$mature, na.rm=T),1)),rep(round(mean(data$mature, na.rm=T),1),moving_average-1))
+  y1 = tail(replace(round(rollmean(series$gilt, moving_average, na.rm=TRUE),1), which(is.nan(round(rollmean(series$gilt, moving_average, na.rm=TRUE),1))), NA), show.window)
+  y2 = tail(replace(round(rollmean(series$young, moving_average, na.rm=TRUE),1), which(is.nan(round(rollmean(series$young, moving_average, na.rm=TRUE),1))), NA), show.window)
+  y3 = tail(replace(round(rollmean(series$prime, moving_average, na.rm=TRUE),1), which(is.nan(round(rollmean(series$prime, moving_average, na.rm=TRUE),1))), NA), show.window)
+  y4 = tail(replace(round(rollmean(series$mature, moving_average, na.rm=TRUE),1), which(is.nan(round(rollmean(series$mature, moving_average, na.rm=TRUE),1))), NA), show.window)
   y = data$observed
   
   y.all=c(y,y1,y2,y3,y4)
@@ -1973,10 +1971,10 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
     add_trace(x=x,y = y,name=t,marker=list(color=color),type='bar', yaxis="y2",
               text = text, hoverinfo = 'text') %>%
     layout(yaxis = list(side = 'right', title = "", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+1), tickformat=',d'),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y2", range = c(min.y, max(y.all,na.rm=T)+0.5), tickformat=',d'),
            xaxis = list(title = xlabel, autorange = TRUE),
            legend=list(orientation="h",
-                       x=0.25,y=max(y,na.rm=T),
+                       x=0.25,y=1.1,
                        traceorder='normal'))
   
   if(!is.null(target)){
@@ -2129,8 +2127,8 @@ TS.barplot.continuous.events <- function(df.indicator = df.indicator,     #df.in
            yaxis2 = list(side = 'left', title = i, overlaying = "y2", range = c(0, max(y,na.rm=T)), tickformat=',d'),
            xaxis = list(title = "Week", autorange = TRUE),
            barmode = 'stack', legend=list(orientation="h",
-                                            x=0.25,y=max(y,na.rm=T),
-                                            traceorder='normal'))
+                                          x=0.25,y=1.1,
+                                          traceorder='normal'))
 
     plots[[plots.count]] <- plot
 
