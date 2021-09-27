@@ -12,6 +12,12 @@ output:
 
 <style type="text/css">
 
+.html-widget.gauge svg {
+  height:20%; /*or try sth like 320px instead of 100%, whatever you prefer*/
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
 .chart-title {  /* chart_title  */
    font-size: 15px;
 }
@@ -148,12 +154,69 @@ return(arguments)
   
 ```
 
-# Overview
-
 # Overview {.sidebar data-width=200}
 
-```{r}
+# Overview
 
+Row
+-----------------------------------------------------------------------
+
+```{r, fig.width=14, fig.height=12}
+  gauge(42, min = 0, max = 100, symbol = '%', label = "Gilts", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=14, fig.height=12}
+  gauge(31, min = 0, max = 100, symbol = '%', label = "Empty Sows", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=14, fig.height=12}
+  gauge(97, min = 0, max = 100, symbol = '%', label = "Services", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=14, fig.height=12}
+  gauge(50, min = 0, max = 100, symbol = '%', label = "Pregnancy", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+Row
+-----------------------------------------------------------------------
+
+```{r, fig.width=16, fig.height=10}
+  gauge(80, min = 0, max = 100, symbol = '%', label = "Farrowing", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=16, fig.height=10}
+  gauge(27, min = 0, max = 100, symbol = '%', label = "Weaning", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=16, fig.height=10}
+  gauge(78, min = 0, max = 100, symbol = '%', label = "Post-Weaning", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
+
+```
+
+```{r, fig.width=16, fig.height=10}
+  gauge(50, min = 0, max = 100, symbol = '%', label = "Exit", gaugeSectors(
+    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
+  ))
 
 ```
 
@@ -365,7 +428,7 @@ if("rereservices" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of sows",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -526,7 +589,7 @@ if("services.to.farrow" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of services to farrow",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -589,7 +652,7 @@ if("pregnancy.length" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average pregnancy length (in days)",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -677,7 +740,7 @@ if("days.between.farrowings" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of days",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -939,7 +1002,7 @@ if("total.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1002,7 +1065,7 @@ if("live.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1065,7 +1128,7 @@ if("dead.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1128,7 +1191,7 @@ if("perc.dead.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average % of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1191,7 +1254,7 @@ if("small.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1254,7 +1317,7 @@ if("perc.small.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average % of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1317,7 +1380,7 @@ if("weak.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1380,7 +1443,7 @@ if("perc.weak.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average % of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1443,7 +1506,7 @@ if("mummi.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1506,7 +1569,7 @@ if("perc.mummi.born.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average % of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1626,7 +1689,7 @@ if("total.wean.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1689,7 +1752,7 @@ if("negdiff.weaned.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average nº of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1752,7 +1815,7 @@ if("perc.negdiff.weaned.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "average % of piglets",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
@@ -1815,7 +1878,7 @@ if("weight.wean.litter" %in% names(indicators.data)) {
   TS.barplot.pg.continuous(df.indicator = indicators.continuous.to.weekly[[i]],
                            target = NULL,
                            target.unit = NULL, 
-                           ylabel = "average time (in days)",
+                           ylabel = "weight (in kg)",
                            use.minimum.y = "min",
                            moving_average = moving_average)
 }
