@@ -15,7 +15,7 @@ source("R/Functions.r")
 
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
-load("data/indicators.RData")
+load("data/farm01/indicators.RData")
 # index.dates.week
 # indicators.data
 # indicators.labels
