@@ -335,15 +335,18 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
       if(length(dim(indicator))>2){
         
         parity.count = parity.count+1
-
-      if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
         
-        assign(paste0(noquote(l)), round(indicator[,(parity.group2$parity[parity.group2$group.name==l]), "numerator"][range.weekly]/
-                                      indicator[,(parity.group2$parity[parity.group2$group.name==l]), "denominator"][range.weekly]*100,2))
+        numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+        numbers.parity <- numbers.parity[numbers.parity!=0]
+
+      if (length(numbers.parity) == 1) {
+        
+        assign(paste0(noquote(l)), round(indicator[,(numbers.parity), "numerator"][range.weekly]/
+                                      indicator[,(numbers.parity), "denominator"][range.weekly]*100,2))
       }else{
         
-        assign(paste0(noquote(l)), round(rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"numerator"])[range.weekly]/
-                 rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"denominator"])[range.weekly]*100,2))
+        assign(paste0(noquote(l)), round(rowSums(indicator[,(numbers.parity),"numerator"])[range.weekly]/
+                 rowSums(indicator[,(numbers.parity),"denominator"])[range.weekly]*100,2))
       }
         if (parity.count==1){
           parity <- noquote(l)
@@ -355,14 +358,17 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
       if(length(dim(indicator))==2){
         
       parity.count = parity.count+1
+      
+      numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+      numbers.parity <- numbers.parity[numbers.parity!=0]
 
-      if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
+      if (length(numbers.parity) == 1) {
         
-        assign(paste0(noquote(l)), indicator[,(parity.group2$parity[parity.group2$group.name==l])][range.weekly])
+        assign(paste0(noquote(l)), indicator[,(numbers.parity)][range.weekly])
         
       }else{
         
-        assign(paste0(noquote(l)), rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l])])[range.weekly])
+        assign(paste0(noquote(l)), rowSums(indicator[,(numbers.parity)])[range.weekly])
       }
       
       if (parity.count==1){
@@ -403,7 +409,7 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator       #indicator=indicators.data$perc.dead.born.litter
+continuous.indicators <- function(indicator=indicator       #indicator=indicators.data$days.between.farrowings
                                   )
 {
   range <- 1:dim(indicator)[1]   #apply range restriction only to detection
@@ -412,7 +418,6 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   week <- isoweek(as.Date(date,origin="1970-01-01"))
   year <- isoyear(as.Date(date,origin="1970-01-01"))
   sowINDEX <- indicator[,"sowINDEX"]
-  parity <- parity.group2$group.name[indicator[, "parity"]]
   observed <- indicator[,"indicator"]
   baseline <- c(rep(NA, length(range)))
   UCL.ewma <- c(rep(NA, length(range)))
@@ -421,7 +426,20 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   LCL.shew <- c(rep(NA, length(range)))
   alarms.ewma <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
-
+  parity <- parity.group2$group.name[indicator[, "parity"]+1]
+  # parity <- c(rep(NA, length(range)))
+  # 
+  # for(i in 1:length(range)){   #i=3
+  # 
+  #   if (indicator[i, "parity"]!=0) {
+  #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+  #   }
+  # 
+  #   if (indicator[i, "parity"]==0) {
+  #     indicator[i, "parity"] <- 1
+  #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+  #   }
+  # }
   table <- data.frame(date, week, year, sowINDEX,
                       parity, observed, baseline,
                       UCL.ewma, LCL.ewma, alarms.ewma,
@@ -449,7 +467,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
       
       if (is.array(indicator)) {
         
-        if (length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)){
+        if (length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)-1){
           
           observed <- rowSums(indicator)[range.weekly]
       }
@@ -465,13 +483,16 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
           
           parity.count = parity.count+1
           
-          if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-            
-            assign(paste0(noquote(l)), round(indicator[,(parity.group2$parity[parity.group2$group.name==l]), "numerator"][range.weekly]/
-                                               indicator[,(parity.group2$parity[parity.group2$group.name==l]), "denominator"][range.weekly]*100,2))
+          numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+          numbers.parity <- numbers.parity[numbers.parity!=0]
+          
+          if (length(numbers.parity) == 1) {
+          
+            assign(paste0(noquote(l)), round(indicator[,(numbers.parity), "numerator"][range.weekly]/
+                                               indicator[,(numbers.parity), "denominator"][range.weekly]*100,2))
           }else{
-            assign(paste0(noquote(l)), round(rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"numerator"])[range.weekly]/
-                                               rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"denominator"])[range.weekly]*100,2))
+            assign(paste0(noquote(l)), round(rowSums(indicator[,(numbers.parity),"numerator"])[range.weekly]/
+                                               rowSums(indicator[,(numbers.parity),"denominator"])[range.weekly]*100,2))
           }
           if (parity.count==1){
             parity <- noquote(l)
@@ -484,17 +505,20 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
           colnames(table) <- c(parity,"observed")
         }
         
-        if(length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)){
+        if(length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)-1){
           
           parity.count = parity.count+1
           
-          if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-            
-            assign(paste0(noquote(l)), indicator[,(parity.group2$parity[parity.group2$group.name==l])][range.weekly])
+          numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+          numbers.parity <- numbers.parity[numbers.parity!=0]
+          
+          if (length(numbers.parity) == 1) {
+          
+            assign(paste0(noquote(l)), indicator[,(numbers.parity)][range.weekly])
             
           }else{
             
-            assign(paste0(noquote(l)), rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l])])[range.weekly])
+            assign(paste0(noquote(l)), rowSums(indicator[,(numbers.parity)])[range.weekly])
           }
           
           if (parity.count==1){
@@ -509,7 +533,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
         }
       }
         
-        if (length(dim(indicator))==2 && dim(indicator)[2]!=length(parity.group2$parity)) {   #!=15
+        if (length(dim(indicator))==2 && dim(indicator)[2]!=length(parity.group2$parity)-1) {   #!=15
           #for weekly indicators composed
           
           observed <- indicator[range.weekly,]
@@ -536,8 +560,21 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
     week <- isoweek(as.Date(date,origin="1970-01-01"))
     year <- isoyear(as.Date(date,origin="1970-01-01"))
     sowINDEX <- indicator[,"sowINDEX"]
-    parity <- parity.group2$group.name[indicator[, "parity"]]
     observed <- indicator[,"indicator"]
+    parity <- parity.group2$group.name[indicator[, "parity"]+1]
+    # parity <- c(rep(NA, length(range)))
+    # 
+    # for(i in 1:length(range)){   #i=3
+    #   
+    #   if (indicator[i, "parity"]!=0) {
+    #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+    #   }
+    #   
+    #   if (indicator[i, "parity"]==0) {
+    #     indicator[i, "parity"] <- 1
+    #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+    #   }
+    # }
 
     table <- data.frame(date, week, year,
                         sowINDEX, parity, observed)

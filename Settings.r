@@ -117,13 +117,21 @@ col_parity = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_co
 parity.group$color1 <- col_parity[as.numeric(as.factor(parity.group$group.name))]
 parity.group$color2 <- col_parity[as.numeric(as.factor(parity.group$parity))]
 
-parity.group2 <- parity.group[-1,]
+#parity.group2 <- parity.group[-1,]
+parity.group2 <- parity.group
 
-colors.custom<- c(rep("#4287f5",1),
+# colors.custom<- c(rep("#4287f5",1),
+#                   rep("#28ab1f",2),
+#                   rep("#f5942c",3),
+#                   rep("#a15a4c",9)
+# )
+
+colors.custom<- c(rep("#4287f5",2),
                   rep("#28ab1f",2),
                   rep("#f5942c",3),
                   rep("#a15a4c",9)
 )
+
 parity.group2 <-cbind(parity.group2,colors.custom)
 parity.group2$colors.custom<-colors.custom
 
