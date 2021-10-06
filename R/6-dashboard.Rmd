@@ -19,9 +19,26 @@ output:
 }
 
 .chart-title {  /* chart_title  */
-   font-size: 15px;
+   font-size: 17px;
 }
-    
+
+.navbar {
+  font-size:17px;
+
+}
+
+<!-- .active { -->
+<!--   font-size:20px; -->
+<!-- } -->
+
+.tabset { 
+  font-size:17px;
+}
+
+.dropdown-menu {
+  font-size:15px;
+}
+
 </style>
 
 ```{r message=FALSE, warning=FALSE}
@@ -40,8 +57,8 @@ source('R/Functions.r')
 source('R/Functions-plotting.r')
 source('R/4-detection.R')
 source('R/5-continuous.to.weekly.R')
-load('data/individual.sows.RData')
-load('data/indicators.RData')
+load('data/farm01/individual.sows.RData')
+load('data/farm01/indicators.RData')
 
 ```
 
@@ -279,7 +296,8 @@ if("empty.long.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "sows")
+                ylabel = "sows",
+                use.minimum.y="zero")
 }
 ```
 
@@ -300,7 +318,8 @@ if("reservices.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "reservices")
+                ylabel = "reservices",
+                use.minimum.y="zero")
 }
 
 ```
@@ -448,7 +467,8 @@ if("perc.failure" %in% names(indicators.data)) {
                   argument.list = TRUE,
                   target = NULL,
                   target.unit = NULL,
-                  ylabel = "% failure")
+                  ylabel = "% failure",
+                  use.minimum.y="zero")
 }
 
 ```
@@ -467,7 +487,8 @@ if("perc.reservice" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% reservice")
+                ylabel = "% reservice",
+                use.minimum.y="zero")
 }
 
 ```
@@ -489,7 +510,8 @@ if("services.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "services")
+                ylabel = "services",
+                use.minimum.y="min")
 }
 ```
 
@@ -510,7 +532,8 @@ if("perc.pregnancy" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% pregnancy")
+                ylabel = "% pregnancy",
+                use.minimum.y="min")
 }
 ```
 
@@ -528,7 +551,8 @@ if("abortions.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "abortions")
+                ylabel = "abortions",
+                use.minimum.y="min")
 }
 ```
 
@@ -760,7 +784,8 @@ if("farrowings.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of farrowings")
+                ylabel = "nº of farrowings",
+                use.minimum.y="zero")
 }
 ```
 
@@ -778,7 +803,8 @@ if("total.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 
 ```
@@ -797,7 +823,8 @@ if("live.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -815,7 +842,8 @@ if("dead.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -833,7 +861,8 @@ if("small.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -851,7 +880,8 @@ if("weak.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -869,7 +899,8 @@ if("mummi.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "nº of piglets")
+                ylabel = "nº of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -887,7 +918,8 @@ if("perc.dead.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% of piglets")
+                ylabel = "% of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -905,7 +937,8 @@ if("perc.small.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% of piglets")
+                ylabel = "% of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -923,7 +956,8 @@ if("perc.weak.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% of piglets")
+                ylabel = "% of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -941,7 +975,8 @@ if("perc.mummi.born.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "% of piglets")
+                ylabel = "% of piglets",
+                use.minimum.y="min")
 }
 ```
 
@@ -1592,7 +1627,8 @@ if("total.wean.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "piglets",
+                use.minimum.y="zero")
 }
 ```
 
@@ -1610,7 +1646,8 @@ if("diff.wean.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "piglets",
+                use.minimum.y="zero")
 }
 ```
 
@@ -1628,7 +1665,8 @@ if("negdiff.wean.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "piglets")
+                ylabel = "piglets",
+                use.minimum.y="zero")
 }
 ```
 
@@ -1901,7 +1939,8 @@ if("weanings.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "weanings")
+                ylabel = "weanings",
+                use.minimum.y="zero")
 }
 ```
 
@@ -1964,7 +2003,8 @@ if("number.deaths.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "sows")
+                ylabel = "sows",
+                use.minimum.y="zero")
 }
 
 ```
@@ -2003,7 +2043,8 @@ if("number.exits.week" %in% names(indicators.data)) {
                 argument.list = TRUE,
                 target = NULL,
                 target.unit = NULL,
-                ylabel = "exits")
+                ylabel = "exits",
+                use.minimum.y="zero")
 }
 
 ```
