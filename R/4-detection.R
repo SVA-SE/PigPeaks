@@ -15,14 +15,7 @@ source("R/Functions.r")
 
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
-load("data/farm01/indicators.RData")
-# index.dates.week
-# indicators.data
-# indicators.labels
-# indicators.type
-# indicators.sys
-# indicators.limits
-# indicators.categories
+#load("data/farm01/indicators.RData")
 
 
 ## RUN in the following order:
