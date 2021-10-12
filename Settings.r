@@ -78,28 +78,16 @@ LCL.shew=2                      #the maximum number that would have generated an
 # plotting and dashboard -----
 
 plot.years=2
-weeks.to.show <- 78
-nonTS.to.show <- 100
+weeks.to.show <- 78             #weeks to show on the weekly graphs
+nonTS.to.show <- 100            #events to show on the continuous graphs
 #days.ago.nonTS <- 114
 group.window <- 114
-years.to.see <- 3
-moving_average <- 8
+years.to.see <- 3               #number of events and alarms seen in the last x years to see 
+moving_average <- 8             #moving average in weeks to represent parity in continuous graphs
 
-indicator.label = "indicator"
-target = NULL
+target = NULL                   #the target value for each indicator
 target.unit = "vector"          #c("value","vector"), defaults to vector
-UCL.EWMA = TRUE
-LCL.EWMA = TRUE
-UCL.SHEW = TRUE
-LCL.SHEW = TRUE
-alarms.EWMA.UPP = TRUE
-alarms.EWMA.LW = TRUE
-alarms.SHEW.UPP = TRUE
-alarms.SHEW.LW = TRUE
-series.label="sows"
-vertical.line = NULL            #vector of dates
-vertical.line.label= NULL
-group.labels=c('birth','service','reservice','abortion','farrowing','weaning')
+series.label="sows"             #time-series label, defaults to sows
 
 
 # statistical settings ----
