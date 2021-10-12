@@ -1305,7 +1305,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   y3 = series.pg[[3]][,"observed"]
   y4 = series.pg[[4]][,"observed"]
   y.all=c(y1,y2,y3,y4)
-
+  
+  
   min.y=0
 
   if(length(unique(y.all[y.all>0]))>1)  {
@@ -1633,6 +1634,11 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
       }
     }
   }
+  
+  # if (unique(y.all[!is.na(y.all)])==0 && length(unique(y.all[!is.na(y.all)]))==1) {
+  #   return(plot) & return(cat("There are not any",   indicators.labels[i], "in the last", show.window, xlabel))
+  #   
+  # }
   
   return(plot)    
 }
