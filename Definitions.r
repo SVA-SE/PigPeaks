@@ -6,10 +6,10 @@ parity = 1:15
 reservice.threshold <- 90
 reservice.perc.window <- 4     #(weeks to calculate success of service)
 
-empty.days.target <- 4
+empty.days.target <- 4         #(normal maximum days for sows being empty)
 opendays.target <- 4
 
-min.pregnancy.length <- 110
+min.pregnancy.length <- 110    #(normal minimum pregnancy length)
 
 
 # events ----
