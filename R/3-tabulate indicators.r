@@ -12,8 +12,8 @@ source("Settings.r")
 source("R/Functions.r")
 
 
-load("data/farm01/individual.sows.RData")
-load("data/farm01/animal.RData")
+#load("data/farm01/individual.sows.RData")
+#load("data/farm01/animal.RData")
 
 
 index.dates.days$ISOweekYear <- as.numeric(substr(as.character(index.dates.days[,"ISOweek"]),1,4))
