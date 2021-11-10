@@ -52,12 +52,12 @@ library(stringr)
 
 setwd('..') #do not run this line if running manually (instead of knitting)
 
+load("data/farm01/individual.sows.RData")
+load("data/farm01/indicators.RData")
 source('Settings.r') 
 source('R/Functions.r') 
 source('R/Functions-plotting.r')
 source('R/4-detection.r')
-load('data/farm01/individual.sows.RData')
-load('data/farm01/indicators.RData')
 
 ```
 
