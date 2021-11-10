@@ -27,10 +27,6 @@ output:
 
 }
 
-<!-- .active { -->
-<!--   font-size:20px; -->
-<!-- } -->
-
 .tabset { 
   font-size:17px;
 }
