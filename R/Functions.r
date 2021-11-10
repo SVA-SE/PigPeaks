@@ -456,9 +456,9 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
 
 ## for non-sys indicators
 
-non.sys.indicators <- function (indicator=indicator,          #indicator=indicators.data$death.after.event.week
-                                range.weekly=range.weekly,   #indicator=indicators.data$services.week
-                                indicator.type="w"
+non.sys.indicators <- function (indicator=indicator,          #indicator=indicators.data$time.to.abortion
+                                range.weekly=range.weekly,   #indicator=indicators.data$death.after.event.week
+                                indicator.type="W"
 )
 {
   parity.count = 0
@@ -737,17 +737,17 @@ continuous.to.weekly <- function(df.indicator=df.indicator,
 ##' and substituted by the percentile itself.
 
 clean_baseline_perc <- function (df.indicator=df.indicator,
-                                 limit.upp=0.95,
-                                 limit.lw=0.05,
-                                 run.window.weekly=104,
-                                 median.days.production.cycles=NULL,
-                                 nr.production.cycles=2,
-                                 range=range.weekly,
+                                 limit.upp=limit.upp,
+                                 limit.lw=limit.lw,
+                                 run.window.weekly=run.window.weekly,
+                                 median.days.production.cycles=median.days.production.cycles,
+                                 nr.production.cycles=nr.production.cycles,
+                                 range=range,
                                  indicator.type="W"
 )
 {
   if (indicator.type=="W") {     # for weekly indicators
-                                     #df.indicator=indicators.time.series$`live born per farrowing`
+                                     #df.indicator=indicators.time.series$`Reservices per week`
 
       #require(caTools)
 
@@ -899,17 +899,17 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
 # apply EWMA control chart ----
 
-apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.continuous.to.weekly$`% dead born per farrowing`
-                       evaluate.weekly.window=165,
-                       baseline.weekly.window=104,
-                       continuous.window=5500,
-                       lambda=0.2,
-                       limit.sd=c(2.5,3,3.5),
-                       guard.band.weekly=2,
-                       correct.baseline.UCL.ewma=TRUE,
-                       correct.baseline.LCL.ewma=FALSE,
-                       UCL.ewma=2,
-                       LCL.ewma=2,
+apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`dead born per farrowing`
+                       evaluate.weekly.window=evaluate.weekly.window,
+                       baseline.weekly.window=baseline.weekly.window,
+                       continuous.window=continuous.window,
+                       lambda=lambda,
+                       limit.sd=limit.sd,
+                       guard.band.weekly=guard.band.weekly,
+                       correct.baseline.UCL.ewma=correct.baseline.UCL.ewma,
+                       correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
+                       UCL.ewma=UCL.ewma,
+                       LCL.ewma=LCL.ewma,
                        indicator.type="W"
 )
 {
@@ -945,7 +945,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.co
           correct <- 0
 
 
-          for (l in 1:length(limit.sd)){ #l=2
+          for (l in 1:length(limit.sd)){ #l=1
 
             #require(qcc)
             ewma1 = ewma(to.cc,
@@ -1059,15 +1059,15 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.co
 # apply Shewhart control chart ----
 
 shew_apply <- function (df.indicator=df.indicator,
-                        evaluate.weekly.window=165,
-                        baseline.weekly.window=104,
-                        continuous.window=5500,
-                        limit.sd=c(2.5,3,3.5),
-                        guard.band.weekly=2,
-                        correct.baseline.UCL.shew=TRUE,
-                        correct.baseline.LCL.shew=FALSE,
-                        UCL.shew=2,
-                        LCL.shew=2,
+                        evaluate.weekly.window=evaluate.weekly.window,
+                        baseline.weekly.window=baseline.weekly.window,
+                        continuous.window=continuous.window,
+                        limit.sd=limit.sd,
+                        guard.band.weekly=guard.band.weekly,
+                        correct.baseline.UCL.shew=correct.baseline.UCL.shew,
+                        correct.baseline.LCL.shew=correct.baseline.LCL.shew,
+                        UCL.shew=UCL.shew,
+                        LCL.shew=LCL.shew,
                         indicator.type="W"
 )
 {
@@ -1137,22 +1137,22 @@ shew_apply <- function (df.indicator=df.indicator,
               }
 
               #ADD a one if the result of this loop was a detection
-              if (df.indicator[tpoint,"observed"]>max(0,UCL.value)){
+              if (isTRUE(df.indicator[tpoint,"observed"]>max(0,UCL.value))){
                 df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]+1
               }
 
-              if (df.indicator[tpoint,"observed"]<max(0,LCL.value)){
+              if (isTRUE(df.indicator[tpoint,"observed"]<max(0,LCL.value))){
                 df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]-1
               }
 
               #Correct baseline IF the user indicated so
               if (isTRUE(correct.baseline.UCL.shew)){
-                if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
+                if (isTRUE(df.indicator[tpoint,"observed"] > max(0,UCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
                 }
               }
               if (isTRUE(correct.baseline.LCL.shew)){
-                if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
+                if (isTRUE(df.indicator[tpoint,"observed"] < max(0,LCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
                 }
               }
@@ -1207,7 +1207,7 @@ shew_apply <- function (df.indicator=df.indicator,
 # count alarms ----
 
 count.ewma.alarms <- function (df.indicator=df.indicator,   #df.indicator=indicators.continuous.to.weekly$`Time to reservice`
-                               years.to.see=3
+                               years.to.see=years.to.see
 ){
   
   last.date <- last(df.indicator$date)
