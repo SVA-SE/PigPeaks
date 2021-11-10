@@ -53,7 +53,7 @@ library(stringr)
 setwd('..') #do not run this line if running manually (instead of knitting)
 
 load('dataExample/indicatorsExample.RData')
-source('Settings.r') 
+source('Settings.r') #needs corrections to work for indicatorsExample.RData
 source('R/Functions.r') 
 source('R/Functions-plotting.r')
 source('R/4-detection.r')
