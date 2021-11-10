@@ -1,15 +1,25 @@
 # packages ----
 
-packages <- c("dplyr", "tibble")
+packages <- c("dplyr", "tibble", "qcc", "abind")
 install.packages(setdiff(packages, rownames(installed.packages())))
 
 require(dplyr)
 require(tibble)
+require(qcc)
+require(abind)
+
+
+load('Data_Example/indicatorsExample.RData')
+source('Settings.r')
+source('R/Functions.r') 
+source('R/Functions-plotting.r')
+
 
 # inject outbreaks in quarters
 
-quarters.list = c("2015.2", "2015.3", "2015.4", "2016.1", "2016.2", "2016.3", "2016.4",   
-                 "2017.1", "2017.2", "2017.3", "2017.4", "2018.1")                       
+ quarters.list = c("2017.2", "2017.3", "2017.4",
+                   "2018.1", "2018.2", "2018.3", "2018.4")                       
+
 
 
 # evaluation: PRRS outbreaks injection
@@ -21,33 +31,32 @@ add.outbreaks.reservices <- function(indicator=indicators.data$reservices.week,
                                      quarters.list=quarters.list
 )
 {
-  range_weekly <- range.weekly(indicator=indicators.data$reservices.week,
-                               weekly.window=272)
+  range_weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
                            
   df.indicator.evaluate.system <- weekly.indicators(indicator=indicators.data$reservices.week,
-                                                    range.weekly=range_weekly)
+                                                    range.weekly=1:dim(index.dates.week)[1])
   
   data = df.indicator.evaluate.system[,"observed"]
   
-  week.quarter <- index.dates.week$week[range_weekly]-(floor((index.dates.week$week[range_weekly]-1)/13)*13)
+  week.quarter <- index.dates.week$week-(floor((index.dates.week$week-1)/13)*13)
   
   quarter <- c(rep(NA, dim(df.indicator.evaluate.system)[1]))
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]<=13, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],1, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week<=13, 
+                    paste(index.dates.week$ISOweekYear,1, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>13 & 
-                      index.dates.week$week[range_weekly]<=26, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],2, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>13 & 
+                      index.dates.week$week<=26, 
+                    paste(index.dates.week$ISOweekYear,2, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>26 & 
-                      index.dates.week$week[range_weekly]<=39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],3, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>26 & 
+                      index.dates.week$week<=39, 
+                    paste(index.dates.week$ISOweekYear,3, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],4, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>39, 
+                    paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
-  for ( q in quarters.list){ #q="2015.4"
+  for ( q in quarters.list){ #q="2018.1"
    
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -63,6 +72,7 @@ add.outbreaks.reservices <- function(indicator=indicators.data$reservices.week,
     
     #plot(lgn.reservices, type="l")
     
+   
     baseline.total <- sum(y)/length(y)  # Additive
     simulated.outbreak <- c(y[c(1,2)], ceiling(lgn.reservices[c(3:13)]*baseline.total)+y[c(3:13)])
     
@@ -70,7 +80,11 @@ add.outbreaks.reservices <- function(indicator=indicators.data$reservices.week,
       replace(data, which(quarter==q), simulated.outbreak)
     
     
-    add.df.indicator.evaluate.system <- data.frame(add.reservices.per.week.observed,
+    add.df.indicator.evaluate.system <- data.frame(df.indicator.evaluate.system$gilt,
+                                                   df.indicator.evaluate.system$young,
+                                                   df.indicator.evaluate.system$prime,
+                                                   df.indicator.evaluate.system$mature,
+                                                   add.reservices.per.week.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
                                                    df.indicator.evaluate.system$`LCL EWMA`,
@@ -79,13 +93,11 @@ add.outbreaks.reservices <- function(indicator=indicators.data$reservices.week,
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("observed", "baseline", "UCL EWMA", "LCL EWMA",
+    colnames(add.df.indicator.evaluate.system) <- c("gilt", "young", "prime", "mature",
+                                                    "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
     
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(index.dates.week$week[range_weekly]==53)),]
       
     ## Clean Baseline
     
@@ -93,44 +105,56 @@ add.outbreaks.reservices <- function(indicator=indicators.data$reservices.week,
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
                                                             run.window.weekly=104,
-                                                            nr.production.cycles=NULL)
+                                                            median.days.production.cycles=NULL,
+                                                            nr.production.cycles=2,
+                                                            range=range_weekly,
+                                                            indicator.type="W")
+    
+    
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.ewma=TRUE,
                                                    correct.baseline.LCL.ewma=TRUE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="W")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="W")
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(index.dates.week$week==53)),]
     
     ## construct final table
     
-    dates <- data.frame(index.dates.week$start[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$week[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$ISOweekYear[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        week.quarter[-(which(index.dates.week$week[range_weekly]==53))],
-                        quarter[-(which(index.dates.week$week[range_weekly]==53))])
+    dates <- data.frame(index.dates.week$start[-(which(index.dates.week$week==53))],
+                        index.dates.week$week[-(which(index.dates.week$week==53))],
+                        index.dates.week$ISOweekYear[-(which(index.dates.week$week==53))],
+                        week.quarter[-(which(index.dates.week$week==53))],
+                        quarter[-(which(index.dates.week$week==53))])
     
     table.evaluate.system <- data.frame(dates, add.df.indicator.evaluate.system)
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
+                                         "gilt", "young", "prime", "mature",
                                          "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                          "alarms EWMA", "UCL Shewhart", 
                                          "LCL Shewhart", "alarms Shewhart")
@@ -150,7 +174,7 @@ for (quarter in quarters.list){
                                                                       quarters.list=quarter)
 }
 
-#View(outbreaks.reservices.results[["2015.2"]])
+#View(outbreaks.reservices.results[["2017.4"]])
 
 
 
@@ -160,8 +184,9 @@ add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.l
                                            quarters.list=quarters.list
 )
 {
-  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$pregnancy.length,
-                                                        continuous.window=5500)
+  range.indicator <- max(1,(dim(indicators.data$pregnancy.length)[1]-continuous.window+1)):dim(indicators.data$pregnancy.length)[1]
+  
+  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$pregnancy.length)
   
   data = df.indicator.evaluate.system[,"observed"]
   
@@ -185,7 +210,7 @@ add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.l
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2015.2"
+  for ( q in quarters.list){ #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -234,6 +259,7 @@ add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.l
                                                    df.indicator.evaluate.system$week,
                                                    df.indicator.evaluate.system$year,
                                                    df.indicator.evaluate.system$sowINDEX,
+                                                   df.indicator.evaluate.system$parity,
                                                    add.pregnancy.length.df.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
@@ -243,53 +269,55 @@ add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.l
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX",
+    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX", "parity",
                                                     "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
-    
     
     ## Clean Baseline
     
     add.df.indicator.evaluate.system <- clean_baseline_perc(df.indicator=add.df.indicator.evaluate.system,
                                                             limit.upp=NULL,
                                                             limit.lw=0.05,
-                                                            run.window.weekly=NULL,
-                                                            nr.production.cycles=2)
+                                                            median.days.production.cycles=300,
+                                                            nr.production.cycles=2,
+                                                            range=range.indicator,
+                                                            indicator.type="C")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.ewma=FALSE,
                                                    correct.baseline.LCL.ewma=FALSE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="C")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="C")
+    
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     
     ## delete the row which is week 53 from week.quarter and quarter
-    
     week.quarter <- week.quarter[-c(which(df.indicator.evaluate.system$week==53))]
-    
     quarter <- quarter[-c(which(df.indicator.evaluate.system$week==53))]
     
     
@@ -303,7 +331,7 @@ add.outbreaks.pregnancy.length <- function(indicator=indicators.data$pregnancy.l
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
-                                         "sowINDEX", "observed", "baseline", 
+                                         "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
   }
@@ -322,7 +350,7 @@ for (quarter in quarters.list){
                                                                                   quarters.list=quarter)
 }
 
-#View(outbreaks.pregnancy.length.results[["2015.2"]])
+#View(outbreaks.pregnancy.length.results[["2017.2"]])
 
 
 
@@ -333,34 +361,33 @@ add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
                                     
 )
 {
-  range_weekly <- range.weekly(indicator=indicators.data$abortions.week,
-                               weekly.window=272)
+  range_weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
   
   df.indicator.evaluate.system <- weekly.indicators(indicator=indicators.data$abortions.week,
-                                                    range.weekly=range_weekly)
+                                                    range.weekly=1:dim(index.dates.week)[1])
+  
   
   data = df.indicator.evaluate.system[,"observed"]
   
-  week.quarter <- index.dates.week$week[range_weekly]-(floor((index.dates.week$week[range_weekly]-1)/13)*13)
+  week.quarter <- index.dates.week$week-(floor((index.dates.week$week-1)/13)*13)
   
   quarter <- c(rep(NA, dim(df.indicator.evaluate.system)[1]))
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]<=13, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],1, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week<=13, 
+                    paste(index.dates.week$ISOweekYear,1, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>13 & 
-                      index.dates.week$week[range_weekly]<=26, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],2, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>13 & 
+                      index.dates.week$week<=26, 
+                    paste(index.dates.week$ISOweekYear,2, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>26 & 
-                      index.dates.week$week[range_weekly]<=39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],3, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>26 & 
+                      index.dates.week$week<=39, 
+                    paste(index.dates.week$ISOweekYear,3, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],4, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>39, 
+                    paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
-  
-  for ( q in quarters.list){ #q="2015.2"
+  for ( q in quarters.list){ #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -393,7 +420,11 @@ add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
       data.frame(replace(data, which(quarter==q), simulated.outbreak))
     
     
-    add.df.indicator.evaluate.system <- data.frame(add.abortions.per.week.observed,
+    add.df.indicator.evaluate.system <- data.frame(df.indicator.evaluate.system$gilt,
+                                                   df.indicator.evaluate.system$young,
+                                                   df.indicator.evaluate.system$prime,
+                                                   df.indicator.evaluate.system$mature,
+                                                   add.abortions.per.week.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
                                                    df.indicator.evaluate.system$`LCL EWMA`,
@@ -402,13 +433,10 @@ add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("observed", "baseline", "UCL EWMA", "LCL EWMA",
+    colnames(add.df.indicator.evaluate.system) <- c("gilt", "young", "prime", "mature",
+                                                    "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(index.dates.week$week[range_weekly]==53)),]
     
     
     ## Clean Baseline
@@ -417,44 +445,54 @@ add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
                                                             run.window.weekly=104,
-                                                            nr.production.cycles=NULL)
+                                                            median.days.production.cycles=NULL,
+                                                            nr.production.cycles=2,
+                                                            range=range_weekly,
+                                                            indicator.type="W")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.ewma=TRUE,
                                                    correct.baseline.LCL.ewma=TRUE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="W")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="W")
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(index.dates.week$week==53)),]
     
     ## construct final table
     
-    dates <- data.frame(index.dates.week$start[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$week[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$ISOweekYear[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        week.quarter[-(which(index.dates.week$week[range_weekly]==53))],
-                        quarter[-(which(index.dates.week$week[range_weekly]==53))])
+    dates <- data.frame(index.dates.week$start[-(which(index.dates.week$week==53))],
+                        index.dates.week$week[-(which(index.dates.week$week==53))],
+                        index.dates.week$ISOweekYear[-(which(index.dates.week$week==53))],
+                        week.quarter[-(which(index.dates.week$week==53))],
+                        quarter[-(which(index.dates.week$week==53))])
     
     table.evaluate.system <- data.frame(dates, add.df.indicator.evaluate.system)
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
+                                         "gilt", "young", "prime", "mature",
                                          "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                          "alarms EWMA", "UCL Shewhart", 
                                          "LCL Shewhart", "alarms Shewhart")
@@ -474,7 +512,7 @@ for (quarter in quarters.list){
                                                                     quarters.list=quarter)
 }
 
-#View(outbreaks.abortions.results[["2017.1"]])
+#View(outbreaks.abortions.results[["2018.3"]])
 
 
 
@@ -484,8 +522,9 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
                                        quarters.list=quarters.list
 )
 {
-  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$live.born.litter,
-                                                        continuous.window=5500)
+  range.indicator <- max(1,(dim(indicators.data$live.born.litter)[1]-continuous.window+1)):dim(indicators.data$live.born.litter)[1]
+  
+  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$live.born.litter)
   
   data = df.indicator.evaluate.system[,"observed"]
   
@@ -509,7 +548,7 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2015.2"
+  for ( q in quarters.list){  #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -544,7 +583,7 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
     weeks.corrected <- weeks-(floor((weeks-1)/13)*13)
     
     factor <- lgn.live.piglets[weeks.corrected]
-    born.dead <- round(y*factor)   ##born.dead podem ser stillbirths ou mummi
+    born.dead <- round(y*factor)   ##born.dead could be stillbirths or mummified
     
     simulated.outbreak <- pmax(0,y-born.dead)
     
@@ -560,6 +599,7 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
                                                    df.indicator.evaluate.system$week,
                                                    df.indicator.evaluate.system$year,
                                                    df.indicator.evaluate.system$sowINDEX,
+                                                   df.indicator.evaluate.system$parity,
                                                    add.live.piglets.per.farrowing.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
@@ -569,53 +609,54 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX",
+    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX", "parity",
                                                     "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
     
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
-    
-    
-    ## Clean Baseline
+   ## Clean Baseline
     
     add.df.indicator.evaluate.system <- clean_baseline_perc(df.indicator=add.df.indicator.evaluate.system,
                                                             limit.upp=NULL,
                                                             limit.lw=0.05,
-                                                            run.window.weekly=NULL,
-                                                            nr.production.cycles=2)
+                                                            median.days.production.cycles=300,
+                                                            nr.production.cycles=2,
+                                                            range=range.indicator,
+                                                            indicator.type="C")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.ewma=FALSE,
                                                    correct.baseline.LCL.ewma=FALSE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="C")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="C")
     
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     ## delete the row which is week 53 from week.quarter and quarter
-    
     week.quarter <- week.quarter[-c(which(df.indicator.evaluate.system$week==53))]
-    
     quarter <- quarter[-c(which(df.indicator.evaluate.system$week==53))]
     
     
@@ -629,7 +670,7 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
-                                         "sowINDEX", "observed", "baseline", 
+                                         "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
   }
@@ -656,7 +697,7 @@ for (quarter in quarters.list){
   
 }
 
-#View(outbreaks.live.piglets.results[["2015.2"]])
+#View(outbreaks.live.piglets.results[["2018.2"]])
 
 
 
@@ -666,8 +707,9 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                                             quarters.list=quarters.list
 )
 {
-  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$perc.dead.born.litter,
-                                                        continuous.window=5500)
+  range.indicator <- max(1,(dim(indicators.data$perc.dead.born.litter)[1]-continuous.window+1)):dim(indicators.data$perc.dead.born.litter)[1]
+  
+  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$perc.dead.born.litter)
   
   data = df.indicator.evaluate.system[,"observed"]
   
@@ -691,7 +733,7 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2015.2"
+  for ( q in quarters.list){  #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -717,6 +759,7 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                                                    df.indicator.evaluate.system$week,
                                                    df.indicator.evaluate.system$year,
                                                    df.indicator.evaluate.system$sowINDEX,
+                                                   df.indicator.evaluate.system$parity,
                                                    add.perc.dead.piglets.per.farrowing.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
@@ -726,53 +769,53 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX",
+    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX", "parity",
                                                     "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
-    
     
     ## Clean Baseline
     
     add.df.indicator.evaluate.system <- clean_baseline_perc(df.indicator=add.df.indicator.evaluate.system,
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
-                                                            run.window.weekly=NULL,
-                                                            nr.production.cycles=2)
+                                                            median.days.production.cycles=300,
+                                                            nr.production.cycles=2,
+                                                            range=range.indicator,
+                                                            indicator.type="C")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.ewma=FALSE,
                                                    correct.baseline.LCL.ewma=FALSE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="C")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="C")
     
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     ## delete the row which is week 53 from week.quarter and quarter
-    
     week.quarter <- week.quarter[-c(which(df.indicator.evaluate.system$week==53))]
-    
     quarter <- quarter[-c(which(df.indicator.evaluate.system$week==53))]
     
     
@@ -786,7 +829,7 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
-                                         "sowINDEX", "observed", "baseline", 
+                                         "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
     
@@ -811,7 +854,7 @@ for (quarter in quarters.list){
                                     quarters.list=quarter)
 }
 
-#View(outbreaks.perc.dead.piglets.results[["2015.2"]])
+#View(outbreaks.perc.dead.piglets.results[["2018.2"]])
 
 
 
@@ -821,8 +864,9 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
                                         quarters.list=quarters.list
 )
 {
-  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$mummi.born.litter,
-                                                        continuous.window=5500)
+  range.indicator <- max(1,(dim(indicators.data$mummi.born.litter)[1]-continuous.window+1)):dim(indicators.data$mummi.born.litter)[1]
+  
+  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$mummi.born.litter)
   
   data = df.indicator.evaluate.system[,"observed"]
   
@@ -846,7 +890,7 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2015.2"
+  for ( q in quarters.list){  #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -871,6 +915,7 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
                                                    df.indicator.evaluate.system$week,
                                                    df.indicator.evaluate.system$year,
                                                    df.indicator.evaluate.system$sowINDEX,
+                                                   df.indicator.evaluate.system$parity,
                                                    add.mummi.piglets.per.farrowing.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
@@ -880,14 +925,10 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX",
+    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX", "parity",
                                                     "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     
     ## Clean Baseline
@@ -895,38 +936,44 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
     add.df.indicator.evaluate.system <- clean_baseline_perc(df.indicator=add.df.indicator.evaluate.system,
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
-                                                            run.window.weekly=NULL,
-                                                            nr.production.cycles=2)
+                                                            median.days.production.cycles=300,
+                                                            nr.production.cycles=2,
+                                                            range=range.indicator,
+                                                            indicator.type="C")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.ewma=FALSE,
                                                    correct.baseline.LCL.ewma=FALSE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="C")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="C")
     
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     ## delete the row which is week 53 from week.quarter and quarter
-    
     week.quarter <- week.quarter[-c(which(df.indicator.evaluate.system$week==53))]
-    
     quarter <- quarter[-c(which(df.indicator.evaluate.system$week==53))]
     
     
@@ -940,7 +987,7 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
-                                         "sowINDEX", "observed", "baseline", 
+                                         "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
     
@@ -959,7 +1006,7 @@ for (quarter in quarters.list){
                                                                             quarters.list=quarter)
 }
 
-#View(outbreaks.mummi.piglets.results[["2015.2"]])
+#View(outbreaks.mummi.piglets.results[["2017.2"]])
 
 
 
@@ -970,35 +1017,33 @@ add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.we
                                               
 )
 {
-  
-  range_weekly <- range.weekly(indicator=indicators.data$total.wean.week,
-                               weekly.window=272)
+  range_weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
   
   df.indicator.evaluate.system <- weekly.indicators(indicator=indicators.data$total.wean.week,
-                                                    range.weekly=range_weekly)
+                                                    range.weekly=1:dim(index.dates.week)[1])
   
   data = df.indicator.evaluate.system[,"observed"]
   
-  week.quarter <- index.dates.week$week[range_weekly]-(floor((index.dates.week$week[range_weekly]-1)/13)*13)
+  week.quarter <- index.dates.week$week-(floor((index.dates.week$week-1)/13)*13)
   
   quarter <- c(rep(NA, dim(df.indicator.evaluate.system)[1]))
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]<=13, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],1, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week<=13, 
+                    paste(index.dates.week$ISOweekYear,1, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>13 & 
-                      index.dates.week$week[range_weekly]<=26, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],2, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>13 & 
+                      index.dates.week$week<=26, 
+                    paste(index.dates.week$ISOweekYear,2, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>26 & 
-                      index.dates.week$week[range_weekly]<=39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],3, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>26 & 
+                      index.dates.week$week<=39, 
+                    paste(index.dates.week$ISOweekYear,3, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],4, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>39, 
+                    paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2015.4"
+  for ( q in quarters.list){ #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1022,8 +1067,11 @@ add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.we
     add.piglets.weaned.per.week.observed <-
       replace(data, which(quarter==q), simulated.outbreak)
     
-    
-    add.df.indicator.evaluate.system <- data.frame(add.piglets.weaned.per.week.observed,
+    add.df.indicator.evaluate.system <- data.frame(df.indicator.evaluate.system$gilt,
+                                                   df.indicator.evaluate.system$young,
+                                                   df.indicator.evaluate.system$prime,
+                                                   df.indicator.evaluate.system$mature,
+                                                   add.piglets.weaned.per.week.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
                                                    df.indicator.evaluate.system$`LCL EWMA`,
@@ -1032,14 +1080,10 @@ add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.we
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("observed", "baseline", "UCL EWMA", "LCL EWMA",
+    colnames(add.df.indicator.evaluate.system) <- c("gilt", "young", "prime", "mature",
+                                                    "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(index.dates.week$week[range_weekly]==53)),]
-    
     
     ## Clean Baseline
     
@@ -1047,44 +1091,54 @@ add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.we
                                                             limit.upp=NULL,
                                                             limit.lw=0.05,
                                                             run.window.weekly=104,
-                                                            nr.production.cycles=NULL)
+                                                            median.days.production.cycles=NULL,
+                                                            nr.production.cycles=2,
+                                                            range=range_weekly,
+                                                            indicator.type="W")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.ewma=TRUE,
                                                    correct.baseline.LCL.ewma=TRUE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="W")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="W")
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(index.dates.week$week==53)),]
     
     ## construct final table
     
-    dates <- data.frame(index.dates.week$start[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$week[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$ISOweekYear[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        week.quarter[-(which(index.dates.week$week[range_weekly]==53))],
-                        quarter[-(which(index.dates.week$week[range_weekly]==53))])
+    dates <- data.frame(index.dates.week$start[-(which(index.dates.week$week==53))],
+                        index.dates.week$week[-(which(index.dates.week$week==53))],
+                        index.dates.week$ISOweekYear[-(which(index.dates.week$week==53))],
+                        week.quarter[-(which(index.dates.week$week==53))],
+                        quarter[-(which(index.dates.week$week==53))])
     
     table.evaluate.system <- data.frame(dates, add.df.indicator.evaluate.system)
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
+                                         "gilt", "young", "prime", "mature",
                                          "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                          "alarms EWMA", "UCL Shewhart", 
                                          "LCL Shewhart", "alarms Shewhart")
@@ -1105,7 +1159,7 @@ for (quarter in quarters.list){
                                       quarters.list=quarter)
 }
 
-#View(outbreaks.piglets.weaned.week.results[["2015.3"]])
+#View(outbreaks.piglets.weaned.week.results[["2017.2"]])
 
 
 
@@ -1116,8 +1170,9 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
 )
 {
   
-  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$total.wean.litter,
-                                                        continuous.window=5500)
+  range.indicator <- max(1,(dim(indicators.data$total.wean.litter)[1]-continuous.window+1)):dim(indicators.data$total.wean.litter)[1]
+  
+  df.indicator.evaluate.system <- continuous.indicators(indicator=indicators.data$total.wean.litter)
   
   data = df.indicator.evaluate.system[,"observed"]
   
@@ -1141,7 +1196,7 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2015.2"
+  for ( q in quarters.list){  #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1175,6 +1230,7 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
                                                    df.indicator.evaluate.system$week,
                                                    df.indicator.evaluate.system$year,
                                                    df.indicator.evaluate.system$sowINDEX,
+                                                   df.indicator.evaluate.system$parity,
                                                    add.piglets.weaned.per.litter.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
@@ -1184,53 +1240,54 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX",
+    colnames(add.df.indicator.evaluate.system) <- c("date", "week", "year", "sowINDEX", "parity",
                                                     "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
-    
     
     ## Clean Baseline
     
     add.df.indicator.evaluate.system <- clean_baseline_perc(df.indicator=add.df.indicator.evaluate.system,
                                                             limit.upp=NULL,
                                                             limit.lw=0.05,
-                                                            run.window.weekly=NULL,
-                                                            nr.production.cycles=2)
+                                                            median.days.production.cycles=300,
+                                                            nr.production.cycles=2,
+                                                            range=range.indicator,
+                                                            indicator.type="C")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.ewma=FALSE,
                                                    correct.baseline.LCL.ewma=FALSE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="C")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
                                                    evaluate.weekly.window=NULL,
                                                    baseline.weekly.window=NULL,
+                                                   continuous.window=5000,
                                                    limit.sd=c(2.5,3,3.5),
-                                                   guard.band.weekly=NULL,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="C")
     
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(df.indicator.evaluate.system$week==53)),]
     
     ## delete the row which is week 53 from week.quarter and quarter
-    
     week.quarter <- week.quarter[-c(which(df.indicator.evaluate.system$week==53))]
-    
     quarter <- quarter[-c(which(df.indicator.evaluate.system$week==53))]
     
     
@@ -1244,7 +1301,7 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
-                                         "sowINDEX", "observed", "baseline", 
+                                         "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
     
@@ -1264,7 +1321,7 @@ for (quarter in quarters.list){
                                         quarters.list=quarter)
 }
 
-#View(outbreaks.piglets.weaned.litter.results[["2015.2"]])
+#View(outbreaks.piglets.weaned.litter.results[["2017.2"]])
 
 
 
@@ -1276,34 +1333,33 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
                                          
 )
 {
-  range_weekly <- range.weekly(indicator=indicators.data$negdiff.wean.week,
-                               weekly.window=272)
+  range_weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
   
   df.indicator.evaluate.system <- weekly.indicators(indicator=indicators.data$negdiff.wean.week,
-                                                    range.weekly=range_weekly)
+                                                    range.weekly=1:dim(index.dates.week)[1])
   
   data = df.indicator.evaluate.system[,"observed"]
   
-  week.quarter <- index.dates.week$week[range_weekly]-(floor((index.dates.week$week[range_weekly]-1)/13)*13)
+  week.quarter <- index.dates.week$week-(floor((index.dates.week$week-1)/13)*13)
   
   quarter <- c(rep(NA, dim(df.indicator.evaluate.system)[1]))
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]<=13, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],1, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week<=13, 
+                    paste(index.dates.week$ISOweekYear,1, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>13 & 
-                      index.dates.week$week[range_weekly]<=26, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],2, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>13 & 
+                      index.dates.week$week<=26, 
+                    paste(index.dates.week$ISOweekYear,2, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>26 & 
-                      index.dates.week$week[range_weekly]<=39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],3, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>26 & 
+                      index.dates.week$week<=39, 
+                    paste(index.dates.week$ISOweekYear,3, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],4, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>39, 
+                    paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2015.4"
+  for ( q in quarters.list){ #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1321,14 +1377,17 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
     #plot(lgn.weaning.deaths, type="l") 
     
     simulated.outbreak <- c(y[1], ceiling(y[c(2:13)]*lgn.weaning.deaths[c(2:13)])+y[c(2:13)])
-    #plot(simulated.outbreak,type="l")
     
+    #plot(simulated.outbreak,type="l")
     
     add.negdiff.wean.week.df.observed <-
       replace(data, which(quarter==q), simulated.outbreak)
     
-    
-    add.df.indicator.evaluate.system <- data.frame(add.negdiff.wean.week.df.observed,
+    add.df.indicator.evaluate.system <- data.frame(df.indicator.evaluate.system$gilt,
+                                                   df.indicator.evaluate.system$young,
+                                                   df.indicator.evaluate.system$prime,
+                                                   df.indicator.evaluate.system$mature,
+                                                   add.negdiff.wean.week.df.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
                                                    df.indicator.evaluate.system$`LCL EWMA`,
@@ -1337,13 +1396,10 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("observed", "baseline", "UCL EWMA", "LCL EWMA",
+    colnames(add.df.indicator.evaluate.system) <- c("gilt", "young", "prime", "mature",
+                                                    "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(index.dates.week$week[range_weekly]==53)),]
     
     
     ## Clean Baseline
@@ -1352,44 +1408,54 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
                                                             run.window.weekly=104,
-                                                            nr.production.cycles=NULL)
+                                                            median.days.production.cycles=NULL,
+                                                            nr.production.cycles=2,
+                                                            range=range_weekly,
+                                                            indicator.type="W")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.ewma=TRUE,
                                                    correct.baseline.LCL.ewma=TRUE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="W")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="W")
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(index.dates.week$week==53)),]
     
     ## construct final table
     
-    dates <- data.frame(index.dates.week$start[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$week[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$ISOweekYear[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        week.quarter[-(which(index.dates.week$week[range_weekly]==53))],
-                        quarter[-(which(index.dates.week$week[range_weekly]==53))])
+    dates <- data.frame(index.dates.week$start[-(which(index.dates.week$week==53))],
+                        index.dates.week$week[-(which(index.dates.week$week==53))],
+                        index.dates.week$ISOweekYear[-(which(index.dates.week$week==53))],
+                        week.quarter[-(which(index.dates.week$week==53))],
+                        quarter[-(which(index.dates.week$week==53))])
     
     table.evaluate.system <- data.frame(dates, add.df.indicator.evaluate.system)
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
+                                         "gilt", "young", "prime", "mature",
                                          "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                          "alarms EWMA", "UCL Shewhart", 
                                          "LCL Shewhart", "alarms Shewhart")
@@ -1397,7 +1463,7 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
   
   return(table.evaluate.system)
 }
-
+  
 
 ## Cluster all in one list
 
@@ -1410,7 +1476,7 @@ for (quarter in quarters.list){
                                  quarters.list=quarter)
 }
 
-#View(outbreaks.weaning.deaths.results[["2015.3"]])
+#View(outbreaks.weaning.deaths.results[["2017.2"]])
 
 
 
@@ -1421,34 +1487,33 @@ add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths
                                          
 )
 {
-  range_weekly <- range.weekly(indicator=indicators.data$number.deaths.week,
-                               weekly.window=272)
+  range_weekly <- max(1,(dim(index.dates.week)[1]-weekly.window+1)):dim(index.dates.week)[1]
   
   df.indicator.evaluate.system <- weekly.indicators(indicator=indicators.data$number.deaths.week,
-                                                    range.weekly=range_weekly)
+                                                    range.weekly=1:dim(index.dates.week)[1])
   
   data = df.indicator.evaluate.system[,"observed"]
   
-  week.quarter <- index.dates.week$week[range_weekly]-(floor((index.dates.week$week[range_weekly]-1)/13)*13)
+  week.quarter <- index.dates.week$week-(floor((index.dates.week$week-1)/13)*13)
   
   quarter <- c(rep(NA, dim(df.indicator.evaluate.system)[1]))
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]<=13, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],1, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week<=13, 
+                    paste(index.dates.week$ISOweekYear,1, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>13 & 
-                      index.dates.week$week[range_weekly]<=26, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],2, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>13 & 
+                      index.dates.week$week<=26, 
+                    paste(index.dates.week$ISOweekYear,2, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>26 & 
-                      index.dates.week$week[range_weekly]<=39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],3, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>26 & 
+                      index.dates.week$week<=39, 
+                    paste(index.dates.week$ISOweekYear,3, sep = "."), quarter)
   
-  quarter <- ifelse(index.dates.week$week[range_weekly]>39, 
-                    paste(index.dates.week$ISOweekYear[range_weekly],4, sep = "."), quarter)
+  quarter <- ifelse(index.dates.week$week>39, 
+                    paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2015.4"
+  for ( q in quarters.list){ #q="2017.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1474,7 +1539,11 @@ add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths
       replace(data, which(quarter==q), simulated.outbreak)
     
     
-    add.df.indicator.evaluate.system <- data.frame(add.mortality.sows.observed,
+    add.df.indicator.evaluate.system <- data.frame(df.indicator.evaluate.system$gilt,
+                                                   df.indicator.evaluate.system$young,
+                                                   df.indicator.evaluate.system$prime,
+                                                   df.indicator.evaluate.system$mature,
+                                                   add.mortality.sows.observed,
                                                    df.indicator.evaluate.system$baseline,
                                                    df.indicator.evaluate.system$`UCL EWMA`,
                                                    df.indicator.evaluate.system$`LCL EWMA`,
@@ -1483,13 +1552,10 @@ add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths
                                                    df.indicator.evaluate.system$`LCL Shewhart`,
                                                    df.indicator.evaluate.system$`alarms Shewhart`)
     
-    colnames(add.df.indicator.evaluate.system) <- c("observed", "baseline", "UCL EWMA", "LCL EWMA",
+    colnames(add.df.indicator.evaluate.system) <- c("gilt", "young", "prime", "mature",
+                                                    "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                                     "alarms EWMA", "UCL Shewhart", 
                                                     "LCL Shewhart", "alarms Shewhart")
-    
-    #delete the row which is week 53
-    add.df.indicator.evaluate.system <-
-      add.df.indicator.evaluate.system[-c(which(index.dates.week$week[range_weekly]==53)),]
     
     
     ## Clean Baseline
@@ -1498,44 +1564,54 @@ add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths
                                                             limit.upp=0.95,
                                                             limit.lw=NULL,
                                                             run.window.weekly=104,
-                                                            nr.production.cycles=NULL)
+                                                            median.days.production.cycles=NULL,
+                                                            nr.production.cycles=2,
+                                                            range=range_weekly,
+                                                            indicator.type="W")
     ## Applying EWMA
     
     add.df.indicator.evaluate.system <- apply_ewma(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    lambda=0.2,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.ewma=TRUE,
                                                    correct.baseline.LCL.ewma=TRUE,
                                                    UCL.ewma=2,
-                                                   LCL.ewma=2)
+                                                   LCL.ewma=2,
+                                                   indicator.type="W")
     
     ## Applying Shewhart
     
     add.df.indicator.evaluate.system <- shew_apply(df.indicator=add.df.indicator.evaluate.system,
-                                                   evaluate.weekly.window=165,
-                                                   baseline.weekly.window=104,
+                                                   evaluate.weekly.window=106,
+                                                   baseline.weekly.window=52,
                                                    limit.sd=c(2.5,3,3.5),
                                                    guard.band.weekly=2,
                                                    correct.baseline.UCL.shew=FALSE,
                                                    correct.baseline.LCL.shew=FALSE,
                                                    UCL.shew=2,
-                                                   LCL.shew=2)
+                                                   LCL.shew=2,
+                                                   indicator.type="W")
+    
+    #delete the row which is week 53
+    add.df.indicator.evaluate.system <-
+      add.df.indicator.evaluate.system[-c(which(index.dates.week$week==53)),]
     
     ## construct final table
     
-    dates <- data.frame(index.dates.week$start[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$week[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        index.dates.week$ISOweekYear[range_weekly[-(which(index.dates.week$week[range_weekly]==53))]],
-                        week.quarter[-(which(index.dates.week$week[range_weekly]==53))],
-                        quarter[-(which(index.dates.week$week[range_weekly]==53))])
+    dates <- data.frame(index.dates.week$start[-(which(index.dates.week$week==53))],
+                        index.dates.week$week[-(which(index.dates.week$week==53))],
+                        index.dates.week$ISOweekYear[-(which(index.dates.week$week==53))],
+                        week.quarter[-(which(index.dates.week$week==53))],
+                        quarter[-(which(index.dates.week$week==53))])
     
     table.evaluate.system <- data.frame(dates, add.df.indicator.evaluate.system)
     
     
     colnames(table.evaluate.system) <- c("date", "week", "year", "week quarter", "quarter",
+                                         "gilt", "young", "prime", "mature",
                                          "observed", "baseline", "UCL EWMA", "LCL EWMA",
                                          "alarms EWMA", "UCL Shewhart", 
                                          "LCL Shewhart", "alarms Shewhart")
