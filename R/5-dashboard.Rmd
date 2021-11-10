@@ -27,10 +27,6 @@ output:
 
 }
 
-<!-- .active { -->
-<!--   font-size:20px; -->
-<!-- } -->
-
 .tabset { 
   font-size:17px;
 }
@@ -51,6 +47,7 @@ library(stringr)
 
 
 setwd('..') #do not run this line if running manually (instead of knitting)
+
 
 load("data/farm01/individual.sows.RData")
 load("data/farm01/indicators.RData")
@@ -171,70 +168,6 @@ return(arguments)
 ```
 
 # Overview {.sidebar data-width=200}
-
-# Overview
-
-Row
------------------------------------------------------------------------
-
-```{r, fig.width=14, fig.height=12}
-  gauge(42, min = 0, max = 100, symbol = '%', label = "Gilts", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=14, fig.height=12}
-  gauge(31, min = 0, max = 100, symbol = '%', label = "Empty Sows", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=14, fig.height=12}
-  gauge(97, min = 0, max = 100, symbol = '%', label = "Services", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=14, fig.height=12}
-  gauge(50, min = 0, max = 100, symbol = '%', label = "Pregnancy", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-Row
------------------------------------------------------------------------
-
-```{r, fig.width=16, fig.height=10}
-  gauge(80, min = 0, max = 100, symbol = '%', label = "Farrowing", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=16, fig.height=10}
-  gauge(27, min = 0, max = 100, symbol = '%', label = "Weaning", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=16, fig.height=10}
-  gauge(78, min = 0, max = 100, symbol = '%', label = "Post-Weaning", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
-
-```{r, fig.width=16, fig.height=10}
-  gauge(50, min = 0, max = 100, symbol = '%', label = "Exit", gaugeSectors(
-    success = c(80, 100), warning = c(40, 79), danger = c(0, 39), colors = c("#33cc33","#ffcc00","#cc0000")
-  ))
-
-```
 
 
 Management {data-navmenu="Gilts"}
