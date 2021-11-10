@@ -15,7 +15,7 @@ source("R/Functions.r")
 
 #load("data/individual.sows2.RData")
 #load("data/animal.RData")
-#load("data/farm01/indicators.RData")
+#load("data/indicators.RData")
 
 
 ## RUN in the following order:

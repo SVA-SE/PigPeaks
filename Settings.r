@@ -48,9 +48,9 @@ c3 <- c(rep("gilt",2),
 # functions arguments ----
 
 weekly.window <- 160               #weeks to see in each indicator
-                                        #if you are using the data example provided put: weekly.window <- 160
+                                        #if you are using the data example provided use: weekly.window <- 160
 continuous.window <- 5000          #observations to see in each indicator
-                                        #if you are using the data example provided put: continuous.window <- 5000
+                                        #if you are using the data example provided use: continuous.window <- 5000
 
 limit.upp <- 0.95                  #upper limit (upper percentile) to clean baseline non-parametric
 limit.lw <- 0.05                   #lower limit (lower percentile) to clean baseline non-parametric
@@ -62,10 +62,10 @@ median.days.production.cycles=300 #if left as NULL, it will be calculated based 
                                    #median.days.production.cycles <- 300 (if you are using the data example provided use median.days.production.cycles <- 300)
 
 evaluate.weekly.window=106      #number of time points to be evaluated by the algorithm for weekly indicators
-                                        #if you are using the data example provided put: evaluate.weekly.window <- 106
+                                        #if you are using the data example provided use: evaluate.weekly.window <- 106
 
 baseline.weekly.window=52      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
-                                        #if you are using the data example provided put: baseline.weekly.window <- 52
+                                        #if you are using the data example provided use: baseline.weekly.window <- 52
 
 guard.band.weekly=2             #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
 
