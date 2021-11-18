@@ -8,19 +8,18 @@ require(tibble)
 require(qcc)
 require(abind)
 
-
 load('Data_Example/indicatorsExample.RData')
 source('Settings.r')
-source('R/Functions.r') 
+source('R/Functions.r')
 source('R/Functions-plotting.r')
+source('R/4-detection.r')
+
 
 
 # inject outbreaks in quarters
 
- quarters.list = c("2017.2", "2017.3", "2017.4",
-                   "2018.1", "2018.2", "2018.3", "2018.4")                       
-
-
+quarters.list = c("2017.2", "2017.3", "2017.4",
+                  "2018.1", "2018.2", "2018.3", "2018.4")
 
 # evaluation: PRRS outbreaks injection
 ##based on papers (Valdes-Donoso et al. 2018) and (Pejsak and Markowska-Daniel 1997) 
@@ -174,6 +173,7 @@ for (quarter in quarters.list){
                                                                       quarters.list=quarter)
 }
 
+#View(outbreaks.reservices.results)
 #View(outbreaks.reservices.results[["2017.4"]])
 
 
@@ -350,7 +350,7 @@ for (quarter in quarters.list){
                                                                                   quarters.list=quarter)
 }
 
-#View(outbreaks.pregnancy.length.results[["2017.2"]])
+#View(outbreaks.pregnancy.length.results[["2018.2"]])
 
 
 
@@ -387,7 +387,7 @@ add.outbreaks.abortions <- function(indicator=indicators.data$abortions.week,
   quarter <- ifelse(index.dates.week$week>39, 
                     paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
-  for ( q in quarters.list){ #q="2017.2"
+  for ( q in quarters.list){ #q="2018.4"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -512,7 +512,7 @@ for (quarter in quarters.list){
                                                                     quarters.list=quarter)
 }
 
-#View(outbreaks.abortions.results[["2018.3"]])
+#View(outbreaks.abortions.results[["2018.4"]])
 
 
 
@@ -548,7 +548,7 @@ add.outbreaks.live.piglets <- function(indicator=indicators.data$live.born.litte
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2017.2"
+  for ( q in quarters.list){  #q="2018.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -733,7 +733,7 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2017.2"
+  for ( q in quarters.list){  #q="2018.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -832,12 +832,7 @@ add.outbreaks.perc.dead.piglets <- function(indicator=indicators.data$perc.dead.
                                          "sowINDEX", "parity", "observed", "baseline", 
                                          "UCL EWMA", "LCL EWMA", "alarms EWMA", 
                                          "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
-    
-    # #replace the NaN values for 0.00
-    # add.perc.dead.piglets.per.farrowing[,"observed"] <- 
-    #   replace(add.perc.dead.piglets.per.farrowing[,"observed"],
-    #           which(is.nan(add.perc.dead.piglets.per.farrowing[, "observed"])), 0.00)
-    # 
+ 
   }   
   return(table.evaluate.system)
 }
@@ -890,7 +885,7 @@ add.outbreaks.mummi.piglets <- function(indicator=indicators.data$mummi.born.lit
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2017.2"
+  for ( q in quarters.list){  #q="2018.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1006,7 +1001,7 @@ for (quarter in quarters.list){
                                                                             quarters.list=quarter)
 }
 
-#View(outbreaks.mummi.piglets.results[["2017.2"]])
+#View(outbreaks.mummi.piglets.results[["2018.2"]])
 
 
 
@@ -1043,7 +1038,7 @@ add.outbreaks.piglets.weaned.week <- function(indicator=indicators.data$total.we
                     paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2017.2"
+  for ( q in quarters.list){ #q="2018.4"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1159,7 +1154,7 @@ for (quarter in quarters.list){
                                       quarters.list=quarter)
 }
 
-#View(outbreaks.piglets.weaned.week.results[["2017.2"]])
+#View(outbreaks.piglets.weaned.week.results[["2018.4"]])
 
 
 
@@ -1196,7 +1191,7 @@ add.outbreaks.piglets.weaned.litter <- function(indicator=indicators.data$total.
                     paste(df.indicator.evaluate.system$year,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){  #q="2017.2"
+  for ( q in quarters.list){  #q="2018.2"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1321,7 +1316,7 @@ for (quarter in quarters.list){
                                         quarters.list=quarter)
 }
 
-#View(outbreaks.piglets.weaned.litter.results[["2017.2"]])
+#View(outbreaks.piglets.weaned.litter.results[["2018.2"]])
 
 
 
@@ -1359,7 +1354,7 @@ add.outbreaks.weaning.deaths <- function(indicator=indicators.data$negdiff.wean.
                     paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2017.2"
+  for ( q in quarters.list){ #q="2018.4"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1476,7 +1471,7 @@ for (quarter in quarters.list){
                                  quarters.list=quarter)
 }
 
-#View(outbreaks.weaning.deaths.results[["2017.2"]])
+#View(outbreaks.weaning.deaths.results[["2018.3"]])
 
 
 
@@ -1513,7 +1508,7 @@ add.outbreaks.mortality.sows <- function(indicator=indicators.data$number.deaths
                     paste(index.dates.week$ISOweekYear,4, sep = "."), quarter)
   
   
-  for ( q in quarters.list){ #q="2017.2"
+  for ( q in quarters.list){ #q="2018.4"
     
     start = first(which(quarter==q))
     end = last(which(quarter==q))
@@ -1632,3 +1627,42 @@ for (quarter in quarters.list){
 }
 
 #View(outbreaks.mortality.sows.results[["2017.4"]])
+
+
+# join all results of the same quarter
+
+outbreaks.results <- list()
+
+for (quarter in quarters.list){
+
+  outbreaks.results[[quarter]] <- list(outbreaks.reservices.results[[quarter]],
+                                       outbreaks.pregnancy.length.results[[quarter]],
+                                       outbreaks.abortions.results[[quarter]],
+                                       outbreaks.live.piglets.results[[quarter]],
+                                       outbreaks.perc.dead.piglets.results[[quarter]],
+                                       outbreaks.mummi.piglets.results[[quarter]],
+                                       outbreaks.piglets.weaned.week.results[[quarter]],
+                                       outbreaks.piglets.weaned.litter.results[[quarter]],
+                                       outbreaks.weaning.deaths.results[[quarter]],
+                                       outbreaks.mortality.sows.results[[quarter]])
+
+  names(outbreaks.results[[quarter]]) <- c("reservices.week","pregnancy.length", "abortions.week",
+                                           "live.born.litter", "perc.dead.born.litter",
+                                           "mummi.born.litter", "total.wean.week", "total.wean.litter",
+                                           "negdiff.wean.week", "number.deaths.week")
+
+}
+
+#View(outbreaks.results[["2017.2"]])
+
+
+
+#join the indicators without outbreaks with the ones with outbreaks
+##quarter chosen: 2018.4
+
+replace.indicators <- c("Reservices per week", "pregnancy length","abortions per week",
+                        "live born per farrowing", "% dead born per farrowing", "mummified per farrowing",
+                        "piglets weaned per week", "piglets weaned per weaning",
+                        "expected-weaned weaned per week","sow deaths per week")
+
+indicators.time.series[replace.indicators] <- outbreaks.results[["2018.4"]]
