@@ -9,7 +9,7 @@ source("Definitions.r")
 # database connection settings ----
 server="XXXX" #private information referring to the local computer, see documentation
 database="XXXXX" #name of the WinPig database on your computer, see documentation
-farm.name="farmExample" #name will be used to save base files
+farm.name="farm01" #name will be used to save base files
 
 language=19 #19 is swedish, see documentation for other languages
 
@@ -48,24 +48,24 @@ c3 <- c(rep("gilt",2),
 # functions arguments ----
 
 weekly.window <- 160               #weeks to see in each indicator
-                                        #if you are using the data example provided use: weekly.window <- 160
+                                        #if you are using the data example provided put: weekly.window <- 160
 continuous.window <- 5000          #observations to see in each indicator
-                                        #if you are using the data example provided use: continuous.window <- 5000
+                                        #if you are using the data example provided put: continuous.window <- 5000
 
 limit.upp <- 0.95                  #upper limit (upper percentile) to clean baseline non-parametric
 limit.lw <- 0.05                   #lower limit (lower percentile) to clean baseline non-parametric
 
 run.window.weekly <- 104           #window of time points which will be used to calculate the percentile set (weekly indicators)
 nr.production.cycles <- 2          #number of production cycles to consider to construct a window of time points which will be used to calculate the percentile set (continuous indicators). Set to NULL, if median.days.production.cycles is a value (not NULL).
-median.days.production.cycles=300 #if left as NULL, it will be calculated based on the median value in days of 1 production cycle, using the indicator days.between.farrowings, and multiplied by the nr.production.cycles chosen. Therefore, if set to NULL, the indicator days.between.farrowings has to belong to indicators.to.keep.
+median.days.production.cycles=NULL #if left as NULL, it will be calculated based on the median value in days of 1 production cycle, using the indicator days.between.farrowings, and multiplied by the nr.production.cycles chosen. Therefore, if set to NULL, the indicator days.between.farrowings has to belong to indicators.to.keep.
                                    #if you want to set a fixed median value in days, set for instance: (note that the value chosen will not be multiplied by nr.production.cycles) 
-                                   #median.days.production.cycles <- 300 (if you are using the data example provided use: median.days.production.cycles <- 300)
+                                   #median.days.production.cycles <- 300
 
 evaluate.weekly.window=106      #number of time points to be evaluated by the algorithm for weekly indicators
-                                        #if you are using the data example provided use: evaluate.weekly.window <- 106
+                                        #if you are using the data example provided put: evaluate.weekly.window <- 106
 
 baseline.weekly.window=52      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
-                                        #if you are using the data example provided use: baseline.weekly.window <- 52
+                                        #if you are using the data example provided put: baseline.weekly.window <- 52
 
 guard.band.weekly=2             #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
 
@@ -86,6 +86,8 @@ LCL.shew=2                      #the maximum number that would have generated an
 plot.years=2
 weeks.to.show <- 78             #weeks to show on the weekly graphs
 nonTS.to.show <- 100            #events to show on the continuous graphs
+                                        #if you are using the data example provided to inject outbreaks (in script: "system evaluation), put: 
+                                        #nonTS.to.show <- 300
 #days.ago.nonTS <- 114
 group.window <- 114
 years.to.see <- 3               #number of events and alarms seen in the last x years to see 
