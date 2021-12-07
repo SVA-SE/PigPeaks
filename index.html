@@ -1,0 +1,338 @@
+---
+title: "PigPeaks Dashboard"
+output:
+  flexdashboard::flex_dashboard:
+    theme: simplex
+    vertical_layout: fill
+    social: menu
+    orientation: rows
+    df_print: paged
+    logo: ../SVA_logo.png
+---
+
+<style type="text/css">
+
+.html-widget.gauge svg {
+  height:20%; /*or try sth like 320px instead of 100%, whatever you prefer*/
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
+.chart-title {  /* chart_title  */
+   font-size: 17px;
+}
+
+.navbar {
+  font-size:17px;
+
+}
+
+.tabset { 
+  font-size:17px;
+}
+
+.dropdown-menu {
+  font-size:15px;
+}
+
+</style>
+
+```{r message=FALSE, warning=FALSE}
+library(flexdashboard)
+library(shiny)
+library(dplyr)
+library(plotly)
+library(ggplot2)
+library(stringr)
+
+
+setwd('..') #do not run this line if running manually (instead of knitting)
+
+
+load('Data_Example/indicatorsExample.RData')
+source('Settings.r') #needs corrections to work for indicatorsExample.RData
+source('R/Functions.r') 
+source('R/Functions-plotting.r')
+source('R/4-detection.r')
+
+```
+
+```{r}
+# settings corrections to work for indicatorsExample.RData
+weekly.window <- 160              
+continuous.window <- 5000         
+evaluate.weekly.window <- 106 
+baseline.weekly.window <- 52 
+```
+
+
+```{r}
+
+# function that chose the correct arguments for each indicator plot
+chose.arguments.plot <- function(i = index
+){
+  
+indicator.label = "Observed"
+
+if (isTRUE(indicators.sys[i])) {
+  
+  vertical.line = NULL
+  vertical.line.label=NULL
+  shading.matrix = NULL
+  limits = NULL
+  series.line = NULL
+  group.labels=c('gilts','young','prime','mature')
+  y2label = '% of'
+  y2range = c(0,1)
+  
+  if (indicators.limits[i]=="limit.upp") {
+    
+    UCL.EWMA = TRUE
+    LCL.EWMA = FALSE
+    UCL.SHEW = TRUE
+    LCL.SHEW = FALSE
+    alarms.EWMA.UPP = TRUE
+    alarms.EWMA.LW = FALSE
+    alarms.SHEW.UPP = TRUE
+    alarms.SHEW.LW = FALSE
+    
+  }
+  if (indicators.limits[i]=="both") {
+    
+    UCL.EWMA = TRUE
+    LCL.EWMA = TRUE
+    UCL.SHEW = FALSE
+    LCL.SHEW = FALSE
+    alarms.EWMA.UPP = TRUE
+    alarms.EWMA.LW = TRUE
+    alarms.SHEW.UPP = TRUE
+    alarms.SHEW.LW = TRUE
+  }
+  
+  if (indicators.limits[i]=="limit.lw") {
+    
+    UCL.EWMA = FALSE
+    LCL.EWMA = TRUE
+    UCL.SHEW = FALSE
+    LCL.SHEW = TRUE
+    alarms.EWMA.UPP = FALSE
+    alarms.EWMA.LW = TRUE
+    alarms.SHEW.UPP = FALSE
+    alarms.SHEW.LW = TRUE
+  }
+  
+}
+if (isFALSE(indicators.sys[i])) {
+  
+  vertical.line = NULL
+  vertical.line.label = NULL
+  shading.matrix = NULL
+  limits = NULL
+  series.line = NULL
+  group.labels=c('gilts','young','prime','mature')
+  y2label = '% of'
+  y2range = c(0,1)
+  UCL.EWMA = FALSE
+  LCL.EWMA = FALSE
+  UCL.SHEW = FALSE
+  LCL.SHEW = FALSE
+  alarms.EWMA.UPP = FALSE
+  alarms.EWMA.LW = FALSE
+  alarms.SHEW.UPP = FALSE
+  alarms.SHEW.LW = FALSE
+  
+}
+
+if (indicators.type[i]=="W") {
+  
+  show.window = weeks.to.show
+  index.dates = index.dates.week
+  xlabel = 'Week'
+  
+}
+
+if (indicators.type[i]=="C") {
+  
+  show.window = nonTS.to.show
+  index.dates = index.dates.days
+  xlabel = 'Events'
+  
+}
+
+arguments <- list(indicator.label=indicator.label, vertical.line=vertical.line,
+                  vertical.line.label=vertical.line.label, shading.matrix=shading.matrix,
+                  limits=limits, series.line=series.line, group.labels=group.labels, UCL.EWMA=UCL.EWMA,
+                  LCL.EWMA=LCL.EWMA, UCL.SHEW=UCL.SHEW, LCL.SHEW=LCL.SHEW,
+                  alarms.EWMA.UPP=alarms.EWMA.UPP, alarms.EWMA.LW=alarms.EWMA.LW,
+                  alarms.SHEW.UPP=alarms.SHEW.UPP, alarms.SHEW.LW=alarms.SHEW.LW,
+                  show.window=show.window, index.dates=index.dates, xlabel=xlabel, 
+                  y2label=y2label, y2range=y2range)
+
+
+return(arguments)
+}
+  
+```
+
+
+# Overview {.sidebar data-width=200}
+
+
+Mortality 
+====================================
+
+
+```{r, results='asis'}
+
+if("perc.dead.born.litter" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.dead.born.litter")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  nonTS.barplot.pg.timeless(df.indicator = indicators.time.series[[i]],
+                            argument.list = TRUE,
+                            target = NULL,
+                            target.unit = NULL,
+                            ylabel = "% of piglets",
+                            use.minimum.y = "zero")
+}
+```
+
+```{r, results='asis'}
+
+if("negdiff.wean.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="negdiff.wean.week")
+  
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "piglets",
+                use.minimum.y="zero")
+}
+```
+
+
+```{r, results='asis'}
+
+if("piglets.deaths.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="piglets.deaths.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot(df.indicator = indicators.time.series[[i]],
+             argument.list = TRUE,
+             target = NULL,
+             target.unit = NULL, 
+             series.label = "weaned piglets",
+             ylabel = "deaths")
+}
+  
+```
+
+```{r, results='asis'}
+
+if("number.deaths.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="number.deaths.week")
+  
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "sows",
+                use.minimum.y="zero")
+}
+```
+
+
+Service Success 
+====================================
+
+```{r, results='asis'}
+
+if("reservices.week" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="reservices.week")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "reservices",
+                use.minimum.y="zero")
+}
+
+```
+
+
+```{r, results='asis'}
+
+if("perc.reservice" %in% names(indicators.data)) {
+
+  i = which(names(indicators.data)=="perc.reservice")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = "3.5",
+                target.unit = "value",
+                ylabel = "% reservice",
+                use.minimum.y="zero")
+}
+
+```
+
+
+```{r, results='asis'}
+
+if("perc.pregnancy" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.pregnancy")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+  TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                argument.list = TRUE,
+                target = NULL,
+                target.unit = NULL,
+                ylabel = "% pregnancy",
+                use.minimum.y="min")
+}
+```
+
+
+```{r, results='asis'}
+
+if("perc.failure" %in% names(indicators.data)) {
+  
+  i = which(names(indicators.data)=="perc.failure")
+  
+  cat("  \n##")
+  cat("  \n###", indicators.labels[i],"  \n")
+  
+    TS.barplot.pg(df.indicator = indicators.time.series[[i]],
+                  argument.list = TRUE,
+                  target = NULL,
+                  target.unit = NULL,
+                  ylabel = "% failure",
+                  use.minimum.y="zero")
+}
+
+```
+
