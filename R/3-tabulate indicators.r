@@ -483,29 +483,29 @@ for (r in 1:dim(index.dates.week)[1]){
 
 # exit reason ----
 
-exit.reasons <- cause[(cause$ID2==language),"ID1"]
-exit.reason.days <- matrix(NA,
-                           nrow=dim(index.dates.days)[1],
-                           ncol=length(exit.reasons)
-)
-
-colnames(exit.reason.days)<-as.character(cause[(cause$ID2==language),3])
-
-
-for (r in 1:dim(index.dates.days)[1]){
-  for (e in 1:length(exit.reasons)){
-    exit.reason.days[r,e]<- length(which(individual.sows$ExitReason[r,]==exit.reasons[e]))
-  }
-}
-
-
-exit.reason.week <- matrix(NA,nrow=dim(index.dates.week)[1],ncol=dim(exit.reason.days)[2])
-colnames(exit.reason.week)<- colnames(exit.reason.days)
-
-for (r in 1:dim(index.dates.week)[1]){
-  for (c in 1:dim(exit.reason.days)[2]){
-    exit.reason.week[r,c] <- sum(exit.reason.days[((((r-1)*7)+1):min(c((r*7),dim(index.dates.days)[1]))),c],na.rm=TRUE)
-  }}
+# exit.reasons <- cause[(cause$ID2==language),"ID1"]
+# exit.reason.days <- matrix(NA,
+#                            nrow=dim(index.dates.days)[1],
+#                            ncol=length(exit.reasons)
+# )
+# 
+# colnames(exit.reason.days)<-as.character(cause[(cause$ID2==language),3])
+# 
+# 
+# for (r in 1:dim(index.dates.days)[1]){
+#   for (e in 1:length(exit.reasons)){
+#     exit.reason.days[r,e]<- length(which(individual.sows$ExitReason[r,]==exit.reasons[e]))
+#   }
+# }
+# 
+# 
+# exit.reason.week <- matrix(NA,nrow=dim(index.dates.week)[1],ncol=dim(exit.reason.days)[2])
+# colnames(exit.reason.week)<- colnames(exit.reason.days)
+# 
+# for (r in 1:dim(index.dates.week)[1]){
+#   for (c in 1:dim(exit.reason.days)[2]){
+#     exit.reason.week[r,c] <- sum(exit.reason.days[((((r-1)*7)+1):min(c((r*7),dim(index.dates.days)[1]))),c],na.rm=TRUE)
+#   }}
 
 
 # exit type ----
@@ -789,7 +789,7 @@ save(index.dates.days,  index.dates.week,
      number.deaths.week		      ,#	 NumberOfWeeks x   ParityFrom1
      gilts.deaths.week		      ,#	 NumberOfWeeks x
      piglets.deaths.week		    ,#	 NumberOfWeeks x
-     exit.reason.week		        ,#	 NumberOfWeeks x  614
+#     exit.reason.week		        ,#	 NumberOfWeeks x  614
      exit.type.week			        ,#	 NumberOfWeeks x    7
      exit.after.event.week		  ,#	 NumberOfWeeks x    6
      death.after.event.week		  ,#	 NumberOfWeeks x    6
