@@ -282,7 +282,10 @@ all.dates<- c(
   farrowing$EventDate,
   weaning$EventDate)
 
-end.date <- max(all.dates,na.rm=T)
+if(!exists("end.date")){
+  end.date <- max(all.dates,na.rm=T)
+}
+
 total.date.rows <- as.integer(end.date-start.date)+1
 
 #options(error = browser(), warn = 2)
