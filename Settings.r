@@ -20,6 +20,7 @@ start.date <- NULL #leave NULL to start from the latest possible date
 
 indicators.excel <- read.table(file="Table_Indicators_CSV.csv", header=TRUE, sep=";")
 indicators.to.keep <- indicators.all %in% indicators.excel$indicators[indicators.excel$indicators.to.keep==TRUE]
+        #indicators.to.keep <- rep(TRUE,length(indicators.all))
 indicators.to.keep.numerical <- which(indicators.to.keep==T)
 
 indicators.labels <- indicators.excel$indicators.labels[indicators.excel$indicators.to.keep==TRUE]
@@ -61,7 +62,7 @@ median.days.production.cycles=NULL #if left as NULL, it will be calculated based
                                    #if you want to set a fixed median value in days, set for instance: (note that the value chosen will not be multiplied by nr.production.cycles) 
                                    #median.days.production.cycles <- 300
 
-evaluate.weekly.window=165      #number of time points to be evaluated by the algorithm for weekly indicators
+evaluate.weekly.window=12      #number of time points to be evaluated by the algorithm for weekly indicators
                                         #if you are using the data example provided put: evaluate.weekly.window <- 106
 
 baseline.weekly.window=104      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
@@ -99,7 +100,7 @@ series.label="sows"             #time-series label, defaults to sows
 
 
 # statistical settings ----
-baseline.years=3
+baseline.years=2
 
 
 # parity colouring ----

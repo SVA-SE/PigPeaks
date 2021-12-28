@@ -11,7 +11,7 @@ source("Settings.r")
 # read data in ----
 conn <- odbcDriverConnect(paste0('driver={SQL Server};server=',server,';database=',database,';trusted_connection=true'))
 
-animal              <- sqlQuery(conn, "SELECT * FROM animal;")
+animal              <- sqlQuery(conn, "SELECT ID,BirthDate,Sex,AnimalType,EntryDate,ExitDate,ExitType,ExitCause1Id,ExitCause2Id  FROM animal;")
 service             <- sqlQuery(conn, "SELECT * FROM service;")
   service <- service[service$LinkedToEvent!=1,]
 pregnancyTest      <- sqlQuery(conn, "SELECT * FROM pregnancyTest;")
