@@ -10,7 +10,7 @@ require(zoo)
 
 ##  For weekly time-series
   
-  TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indicators.time.series$`abortions per week`
+  TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indicators.time.series$`gilt deaths per week`
                          indicator.label = indicators.labels[i],
                          show.window = weeks.to.show,
                          index.dates = index.dates.week,
@@ -79,7 +79,8 @@ require(zoo)
     plot <- plot %>%
       add_trace(x=x,y = y,type='bar', name=series.label,
                 text = text, hoverinfo = 'text') %>%
-      layout(yaxis = list(title = ylabel, overlaying = "y", range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)-0.5), tickformat=',d'), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
+      layout(yaxis = list(title = ylabel, overlaying = "y", 
+                          range = c(max(0,min(y,na.rm=T)-1), max(y,na.rm=T)+ 0.15*(max(y,na.rm=T)-max(0,min(y,na.rm=T)-1)))), #Changed from range = c(min(y,na.rm=T), max(y,na.rm=T)))
              xaxis = list(title = xlabel),
              barmode = 'stack',
              legend=list(orientation="h",
@@ -361,9 +362,13 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   text=str_c(indicator.label,":",y,
              "<br>Week:",date2ISOweek(x.dates),
              "<br>date:",x.dates,
-             "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.range[,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
-    #improve sowID
+             "<br>sowID:",series.range[,"sowINDEX"])
   
+  try({text=str_c(indicator.label,":",y,
+             "<br>Week:",date2ISOweek(x.dates),
+             "<br>date:",x.dates,
+             "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.range[,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+
   target.vector = target
   if(!is.null(target.unit)){
     if(target.unit=="value"){
@@ -812,8 +817,8 @@ TS.exit <- function(df.indicator = df.indicator,      #df.indicator=indicators.t
 
 ##  For weekly time-series
 
-TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicators.time.series$`abortions per week`
-                          indicator.label="indicator",
+TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicators.time.series$`gilt deaths per week`
+                          indicator.label="indicator",  
                           show.window = weeks.to.show,
                           index.dates = index.dates.week,
                           ylabel = 'Number of sows',
@@ -831,6 +836,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
                           alarms.SHEW.UPP = TRUE,                #Added
                           alarms.SHEW.LW = FALSE,                #Added
                           group.labels=c('gilts','young','prime','mature'),
+                          use.minimum.y="min",                   #"zero"
                           argument.list=TRUE
                           
 ){
@@ -868,6 +874,17 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
   y3 = data$prime
   y4 = data$mature
   y = y1+y2+y3+y4
+ 
+  min.y=0
+  
+  if(length(unique(y[y>0]))>1)  {
+    
+    if(use.minimum.y=="min")(min.y=max(0, min(y[y>0],na.rm=T)-1))
+    
+  }else{
+    
+    if(use.minimum.y=="min")(min.y=unique(y[y>=0]))
+  }
   
   #labels
   t1 = group.labels[1]
@@ -933,11 +950,6 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
   color3="#f7b165"
   color4="#be857a"
   
-  # color1="#d2e5f1"
-  # color2="#d6f1d2"
-  # color3="#ffe195"
-  # color4="#dad0b8"
-  
   # color1=color.pg[1]
   # color2=color.pg[2]
   # color3=color.pg[3]
@@ -995,9 +1007,11 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
               text = text3, hoverinfo = 'text') %>%
     add_trace(x=x,y = y4,name=t4,marker=list(color=color4),type='bar',yaxis="y2",
               text = text4, hoverinfo = 'text') %>%
-    layout(yaxis = list(side = 'right', title = "", autorange = TRUE, tickformat=',d'),
-           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", autorange = TRUE, tickformat=',d'),
-           xaxis = list(title = xlabel, autorange = TRUE),
+    layout(yaxis = list(side = 'right', title = "", tickformat=',d',
+           range = c(min.y, max(y,na.rm=T) + 0.15*(max(y,na.rm=T)-min.y))),
+           yaxis2 = list(side = 'left', title = ylabel, overlaying = "y", tickformat=',d',
+                         range = c(min.y, max(y,na.rm=T) + 0.15*(max(y,na.rm=T)-min.y))),
+           xaxis = list(title = xlabel),
            barmode = 'stack',
            legend=list(orientation="h",
                        x=0.25,y=1.1,
@@ -1221,7 +1235,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator = indicat
 ##  For continuous time-series
 
 nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indicator=indicators.time.series$`mummified per farrowing`
-                                      indicator.label = indicator.label,
+                                      indicator.label = indicator.label,#df.indicator=indicators.time.series$`live born per farrowing`
                                       series.line = NULL,
                                       show.window = nonTS.to.show,                #always as number of events
                                       vertical.line = NULL,                       #VECTOR OF DATES
@@ -1297,33 +1311,72 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   y4 = series.pg[[4]][,"observed"]
   y.all=c(y1,y2,y3,y4)
   
-  min.y=0
-  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
   
+  min.y=0
+
+  if(length(unique(y.all[y.all>0]))>1)  {
+
+    if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
+
+  }else{
+
+    if(use.minimum.y=="min")(min.y=unique(y.all[y.all>=0]))
+    }
   
   #colors
   
   text1=str_c("Parity group:",t1,
-              "<br>",indicator.label,":",y1,
-              "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
-              "<br>date:",series.pg[[1]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[1]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
-  text2=str_c("Parity group:",t2,
-              "<br>",indicator.label,":",y2,
-              "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
-              "<br>date:",series.pg[[2]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[2]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
-  text3=str_c("Parity group:",t3,
-              "<br>",indicator.label,":",y3,
-              "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
-              "<br>date:",series.pg[[3]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[3]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
-  text4=str_c("Parity group:",t4,
-              "<br>",indicator.label,":",y4,
-              "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
-              "<br>date:",series.pg[[4]][,"date"],
-              "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[4]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])
+             "<br>",indicator.label,":",y1,
+             "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
+             "<br>date:",series.pg[[1]][,"date"],
+             "<br>sowID:",series.pg[[1]][,"sowINDEX"])
   
+  
+  try({text1=str_c("Parity group:",t1,
+             "<br>",indicator.label,":",y1,
+             "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
+             "<br>date:",series.pg[[1]][,"date"],
+             "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[1]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+
+
+  text2=str_c("Parity group:",t2,
+             "<br>",indicator.label,":",y2,
+             "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
+             "<br>date:",series.pg[[2]][,"date"],
+             "<br>sowID:",series.pg[[2]][,"sowINDEX"])
+  
+  try({text2=str_c("Parity group:",t2,
+               "<br>",indicator.label,":",y2,
+               "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
+               "<br>date:",series.pg[[2]][,"date"],
+               "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[2]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+
+
+  text3=str_c("Parity group:",t3,
+             "<br>",indicator.label,":",y3,
+             "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
+             "<br>date:",series.pg[[3]][,"date"],
+             "<br>sowID:",series.pg[[3]][,"sowINDEX"])
+  
+  try({text3=str_c("Parity group:",t3,
+               "<br>",indicator.label,":",y3,
+               "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
+               "<br>date:",series.pg[[3]][,"date"],
+               "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[3]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+
+
+  text4=str_c("Parity group:",t4,
+             "<br>",indicator.label,":",y4,
+             "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
+             "<br>date:",series.pg[[4]][,"date"],
+             "<br>sowID:",series.pg[[4]][,"sowINDEX"])
+  
+  try({text4=str_c("Parity group:",t4,
+               "<br>",indicator.label,":",y4,
+               "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
+               "<br>date:",series.pg[[4]][,"date"],
+               "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[4]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+
   
   target.vector = target
   if(!is.null(target.unit)){
@@ -1366,7 +1419,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
         name=y2label,yaxis="y2",
         line=list(color = 'black'), showlegend = TRUE
       )%>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T)), tickformat=',d'),
+      layout(yaxis = list(side = 'left', title = ylabel, tickformat=',d',
+                          range = c(min.y, max(y.all,na.rm=T) + 0.15*(max(y.all,na.rm=T)-min.y))),
              yaxis2 = list(side = 'right', title = y2label, overlaying = "y",range = y2range, showgrid = FALSE, tickformat=',d'),
              xaxis = list(title = xlabel),
              barmode = "group",
@@ -1376,7 +1430,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
     
   }else{
     plot <- plot %>%
-      layout(yaxis = list(side = 'left', title = ylabel, range = c(min.y, max(y.all,na.rm=T)), tickformat=',d'),
+      layout(yaxis = list(side = 'left', title = ylabel, #tickformat=',d',
+                          range = c(min.y, max(y.all,na.rm=T)+0.15*(max(y.all,na.rm=T)-min.y))),
              xaxis = list(title = xlabel),
              barmode = "group",
              legend=list(orientation="h",
@@ -1616,6 +1671,11 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
     }
   }
   
+  # if (unique(y.all[!is.na(y.all)])==0 && length(unique(y.all[!is.na(y.all)]))==1) {
+  #   return(plot) & return(cat("There are not any",   indicators.labels[i], "in the last", show.window, xlabel))
+  #   
+  # }
+  
   return(plot)    
 }
 
@@ -1809,7 +1869,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
 
 
 
-TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator = indicators.continuous.to.weekly$`Time to reservice`
+TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicator=indicators.continuous.to.weekly$`mummified per farrowing`
                                      indicator.label="Indicator",
                                      show.window = 52,
                                      index.dates = index.dates.week,
@@ -1819,7 +1879,8 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
                                      target.unit = NULL,            #c("value","vector"), defaults to vector
                                      shading.matrix = NULL,
                                      limits = NULL,
-                                     group.labels=c('gilts','young','prime','mature'),                                        use.minimum.y="min",            #"zero"
+                                     group.labels=c('gilts','young','prime','mature'),
+                                     use.minimum.y="min",            #"zero"
                                      moving_average = 8
 ){
   series <- df.indicator
@@ -1840,7 +1901,15 @@ TS.barplot.pg.continuous <- function(df.indicator = df.indicator,   #df.indicato
   y.all=c(y,y1,y2,y3,y4)
   
   min.y=0
-  if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
+  
+  if(length(unique(y.all[y.all>0]))>1)  {
+    
+    if(use.minimum.y=="min")(min.y=max(0, min(y.all[y.all>0],na.rm=T)-1))
+    
+  }else{
+    
+    if(use.minimum.y=="min")(min.y=unique(y.all[y.all>=0]))
+  }
   
   #labels
   t = "Average observed"

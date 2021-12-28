@@ -48,7 +48,9 @@ c3 <- c(rep("gilt",2),
 # functions arguments ----
 
 weekly.window <- 271               #weeks to see in each indicator
+                                        #if you are using the data example provided put: weekly.window <- 160
 continuous.window <- 5500          #observations to see in each indicator
+                                        #if you are using the data example provided put: continuous.window <- 5000
 
 limit.upp <- 0.95                  #upper limit (upper percentile) to clean baseline non-parametric
 limit.lw <- 0.05                   #lower limit (lower percentile) to clean baseline non-parametric
@@ -60,7 +62,11 @@ median.days.production.cycles=NULL #if left as NULL, it will be calculated based
                                    #median.days.production.cycles <- 300
 
 evaluate.weekly.window=165      #number of time points to be evaluated by the algorithm for weekly indicators
+                                        #if you are using the data example provided put: evaluate.weekly.window <- 106
+
 baseline.weekly.window=104      #baseline used to train the algorithm in order to provide a forecast for weekly indicators
+                                        #if you are using the data example provided put: baseline.weekly.window <- 52
+
 guard.band.weekly=2             #number of time units used to separate the current time unit evaluated and the baseline window for weekly indicators
 
 lambda=0.2                      #EWMA parameter (lambda)
@@ -78,28 +84,18 @@ LCL.shew=2                      #the maximum number that would have generated an
 # plotting and dashboard -----
 
 plot.years=2
-weeks.to.show <- 78
-nonTS.to.show <- 100
+weeks.to.show <- 78             #weeks to show on the weekly graphs
+nonTS.to.show <- 100            #events to show on the continuous graphs
+                                        #if you are using the data example provided to inject outbreaks (in script: "system evaluation), put: 
+                                        #nonTS.to.show <- 300
 #days.ago.nonTS <- 114
 group.window <- 114
-years.to.see <- 3
-moving_average <- 8
+years.to.see <- 3               #number of events and alarms seen in the last x years to see 
+moving_average <- 8             #moving average in weeks to represent parity in continuous graphs
 
-indicator.label = "indicator"
-target = NULL
+target = NULL                   #the target value for each indicator
 target.unit = "vector"          #c("value","vector"), defaults to vector
-UCL.EWMA = TRUE
-LCL.EWMA = TRUE
-UCL.SHEW = TRUE
-LCL.SHEW = TRUE
-alarms.EWMA.UPP = TRUE
-alarms.EWMA.LW = TRUE
-alarms.SHEW.UPP = TRUE
-alarms.SHEW.LW = TRUE
-series.label="sows"
-vertical.line = NULL            #vector of dates
-vertical.line.label= NULL
-group.labels=c('birth','service','reservice','abortion','farrowing','weaning')
+series.label="sows"             #time-series label, defaults to sows
 
 
 # statistical settings ----
@@ -117,13 +113,21 @@ col_parity = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_co
 parity.group$color1 <- col_parity[as.numeric(as.factor(parity.group$group.name))]
 parity.group$color2 <- col_parity[as.numeric(as.factor(parity.group$parity))]
 
-parity.group2 <- parity.group[-1,]
+#parity.group2 <- parity.group[-1,]
+parity.group2 <- parity.group
 
-colors.custom<- c(rep("#4287f5",1),
+# colors.custom<- c(rep("#4287f5",1),
+#                   rep("#28ab1f",2),
+#                   rep("#f5942c",3),
+#                   rep("#a15a4c",9)
+# )
+
+colors.custom<- c(rep("#4287f5",2),
                   rep("#28ab1f",2),
                   rep("#f5942c",3),
                   rep("#a15a4c",9)
 )
+
 parity.group2 <-cbind(parity.group2,colors.custom)
 parity.group2$colors.custom<-colors.custom
 

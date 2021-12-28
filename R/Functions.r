@@ -335,15 +335,18 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
       if(length(dim(indicator))>2){
         
         parity.count = parity.count+1
-
-      if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
         
-        assign(paste0(noquote(l)), round(indicator[,(parity.group2$parity[parity.group2$group.name==l]), "numerator"][range.weekly]/
-                                      indicator[,(parity.group2$parity[parity.group2$group.name==l]), "denominator"][range.weekly]*100,2))
+        numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+        numbers.parity <- numbers.parity[numbers.parity!=0]
+
+      if (length(numbers.parity) == 1) {
+        
+        assign(paste0(noquote(l)), round(indicator[,(numbers.parity), "numerator"][range.weekly]/
+                                      indicator[,(numbers.parity), "denominator"][range.weekly]*100,2))
       }else{
         
-        assign(paste0(noquote(l)), round(rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"numerator"])[range.weekly]/
-                 rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"denominator"])[range.weekly]*100,2))
+        assign(paste0(noquote(l)), round(rowSums(indicator[,(numbers.parity),"numerator"])[range.weekly]/
+                 rowSums(indicator[,(numbers.parity),"denominator"])[range.weekly]*100,2))
       }
         if (parity.count==1){
           parity <- noquote(l)
@@ -355,14 +358,17 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
       if(length(dim(indicator))==2){
         
       parity.count = parity.count+1
+      
+      numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+      numbers.parity <- numbers.parity[numbers.parity!=0]
 
-      if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
+      if (length(numbers.parity) == 1) {
         
-        assign(paste0(noquote(l)), indicator[,(parity.group2$parity[parity.group2$group.name==l])][range.weekly])
+        assign(paste0(noquote(l)), indicator[,(numbers.parity)][range.weekly])
         
       }else{
         
-        assign(paste0(noquote(l)), rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l])])[range.weekly])
+        assign(paste0(noquote(l)), rowSums(indicator[,(numbers.parity)])[range.weekly])
       }
       
       if (parity.count==1){
@@ -403,7 +409,7 @@ weekly.indicators <- function(indicator=indicator,   #indicator=indicators.data$
 
 ## for continuous indicators taking parity into account
 
-continuous.indicators <- function(indicator=indicator       #indicator=indicators.data$perc.dead.born.litter
+continuous.indicators <- function(indicator=indicator       #indicator=indicators.data$days.between.farrowings
                                   )
 {
   range <- 1:dim(indicator)[1]   #apply range restriction only to detection
@@ -412,7 +418,6 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   week <- isoweek(as.Date(date,origin="1970-01-01"))
   year <- isoyear(as.Date(date,origin="1970-01-01"))
   sowINDEX <- indicator[,"sowINDEX"]
-  parity <- parity.group2$group.name[indicator[, "parity"]]
   observed <- indicator[,"indicator"]
   baseline <- c(rep(NA, length(range)))
   UCL.ewma <- c(rep(NA, length(range)))
@@ -421,7 +426,20 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   LCL.shew <- c(rep(NA, length(range)))
   alarms.ewma <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
   alarms.shew <- c(rep(NA, length(range)))  ## change after choosing what algorithms will be used
-
+  parity <- parity.group2$group.name[indicator[, "parity"]+1]
+  # parity <- c(rep(NA, length(range)))
+  # 
+  # for(i in 1:length(range)){   #i=3
+  # 
+  #   if (indicator[i, "parity"]!=0) {
+  #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+  #   }
+  # 
+  #   if (indicator[i, "parity"]==0) {
+  #     indicator[i, "parity"] <- 1
+  #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+  #   }
+  # }
   table <- data.frame(date, week, year, sowINDEX,
                       parity, observed, baseline,
                       UCL.ewma, LCL.ewma, alarms.ewma,
@@ -438,9 +456,9 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
 
 ## for non-sys indicators
 
-non.sys.indicators <- function (indicator=indicator,          #indicator=indicators.data$death.after.event.week
-                                range.weekly=range.weekly,   #indicator=indicators.data$services.week
-                                indicator.type="w"
+non.sys.indicators <- function (indicator=indicator,          #indicator=indicators.data$time.to.abortion
+                                range.weekly=range.weekly,   #indicator=indicators.data$death.after.event.week
+                                indicator.type="W"
 )
 {
   parity.count = 0
@@ -449,7 +467,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
       
       if (is.array(indicator)) {
         
-        if (length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)){
+        if (length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)-1){
           
           observed <- rowSums(indicator)[range.weekly]
       }
@@ -465,13 +483,16 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
           
           parity.count = parity.count+1
           
-          if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-            
-            assign(paste0(noquote(l)), round(indicator[,(parity.group2$parity[parity.group2$group.name==l]), "numerator"][range.weekly]/
-                                               indicator[,(parity.group2$parity[parity.group2$group.name==l]), "denominator"][range.weekly]*100,2))
+          numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+          numbers.parity <- numbers.parity[numbers.parity!=0]
+          
+          if (length(numbers.parity) == 1) {
+          
+            assign(paste0(noquote(l)), round(indicator[,(numbers.parity), "numerator"][range.weekly]/
+                                               indicator[,(numbers.parity), "denominator"][range.weekly]*100,2))
           }else{
-            assign(paste0(noquote(l)), round(rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"numerator"])[range.weekly]/
-                                               rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l]),"denominator"])[range.weekly]*100,2))
+            assign(paste0(noquote(l)), round(rowSums(indicator[,(numbers.parity),"numerator"])[range.weekly]/
+                                               rowSums(indicator[,(numbers.parity),"denominator"])[range.weekly]*100,2))
           }
           if (parity.count==1){
             parity <- noquote(l)
@@ -484,17 +505,20 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
           colnames(table) <- c(parity,"observed")
         }
         
-        if(length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)){
+        if(length(dim(indicator))==2 && dim(indicator)[2]==length(parity.group2$parity)-1){
           
           parity.count = parity.count+1
           
-          if (length(parity.group2$parity[parity.group2$group.name==l]) == 1) {
-            
-            assign(paste0(noquote(l)), indicator[,(parity.group2$parity[parity.group2$group.name==l])][range.weekly])
+          numbers.parity <- parity.group2$parity[parity.group2$group.name==l] 
+          numbers.parity <- numbers.parity[numbers.parity!=0]
+          
+          if (length(numbers.parity) == 1) {
+          
+            assign(paste0(noquote(l)), indicator[,(numbers.parity)][range.weekly])
             
           }else{
             
-            assign(paste0(noquote(l)), rowSums(indicator[,(parity.group2$parity[parity.group2$group.name==l])])[range.weekly])
+            assign(paste0(noquote(l)), rowSums(indicator[,(numbers.parity)])[range.weekly])
           }
           
           if (parity.count==1){
@@ -509,7 +533,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
         }
       }
         
-        if (length(dim(indicator))==2 && dim(indicator)[2]!=length(parity.group2$parity)) {   #!=15
+        if (length(dim(indicator))==2 && dim(indicator)[2]!=length(parity.group2$parity)-1) {   #!=15
           #for weekly indicators composed
           
           observed <- indicator[range.weekly,]
@@ -536,8 +560,21 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
     week <- isoweek(as.Date(date,origin="1970-01-01"))
     year <- isoyear(as.Date(date,origin="1970-01-01"))
     sowINDEX <- indicator[,"sowINDEX"]
-    parity <- parity.group2$group.name[indicator[, "parity"]]
     observed <- indicator[,"indicator"]
+    parity <- parity.group2$group.name[indicator[, "parity"]+1]
+    # parity <- c(rep(NA, length(range)))
+    # 
+    # for(i in 1:length(range)){   #i=3
+    #   
+    #   if (indicator[i, "parity"]!=0) {
+    #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+    #   }
+    #   
+    #   if (indicator[i, "parity"]==0) {
+    #     indicator[i, "parity"] <- 1
+    #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
+    #   }
+    # }
 
     table <- data.frame(date, week, year,
                         sowINDEX, parity, observed)
@@ -700,17 +737,17 @@ continuous.to.weekly <- function(df.indicator=df.indicator,
 ##' and substituted by the percentile itself.
 
 clean_baseline_perc <- function (df.indicator=df.indicator,
-                                 limit.upp=0.95,
-                                 limit.lw=0.05,
-                                 run.window.weekly=104,
-                                 median.days.production.cycles=NULL,
-                                 nr.production.cycles=2,
-                                 range=range.weekly,
+                                 limit.upp=limit.upp,
+                                 limit.lw=limit.lw,
+                                 run.window.weekly=run.window.weekly,
+                                 median.days.production.cycles=median.days.production.cycles,
+                                 nr.production.cycles=nr.production.cycles,
+                                 range=range,
                                  indicator.type="W"
 )
 {
   if (indicator.type=="W") {     # for weekly indicators
-                                     #df.indicator=indicators.time.series$`live born per farrowing`
+                                     #df.indicator=indicators.time.series$`Reservices per week`
 
       #require(caTools)
 
@@ -862,17 +899,17 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
 
 # apply EWMA control chart ----
 
-apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.continuous.to.weekly$`% dead born per farrowing`
-                       evaluate.weekly.window=165,
-                       baseline.weekly.window=104,
-                       continuous.window=5500,
-                       lambda=0.2,
-                       limit.sd=c(2.5,3,3.5),
-                       guard.band.weekly=2,
-                       correct.baseline.UCL.ewma=TRUE,
-                       correct.baseline.LCL.ewma=FALSE,
-                       UCL.ewma=2,
-                       LCL.ewma=2,
+apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.time.series$`dead born per farrowing`
+                       evaluate.weekly.window=evaluate.weekly.window,
+                       baseline.weekly.window=baseline.weekly.window,
+                       continuous.window=continuous.window,
+                       lambda=lambda,
+                       limit.sd=limit.sd,
+                       guard.band.weekly=guard.band.weekly,
+                       correct.baseline.UCL.ewma=correct.baseline.UCL.ewma,
+                       correct.baseline.LCL.ewma=correct.baseline.LCL.ewma,
+                       UCL.ewma=UCL.ewma,
+                       LCL.ewma=LCL.ewma,
                        indicator.type="W"
 )
 {
@@ -908,7 +945,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.co
           correct <- 0
 
 
-          for (l in 1:length(limit.sd)){ #l=2
+          for (l in 1:length(limit.sd)){ #l=1
 
             #require(qcc)
             ewma1 = ewma(to.cc,
@@ -1022,15 +1059,15 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.co
 # apply Shewhart control chart ----
 
 shew_apply <- function (df.indicator=df.indicator,
-                        evaluate.weekly.window=165,
-                        baseline.weekly.window=104,
-                        continuous.window=5500,
-                        limit.sd=c(2.5,3,3.5),
-                        guard.band.weekly=2,
-                        correct.baseline.UCL.shew=TRUE,
-                        correct.baseline.LCL.shew=FALSE,
-                        UCL.shew=2,
-                        LCL.shew=2,
+                        evaluate.weekly.window=evaluate.weekly.window,
+                        baseline.weekly.window=baseline.weekly.window,
+                        continuous.window=continuous.window,
+                        limit.sd=limit.sd,
+                        guard.band.weekly=guard.band.weekly,
+                        correct.baseline.UCL.shew=correct.baseline.UCL.shew,
+                        correct.baseline.LCL.shew=correct.baseline.LCL.shew,
+                        UCL.shew=UCL.shew,
+                        LCL.shew=LCL.shew,
                         indicator.type="W"
 )
 {
@@ -1100,22 +1137,22 @@ shew_apply <- function (df.indicator=df.indicator,
               }
 
               #ADD a one if the result of this loop was a detection
-              if (df.indicator[tpoint,"observed"]>max(0,UCL.value)){
+              if (isTRUE(df.indicator[tpoint,"observed"]>max(0,UCL.value))){
                 df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]+1
               }
 
-              if (df.indicator[tpoint,"observed"]<max(0,LCL.value)){
+              if (isTRUE(df.indicator[tpoint,"observed"]<max(0,LCL.value))){
                 df.indicator[tpoint,"alarms Shewhart"]<-df.indicator[tpoint,"alarms Shewhart"]-1
               }
 
               #Correct baseline IF the user indicated so
               if (isTRUE(correct.baseline.UCL.shew)){
-                if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
+                if (isTRUE(df.indicator[tpoint,"observed"] > max(0,UCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
                 }
               }
               if (isTRUE(correct.baseline.LCL.shew)){
-                if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
+                if (isTRUE(df.indicator[tpoint,"observed"] < max(0,LCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
                 }
               }
@@ -1170,7 +1207,7 @@ shew_apply <- function (df.indicator=df.indicator,
 # count alarms ----
 
 count.ewma.alarms <- function (df.indicator=df.indicator,   #df.indicator=indicators.continuous.to.weekly$`Time to reservice`
-                               years.to.see=3
+                               years.to.see=years.to.see
 ){
   
   last.date <- last(df.indicator$date)
