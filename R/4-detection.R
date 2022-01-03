@@ -210,3 +210,7 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
                                                                limits=indicators.limits[[i]]
   )
 }
+
+
+save(indicators.time.series,
+     file="data/indicators.time.series.RData")
