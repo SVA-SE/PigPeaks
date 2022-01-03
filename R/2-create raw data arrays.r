@@ -151,7 +151,7 @@ for (d in 1:7){
   if(!is.null(dim(day.events$service))){
     for (r in 1:dim(day.events$service)[1]){
       sowID <- day.events$service[r,"AnimalId"]
-      sow.dim <- which(dcolnames(individual.sows[[1]])==sowID)
+      sow.dim <- which(colnames(individual.sows[[1]])==sowID)
 
       #making sure this is not a reinsemination from yesterday --> doesn't work for day=1
       if(date.row>1){
