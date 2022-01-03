@@ -212,5 +212,6 @@ for (i in intersect(which(indicators.sys==TRUE), which(indicators.type=="C"))) {
 }
 
 
-save(indicators.time.series,
-     file="data/indicators.time.series.RData")
+save(indicators.time.series,indicators.continuous.to.weekly,
+     file="data/indicators.results.RData")
+
