@@ -13,8 +13,6 @@ farm.name="farm01" #name will be used to save base files
 
 language=19 #19 is swedish, see documentation for other languages
 
-start.date <- NULL #leave NULL to start from the latest possible date
-                #set to a date in the format "2010-12-31" to start from a specific date
 
 # desired indicators from EXCEL ----
 
