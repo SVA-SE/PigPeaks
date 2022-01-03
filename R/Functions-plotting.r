@@ -147,7 +147,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
   
   if(isTRUE(alarms.EWMA.UPP)& length(which(alarms.ewma>0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma>0)) ){
         
@@ -185,7 +185,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
   
   if(isTRUE(alarms.EWMA.LW)& length(which(alarms.ewma<0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma<0)) ){
         
@@ -224,7 +224,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
   
   if(isTRUE(alarms.SHEW.UPP)& length(which(alarms.shew>0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew>0)) ){
         
@@ -262,7 +262,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
   
   if(isTRUE(alarms.SHEW.LW)& length(which(alarms.shew<0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew<0)) ){
         
@@ -469,7 +469,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   
   if(isTRUE(alarms.EWMA.UPP)& length(which(alarms.ewma>0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma>0)) ){
         
@@ -507,7 +507,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   
   if(isTRUE(alarms.EWMA.LW)& length(which(alarms.ewma<0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma<0)) ){
         
@@ -546,7 +546,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   
   if(isTRUE(alarms.SHEW.UPP)& length(which(alarms.shew>0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew>0)) ){
         
@@ -584,7 +584,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   
   if(isTRUE(alarms.SHEW.LW)& length(which(alarms.shew<0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew<0)) ){
         
@@ -1075,7 +1075,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
   
   if(isTRUE(alarms.EWMA.UPP) & length(which(alarms.ewma>0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma>0)) ){
         
@@ -1113,7 +1113,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
   
   if(isTRUE(alarms.EWMA.LW) & length(which(alarms.ewma<0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma<0)) ){
         
@@ -1152,7 +1152,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
   
   if(isTRUE(alarms.SHEW.UPP) & length(which(alarms.shew>0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew>0)) ){
         
@@ -1190,7 +1190,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
   
   if(isTRUE(alarms.SHEW.LW) & length(which(alarms.shew<0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew<0)) ){
         
@@ -1519,7 +1519,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   
   if(isTRUE(alarms.EWMA.UPP) & length(which(alarms.ewma>0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma>0)) ){
         
@@ -1557,7 +1557,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   
   if(isTRUE(alarms.EWMA.LW) & length(which(alarms.ewma<0))>0){          #Added
     
-    for(a in 1:length(alarms.ewma)) {
+    for(a in first(which(!is.na(alarms.ewma))):length(alarms.ewma)) {
       
       if (a==first(which(alarms.ewma<0)) ){
         
@@ -1596,7 +1596,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   
   if(isTRUE(alarms.SHEW.UPP) & length(which(alarms.shew>0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew>0)) ){
         
@@ -1634,7 +1634,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
   
   if(isTRUE(alarms.SHEW.LW) & length(which(alarms.shew<0))>0){          #Added
     
-    for(a in 1:length(alarms.shew)) {
+    for(a in first(which(!is.na(alarms.shew))):length(alarms.shew)) {
       
       if (a==first(which(alarms.shew<0)) ){
         
