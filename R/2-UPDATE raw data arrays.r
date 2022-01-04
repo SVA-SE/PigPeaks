@@ -116,12 +116,12 @@ death <- exit[exit$ExitType==3|exit$ExitType==4,]
 
 
 n.rows.add <- as.integer(end.date-start.date)
-rows.update.index <- index.start.days:(index.start.days+n.rows.add)
+rows.update.index <- index.start.days:(index.start.days+n.rows.add-1)
 
 
 #options(error = browser(), warn = 2)
 
-for (d in 1:n.rows.add){
+for (d in 1:n.rows.add){  #for (d in 1:35){ #for (d in 36:500){ #for (d in 501:n.rows.add){
   
   date.today <- start.date + d - 1
   date.row=rows.update.index[d] 
@@ -316,7 +316,7 @@ for (s in 1:dim(individual.sows[[1]])[2]){
 
 
 
-save(individual.sows,active.sows.displayID,index.dates.days,index.dates.week,file="data/individual.sows.RData")
+save(individual.sows,active.sows.displayID,index.dates.days,file="data/individual.sows.RData")
 save(animal,exit,progeny.dead,cause,file="data/animal.RData")
 
 
