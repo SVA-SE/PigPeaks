@@ -7,9 +7,9 @@ library(RODBC)
 source("Settings.r")
 source("R/Functions.r")
 
-server="svasql16" #private information referring to the local computer, see documentation
-database="WP_Test1" #name of the WinPig database on your computer, see documentation #"WP_Test2" #"WP_farm03"
-farm.name="farm01" #name will be used to save base files
+server="xxxx" #private information referring to the local computer, see documentation
+database="xxxx" #name of the WinPig database on your computer, see documentation #"WP_Test2" #"WP_farm03"
+farm.name="xxxx" #name will be used to save base files
 
 
 load("data/individual.sows.RData")
@@ -18,8 +18,8 @@ load("data/indicators.RData")
 load("data/indicators.results.RData")
 
 
-#today.is <- Sys.Date()
-today.is <- as.Date("2018-01-01",format="%Y-%m-%d")
+today.is <- Sys.Date()
+
 
 last.update.was <- max(index.dates.week$start)
 
