@@ -68,7 +68,7 @@ indicators.all <- c("services.week","empty.long.week",
                     "weight.wean.litter",
                     "number.deaths.week","gilts.deaths.week","piglets.deaths.week",
                     "death.after.event.week",
-                    "number.exits.week","exit.reason.week","exit.type.week","exit.after.event.week")
+                    "number.exits.week","exit.type.week","exit.after.event.week")
 
 indicators.all.labels <- c("Services per week","Sows empty longer than target, weekly",
                        "Reservices per week","Time to reservice","Sows re-serviced twice",
@@ -89,20 +89,20 @@ indicators.all.labels <- c("Services per week","Sows empty longer than target, w
                        "average weight at weaning",
                        "sow deaths per week","gilt deaths per week","weaned piglet deaths per week",
                        "death after event, weekly",
-                       "number of exits per week","exit reason, weekly","exit type, weekly","exit after event, weekly")
+                       "number of exits per week","exit type, weekly","exit after event, weekly")
 
 indicators.all.type <- c("W","W","W","C","C","W","W","W","C","C","W","C",
                          "C","C","C","W","W","W","W","W","W","W","W","W",
                          "W","W","C","C","C","C","C","C","C","C","C","C",
                          "W","W","W","W","C","C","C","C","C","W","W","W",
-                         "W","W","W","W","W")
+                         "W","W","W","W")
 
 indicators.all.sys <- c(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE,
                         TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
                         TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,
                         TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE,
                         FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, TRUE,
-                        FALSE, FALSE, FALSE)
+                        FALSE, FALSE)
 
 indicators.all.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.upp",
                            "limit.lw", "limit.upp", "limit.upp", "non-sys", "non-sys",
@@ -114,7 +114,7 @@ indicators.all.limits <- c("non-sys", "limit.upp", "limit.upp", "both", "limit.u
                            "limit.upp", "non-sys", "limit.lw", "limit.lw", "limit.upp",
                            "non-sys", "limit.lw", "limit.lw", "limit.lw", "limit.lw",
                            "limit.upp", "limit.upp", "limit.upp", "non-sys", "both",
-                           "non-sys", "non-sys", "non-sys")
+                           "non-sys", "non-sys")
 
 indicators.all.categories <- c("services", "empty sows", "services", "services", "services",
                                "pregnancy", "services", "services", "gilts", "gilts",
@@ -126,7 +126,7 @@ indicators.all.categories <- c("services", "empty sows", "services", "services",
                                "farrowing", "weaning", "weaning", "weaning", "weaning",
                                "weaning", "weaning", "weaning", "weaning", "weaning",
                                "exit", "exit", "post-weaning", "exit", "exit",
-                               "exit", "exit", "exit")
+                               "exit", "exit")
 
 
 # services.week              #   NumberOfWeeks x   ParityFrom1
@@ -177,7 +177,7 @@ indicators.all.categories <- c("services", "empty sows", "services", "services",
 # number.deaths.week	       #	 NumberOfWeeks x   ParityFrom1
 # gilts.deaths.week	         #	 NumberOfWeeks x
 # piglets.deaths.week	       #	 NumberOfWeeks x
-# exit.reason.week	         #	 NumberOfWeeks x  614
+#EXCLUDED# exit.reason.week	         #	 NumberOfWeeks x  614
 # exit.type.week	           #	 NumberOfWeeks x    7
 # exit.after.event.week	     #	 NumberOfWeeks x    6
 # death.after.event.week     #	 NumberOfWeeks x    6

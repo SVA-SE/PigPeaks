@@ -49,6 +49,5 @@ gilts.deaths.week;gilt deaths per week;W;TRUE;limit.upp;exit;TRUE
 piglets.deaths.week;weaned piglet deaths per week;W;TRUE;limit.upp;post-weaning;TRUE
 death.after.event.week;death after event, weekly;W;FALSE;non-sys;exit;TRUE
 number.exits.week;number of exits per week;W;TRUE;both;exit;TRUE
-exit.reason.week;exit reason, weekly;W;FALSE;non-sys;exit;FALSE
 exit.type.week;exit type, weekly;W;FALSE;non-sys;exit;TRUE
 exit.after.event.week;exit after event, weekly;W;FALSE;non-sys;exit;TRUE
