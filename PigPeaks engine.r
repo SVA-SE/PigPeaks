@@ -56,9 +56,9 @@ source("R/2-UPDATE raw data arrays.r")
 
 source("R/3-UPDATE indicators.r")
 
-source("R/4-detection.r")
+source("R/4-UPDATE detection.r")
 
 
 rmarkdown::render("R/5-dashboard.Rmd",
-                  output_file = "data/index.html")
+                  output_file = "../data/index.html")
 
