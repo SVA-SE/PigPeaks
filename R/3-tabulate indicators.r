@@ -739,9 +739,7 @@ for (r in 1:dim(index.dates.week)[1]){
 
 save(individual.sows,file="data/individual.sows2.RData")
 
-save(index.dates.days,  index.dates.week,
-
-     services.week              ,#   NumberOfWeeks x   ParityFrom1
+save(services.week              ,#   NumberOfWeeks x   ParityFrom1
      reservices.week	          ,#	 NumberOfWeeks x   ParityFrom1
      perc.pregnancy	            ,#	 NumberOfWeeks x   ParityFrom1   x 2
      perc.failure			          ,#   NumberOfWeeks x   ParityFrom1   x 2
@@ -795,7 +793,6 @@ save(index.dates.days,  index.dates.week,
      death.after.event.week		  ,#	 NumberOfWeeks x    6
      empty.long.week			      ,#	 NumberOfWeeks x   ParityFrom1
 
-     active.sows.displayID,
 
      file="data/indicators-ALL.RData")
 

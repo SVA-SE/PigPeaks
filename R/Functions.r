@@ -108,7 +108,7 @@ create.nonTS.timeto <- function(group.matrix=individual.sows$parity,
                                 condition=NULL){
 
   matrix.timeto <- matrix(NA,nrow=1,ncol=4)
-  colnames(matrix.timeto)<- c(col1,col2,col3,"sowINDEX")
+  colnames(matrix.timeto)<- c(col1,col2,col3,"sowID")
 
   for (r in 2:length(index.dates)){
     for (s in 1:dim(group.matrix)[2]){
@@ -133,7 +133,7 @@ create.nonTS.timeto <- function(group.matrix=individual.sows$parity,
 
         matrix.timeto.c3 <- as.numeric(index.dates[r])
 
-        matrix.timeto.c4 <- s
+        matrix.timeto.c4 <- colnames(group.matrix)[s]
         matrix.timeto <- rbind(matrix.timeto,
                                c(matrix.timeto.c1,
                                  matrix.timeto.c2,
@@ -167,7 +167,7 @@ create.nonTS.eventsto <- function(group.matrix=individual.sows$parity,
 
   matrix.eventsto <- matrix(NA,nrow=1,ncol=4)
 
-  colnames(matrix.eventsto)<- c(col1,col2,col3,"sowINDEX")
+  colnames(matrix.eventsto)<- c(col1,col2,col3,"sowID")
 
 
   for (r in 2:length(index.dates)){
@@ -184,7 +184,7 @@ create.nonTS.eventsto <- function(group.matrix=individual.sows$parity,
         matrix.eventsto.c1 <- length(which(event1.matrix[(rmin+1):r,s]%in%event1.value))
         matrix.eventsto.c2 <- group.matrix[r,s]
         matrix.eventsto.c3 <- as.numeric(index.dates[r])
-        matrix.eventsto.c4 <- s
+        matrix.eventsto.c4 <- colnames(group.matrix)[s]
 
         matrix.eventsto <- rbind(matrix.eventsto,
                                c(matrix.eventsto.c1,
@@ -217,7 +217,7 @@ create.nonTS.counts <- function(group.matrix=individual.sows$parity,
 
   matrix.counts <- matrix(NA,nrow=1,ncol=4)
 
-  colnames(matrix.counts)<- c(col1,col2,col3,"sowINDEX")
+  colnames(matrix.counts)<- c(col1,col2,col3,"sowID")
 
 
   for (r in 2:length(index.dates)){
@@ -250,7 +250,7 @@ create.nonTS.counts <- function(group.matrix=individual.sows$parity,
 
         matrix.counts.c2 <- group.matrix[r,s]
         matrix.counts.c3 <- as.numeric(index.dates[r])
-        matrix.counts.c4 <- s
+        matrix.counts.c4 <- colnames(group.matrix)[s]
 
         matrix.counts <- rbind(matrix.counts,
                                c(matrix.counts.c1,
@@ -417,7 +417,7 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   date <- as.Date(indicator[,"date"],origin="1970-01-01")
   week <- isoweek(as.Date(date,origin="1970-01-01"))
   year <- isoyear(as.Date(date,origin="1970-01-01"))
-  sowINDEX <- indicator[,"sowINDEX"]
+  sowID <- indicator[,"sowID"]
   observed <- indicator[,"indicator"]
   baseline <- c(rep(NA, length(range)))
   UCL.ewma <- c(rep(NA, length(range)))
@@ -440,12 +440,12 @@ continuous.indicators <- function(indicator=indicator       #indicator=indicator
   #     parity[i] <- paste(parity.group2$group.name[indicator[i, "parity"]])
   #   }
   # }
-  table <- data.frame(date, week, year, sowINDEX,
+  table <- data.frame(date, week, year, sowID,
                       parity, observed, baseline,
                       UCL.ewma, LCL.ewma, alarms.ewma,
                       UCL.shew, LCL.shew, alarms.shew)
 
-  colnames(table) <- c("date", "week", "year", "sowINDEX", 
+  colnames(table) <- c("date", "week", "year", "sowID", 
                        "parity", "observed", "baseline",
                        "UCL EWMA", "LCL EWMA", "alarms EWMA",
                        "UCL Shewhart", "LCL Shewhart", "alarms Shewhart")
@@ -559,7 +559,7 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
     date <- as.Date(indicator[,"date"],origin="1970-01-01")
     week <- isoweek(as.Date(date,origin="1970-01-01"))
     year <- isoyear(as.Date(date,origin="1970-01-01"))
-    sowINDEX <- indicator[,"sowINDEX"]
+    sowID <- indicator[,"sowID"]
     observed <- indicator[,"indicator"]
     parity <- parity.group2$group.name[indicator[, "parity"]+1]
     # parity <- c(rep(NA, length(range)))
@@ -577,10 +577,10 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
     # }
 
     table <- data.frame(date, week, year,
-                        sowINDEX, parity, observed)
+                        sowID, parity, observed)
 
     colnames(table) <- c("date", "week", "year",
-                         "sowINDEX", "parity", "observed")
+                         "sowID", "parity", "observed")
   }
 
   return(table)
@@ -591,7 +591,8 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 
 
 continuous.to.weekly <- function(df.indicator=df.indicator,
-                                 limits="both"
+                                 limits="both",
+                                 index.dates.week=index.dates.week
                                 #df.indicator=indicators.time.series$`Time to reservice`
 ){
   
@@ -644,11 +645,11 @@ continuous.to.weekly <- function(df.indicator=df.indicator,
   alarms.ewma <- df.indicator$`alarms EWMA`
   alarms.shew <- df.indicator$`alarms Shewhart`
   
-  indicator.more <- data.frame(df.indicator[, "observed"], parity.name, df.indicator[, "sowINDEX"],
+  indicator.more <- data.frame(df.indicator[, "observed"], parity.name, df.indicator[, "sowID"],
                                as.Date(df.indicator[,"date"], origin="1970-01-01"), monday.date,
                                alarms.ewma, alarms.shew)
   
-  colnames(indicator.more) <- c("indicator", "parity", "sowINDEX", "date", "monday date",
+  colnames(indicator.more) <- c("indicator", "parity", "sowID", "date", "monday date",
                                 "alarms EWMA", "alarms Shewhart")
   
   
@@ -1001,6 +1002,10 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
             }
 
             #Correct baseline IF the user indicated so
+            if(is.na(df.indicator[tpoint,"baseline"])){
+            df.indicator[tpoint,"baseline"] <- df.indicator[tpoint,"observed"] 
+            }
+              
             if (isTRUE(correct.baseline.UCL.ewma)){
               if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
                 df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
@@ -1146,6 +1151,10 @@ shew_apply <- function (df.indicator=df.indicator,
               }
 
               #Correct baseline IF the user indicated so
+              if(is.na(df.indicator[tpoint,"baseline"])){
+              df.indicator[tpoint,"baseline"] <- df.indicator[tpoint,"observed"] 
+              }
+              
               if (isTRUE(correct.baseline.UCL.shew)){
                 if (isTRUE(df.indicator[tpoint,"observed"] > max(0,UCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))

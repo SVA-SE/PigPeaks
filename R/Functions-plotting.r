@@ -362,12 +362,12 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
   text=str_c(indicator.label,":",y,
              "<br>Week:",date2ISOweek(x.dates),
              "<br>date:",x.dates,
-             "<br>sowID:",series.range[,"sowINDEX"])
+             "<br>sowID:",series.range[,"sowID"])
   
   try({text=str_c(indicator.label,":",y,
                   "<br>Week:",date2ISOweek(x.dates),
                   "<br>date:",x.dates,
-                  "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.range[,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                  "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   target.vector = target
   if(!is.null(target.unit)){
@@ -1329,53 +1329,53 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
               "<br>",indicator.label,":",y1,
               "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
               "<br>date:",series.pg[[1]][,"date"],
-              "<br>sowID:",series.pg[[1]][,"sowINDEX"])
+              "<br>sowID:",series.pg[[1]][,"sowID"])
   
   
   try({text1=str_c("Parity group:",t1,
                    "<br>",indicator.label,":",y1,
                    "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
                    "<br>date:",series.pg[[1]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[1]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text2=str_c("Parity group:",t2,
               "<br>",indicator.label,":",y2,
               "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
               "<br>date:",series.pg[[2]][,"date"],
-              "<br>sowID:",series.pg[[2]][,"sowINDEX"])
+              "<br>sowID:",series.pg[[2]][,"sowID"])
   
   try({text2=str_c("Parity group:",t2,
                    "<br>",indicator.label,":",y2,
                    "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
                    "<br>date:",series.pg[[2]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[2]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text3=str_c("Parity group:",t3,
               "<br>",indicator.label,":",y3,
               "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
               "<br>date:",series.pg[[3]][,"date"],
-              "<br>sowID:",series.pg[[3]][,"sowINDEX"])
+              "<br>sowID:",series.pg[[3]][,"sowID"])
   
   try({text3=str_c("Parity group:",t3,
                    "<br>",indicator.label,":",y3,
                    "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
                    "<br>date:",series.pg[[3]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[3]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text4=str_c("Parity group:",t4,
               "<br>",indicator.label,":",y4,
               "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
               "<br>date:",series.pg[[4]][,"date"],
-              "<br>sowID:",series.pg[[4]][,"sowINDEX"])
+              "<br>sowID:",series.pg[[4]][,"sowID"])
   
   try({text4=str_c("Parity group:",t4,
                    "<br>",indicator.label,":",y4,
                    "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
                    "<br>date:",series.pg[[4]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(dimnames(individual.sows[[1]])[[2]][series.pg[[4]][,"sowINDEX"]],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   target.vector = target
