@@ -7,9 +7,9 @@ require(RColorBrewer)
 source("Definitions.r")
 
 # database connection settings ----
-server="XXXX" #private information referring to the local computer, see documentation
-database="XXXXX" #name of the WinPig database on your computer, see documentation
-farm.name="farm01" #name will be used to save base files
+# server="XXXX" #private information referring to the local computer, see documentation
+# database="XXXXX" #name of the WinPig database on your computer, see documentation
+# farm.name="farm01" #name will be used to save base files
 
 language=19 #19 is swedish, see documentation for other languages
 
@@ -46,10 +46,11 @@ c3 <- c(rep("gilt",2),
 
 # functions arguments ----
 
-weekly.window <- 271               #weeks to see in each indicator
+weekly.window <- 999999               #weeks to see in each indicator
                                         #if you are using the data example provided put: weekly.window <- 160
-continuous.window <- 5500          #observations to see in each indicator
+continuous.window <- 5000          #observations to see in each continuous indicator
                                         #if you are using the data example provided put: continuous.window <- 5000
+                                        #as the continuous are always evaluated all at a time, good to leave a limit
 
 limit.upp <- 0.95                  #upper limit (upper percentile) to clean baseline non-parametric
 limit.lw <- 0.05                   #lower limit (lower percentile) to clean baseline non-parametric
