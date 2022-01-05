@@ -133,7 +133,7 @@ create.nonTS.timeto <- function(group.matrix=individual.sows$parity,
 
         matrix.timeto.c3 <- as.numeric(index.dates[r])
 
-        matrix.timeto.c4 <- colnames(group.matrix)[s]
+        matrix.timeto.c4 <- as.numeric(colnames(group.matrix)[s])
         matrix.timeto <- rbind(matrix.timeto,
                                c(matrix.timeto.c1,
                                  matrix.timeto.c2,
@@ -184,7 +184,7 @@ create.nonTS.eventsto <- function(group.matrix=individual.sows$parity,
         matrix.eventsto.c1 <- length(which(event1.matrix[(rmin+1):r,s]%in%event1.value))
         matrix.eventsto.c2 <- group.matrix[r,s]
         matrix.eventsto.c3 <- as.numeric(index.dates[r])
-        matrix.eventsto.c4 <- colnames(group.matrix)[s]
+        matrix.eventsto.c4 <- as.numeric(colnames(group.matrix)[s])
 
         matrix.eventsto <- rbind(matrix.eventsto,
                                c(matrix.eventsto.c1,
@@ -250,7 +250,7 @@ create.nonTS.counts <- function(group.matrix=individual.sows$parity,
 
         matrix.counts.c2 <- group.matrix[r,s]
         matrix.counts.c3 <- as.numeric(index.dates[r])
-        matrix.counts.c4 <- colnames(group.matrix)[s]
+        matrix.counts.c4 <- as.numeric(colnames(group.matrix)[s])
 
         matrix.counts <- rbind(matrix.counts,
                                c(matrix.counts.c1,

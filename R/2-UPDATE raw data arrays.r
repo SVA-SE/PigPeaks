@@ -36,15 +36,16 @@ progeny.dead$EventDate<-as_date(progeny.dead$EventDate)
 active.sows <- which(animal$Sex==1)
 
 active.sows.displayID_new <- data.frame(codesID=as.numeric(as.character(animal$ID[active.sows])),
-                                        displayID=as.numeric(as.character(animal$AnimalNumber[active.sows])))
+                                        displayID=(as.character(animal$AnimalNumber[active.sows])))
 active.sows.displayID_new <- active.sows.displayID_new[which(!active.sows.displayID_new$codesID%in%active.sows.displayID$codesID),]
 
 
 
 deactivate.sows <- which(animal$Sex==1&animal$ExitDate<fetchCDB.start.date)
 active.sows.displayID_old <- data.frame(codesID=as.numeric(as.character(animal$ID[deactivate.sows])),
-                                        displayID=as.numeric(as.character(animal$AnimalNumber[deactivate.sows])))
+                                        displayID=(as.character(animal$AnimalNumber[deactivate.sows])))
 
+active.sows.displayID_new <- active.sows.displayID_new[which(!active.sows.displayID_new$codesID%in%active.sows.displayID_old$codesID),]
 
 
 active.sows.displayID <- rbind(active.sows.displayID,active.sows.displayID_new)
@@ -81,17 +82,22 @@ index.dates.week <- index.dates.week[1:(index.start.week-1),]
 delete.columns <- which(colnames(individual.sows[[1]])%in%active.sows.displayID_old$codesID)
 add.columns <- length(active.sows.displayID_new$codesID)
 
+if (add.columns>0){
 empty.matrix <- matrix(NA,
                        nrow=dim(index.dates.days)[1],
                        ncol=add.columns)
 colnames(empty.matrix)<- active.sows.displayID_new$codesID
+}
 
 
 for (e in 1:length(individual.sows)){
   individual.sows[[e]] <- individual.sows[[e]][1:dim(index.dates.days)[1],]
+  if(length(delete.columns)>0){
   individual.sows[[e]] <- individual.sows[[e]][,-delete.columns]
+  }
+  if (add.columns>0){
   individual.sows[[e]] <- cbind(individual.sows[[e]],empty.matrix)
-  
+  }
 }
 
 
@@ -307,11 +313,13 @@ for (s in 1:dim(individual.sows[[1]])[2]){
       exit.day <-min(which(individual.sows$exit[,s]==1))
     }
     
+    if(exit.day>first.parity){
     for (r in (first.parity+1):exit.day){
       if(is.na(individual.sows$parity[r,s])){
         individual.sows$parity[r,s] <- individual.sows$parity[(r-1),s]
       }
     }}
+    }
 }
 
 
