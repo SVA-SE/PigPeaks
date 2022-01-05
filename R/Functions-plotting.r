@@ -156,6 +156,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.ewma[a])){
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -180,6 +181,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
                       name ='Alarm EWMA UCL',
                       showlegend = show_legend)
       }
+      }
     }
   }
   
@@ -194,6 +196,8 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.ewma[a])){
+        
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -219,6 +223,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
                       showlegend = show_legend)
         
       }
+      }
     }
   }
   
@@ -233,6 +238,8 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -257,6 +264,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
                       name ='Alarm Shewhart UCL',
                       showlegend = show_legend)
       }
+      }
     }
   }
   
@@ -271,6 +279,8 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -295,6 +305,7 @@ TS.barplot <- function(df.indicator = df.indicator,          #df.indicator=indic
                       name ='Alarm Shewhart LCL',
                       showlegend = show_legend)
         
+      }
       }
     }
   }
@@ -477,7 +488,8 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.ewma[a])){
+        
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -501,6 +513,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
                       text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
                       name ='Alarm EWMA UCL',
                       showlegend = show_legend)
+      }
       }
     }
   }
@@ -554,7 +567,8 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -579,6 +593,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
                       name ='Alarm Shewhart UCL',
                       showlegend = show_legend)
       }
+      }
     }
   }
   
@@ -592,7 +607,8 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -617,6 +633,7 @@ nonTS.barplot.timeless <- function(df.indicator = df.indicator,       #df.indica
                       name ='Alarm Shewhart LCL',
                       showlegend = show_legend)
         
+      }
       }
     }
   }
@@ -1083,7 +1100,8 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.ewma[a])){
+        
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
@@ -1108,6 +1126,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
                       name ='Alarm EWMA UCL',
                       showlegend = show_legend)
       }
+      }
     }
   }
   
@@ -1121,7 +1140,8 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.ewma[a])){
+        
       if(alarms.ewma[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
@@ -1147,6 +1167,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
                       showlegend = show_legend)
         
       }
+      }
     }
   }
   
@@ -1161,6 +1182,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.shew[a])){
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
@@ -1185,6 +1207,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
                       name ='Alarm Shewhart UCL',
                       showlegend = show_legend)
       }
+      }
     }
   }
   
@@ -1198,7 +1221,8 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
       }else{
         show_legend <- FALSE
       }
-      
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==-1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a], yaxis="y2",
@@ -1223,6 +1247,7 @@ TS.barplot.pg <- function(df.indicator = df.indicator,   #df.indicator=indicator
                       name ='Alarm Shewhart LCL',
                       showlegend = show_legend)
         
+      }
       }
     }
   }
@@ -1336,7 +1361,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                    "<br>",indicator.label,":",y1,
                    "<br>Week:",date2ISOweek(series.pg[[1]][,"date"]),
                    "<br>date:",series.pg[[1]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.pg[[1]][,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text2=str_c("Parity group:",t2,
@@ -1349,7 +1374,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                    "<br>",indicator.label,":",y2,
                    "<br>Week:",date2ISOweek(series.pg[[2]][,"date"]),
                    "<br>date:",series.pg[[2]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.pg[[2]][,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text3=str_c("Parity group:",t3,
@@ -1362,7 +1387,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                    "<br>",indicator.label,":",y3,
                    "<br>Week:",date2ISOweek(series.pg[[3]][,"date"]),
                    "<br>date:",series.pg[[3]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.pg[[3]][,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   text4=str_c("Parity group:",t4,
@@ -1375,7 +1400,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                    "<br>",indicator.label,":",y4,
                    "<br>Week:",date2ISOweek(series.pg[[4]][,"date"]),
                    "<br>date:",series.pg[[4]][,"date"],
-                   "<br>sowID:",active.sows.displayID[match(series.range[,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
+                   "<br>sowID:",active.sows.displayID[match(series.pg[[4]][,"sowID"],active.sows.displayID[,"codesID"]),"displayID"])}, silent=TRUE)
   
   
   target.vector = target
@@ -1528,6 +1553,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.ewma[a])){
+        
       if(alarms.ewma[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -1551,6 +1578,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                       text = str_c('Score:', alarms.ewma[a]), legendgroup="group",
                       name ='Alarm EWMA UCL',
                       showlegend = show_legend)
+      }
       }
     }
   }
@@ -1605,6 +1633,8 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
         show_legend <- FALSE
       }
       
+      if(!is.na(alarms.shew[a])){
+        
       if(alarms.shew[a]==1){
         plot <- plot %>%
           add_markers(x = x[a], y = y[a],
@@ -1628,6 +1658,7 @@ nonTS.barplot.pg.timeless <- function(df.indicator = df.indicator,      #df.indi
                       text = str_c('Score:', alarms.shew[a]), legendgroup="group2",
                       name ='Alarm Shewhart UCL',
                       showlegend = show_legend)
+      }
       }
     }
   }
