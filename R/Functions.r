@@ -592,14 +592,14 @@ non.sys.indicators <- function (indicator=indicator,          #indicator=indicat
 
 continuous.to.weekly <- function(df.indicator=df.indicator,
                                  limits="both",
-                                 index.dates.week=index.dates.week
+                                 index.dates.week.f=index.dates.week
                                 #df.indicator=indicators.time.series$`Time to reservice`
 ){
   
   
-  range <- 1:dim(index.dates.week)[1]   #apply range restriction only to detection
+  range <- 1:dim(index.dates.week.f)[1]   #apply range restriction only to detection
   
-  date <- index.dates.week$start
+  date <- index.dates.week.f$start
   
   parity.count = 0
   
