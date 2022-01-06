@@ -1006,12 +1006,12 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
             df.indicator[tpoint,"baseline"] <- df.indicator[tpoint,"observed"] 
             }
               
-            if (isTRUE(correct.baseline.UCL.ewma)){
+            if (isTRUE(correct.baseline.UCL.ewma)&!is.na(UCL.value)){
               if (df.indicator[tpoint,"observed"] > max(0,UCL.value)){
                 df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
               }
             }
-            if (isTRUE(correct.baseline.LCL.ewma)){
+            if (isTRUE(correct.baseline.LCL.ewma)&!is.na(LCL.value)){
               if (df.indicator[tpoint,"observed"] < max(0,LCL.value)){
                 df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
               }
@@ -1155,12 +1155,12 @@ shew_apply <- function (df.indicator=df.indicator,
               df.indicator[tpoint,"baseline"] <- df.indicator[tpoint,"observed"] 
               }
               
-              if (isTRUE(correct.baseline.UCL.shew)){
+              if (isTRUE(correct.baseline.UCL.shew)&!is.na(UCL.value)){
                 if (isTRUE(df.indicator[tpoint,"observed"] > max(0,UCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(UCL.value))
                 }
               }
-              if (isTRUE(correct.baseline.LCL.shew)){
+              if (isTRUE(correct.baseline.LCL.shew)&!is.na(LCL.value)){
                 if (isTRUE(df.indicator[tpoint,"observed"] < max(0,LCL.value))){
                   df.indicator[tpoint,"baseline"] <- max(0,round(LCL.value))
                 }

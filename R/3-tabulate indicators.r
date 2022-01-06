@@ -677,12 +677,13 @@ for (s in 1:dim(status.sows)[2]){
 
   first.status <- min(which(!is.na(status.sows[,s])))
 
+  if(dim(status.sows)[1]>first.status){
   for (r in (first.status+1):dim(status.sows)[1]){
 
     if(is.na(status.sows[r,s])){
       status.sows[r,s] <- status.sows[r-1,s]
     }
-
+}
   }
 }
 
