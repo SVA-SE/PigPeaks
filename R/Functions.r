@@ -709,7 +709,7 @@ continuous.to.weekly <- function(df.indicator=df.indicator,
       #d=as.Date("2015-06-15")
       
       
-      for (p in unique(as.character(indicator.more$parity[indicator.more$`monday date`==d]))) { #p="prime"
+      for (p in unique(as.character(indicator.more$parity[indicator.more$`monday date`==d&!is.na(indicator.more$parity)]))) { #p="prime"
         
         table[which(table$date %in% d), p] <- sum(table[which(table$date %in% d), p],
           round(mean(indicator.more$indicator[indicator.more$`monday date`==d & indicator.more$parity==p], na.rm =T),1), na.rm = T)
