@@ -1,8 +1,10 @@
 
 # indicators construction ----
 
+#number of births of a sow
 parity = 1:15
 
+#number of days to consider a second insemination to be a "reservice" from the first
 reservice.threshold <- 90
 reservice.perc.window <- 4     #(weeks to calculate success of service)
 
@@ -131,16 +133,16 @@ indicators.all.categories <- c("services", "empty sows", "services", "services",
 
 # services.week              #   NumberOfWeeks x   ParityFrom1
 # reservices.week	           #	 NumberOfWeeks x   ParityFrom1
-# perc.pregnancy	           #	 NumberOfWeeks x   ParityFrom1   x 2
-# perc.failure		           #   NumberOfWeeks x   ParityFrom1   x 2
-# perc.reservice	           #	 NumberOfWeeks x   ParityFrom1   x 2
-# time.to.reservice          #	 579   4
-# rereservices		           #   0 4
-# time.to.first.service      #	 2353    4
-# time.to.first.farrowing    #	 2172    4
+# perc.pregnancy	           #	 NumberOfWeeks x   ParityFrom1   x 2 (numerator and denominator)
+# perc.failure		           #   NumberOfWeeks x   ParityFrom1   x 2 (numerator and denominator)
+# perc.reservice	           #	 NumberOfWeeks x   ParityFrom1   x 2 (numerator and denominator)
+# time.to.reservice          #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# rereservices		           #   EVENTS x 4 (indicator parity  date sowINDEX) 
+# time.to.first.service      #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# time.to.first.farrowing    #	 EVENTS x 4 (indicator parity  date sowINDEX)
 # abortions.week	           #	 NumberOfWeeks x   ParityFrom1
-# time.to.abortion	         #	 34  4
-# days.between.farrowings    #	 6934    4
+# time.to.abortion	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# days.between.farrowings    #	 EVENTS x 4 (indicator parity  date sowINDEX)
 # farrowings.week	           #	 NumberOfWeeks x   ParityFrom1
 # total.born.week	           #	 NumberOfWeeks x   ParityFrom1
 # live.born.week	           #	 NumberOfWeeks x   ParityFrom1
@@ -148,40 +150,38 @@ indicators.all.categories <- c("services", "empty sows", "services", "services",
 # small.born.week	           #	 NumberOfWeeks x   ParityFrom1
 # weak.born.week	           #	 NumberOfWeeks x   ParityFrom1
 # mummi.born.week	           #	 NumberOfWeeks x   ParityFrom1
-# perc.dead.born.week        #	 NumberOfWeeks x   ParityFrom1   2
-# perc.small.born.week	     #	 NumberOfWeeks x   ParityFrom1   2
-# perc.weak.born.week	       #	 NumberOfWeeks x   ParityFrom1   2
-# perc.mummi.born.week	     #	 NumberOfWeeks x   ParityFrom1   2
-# pregnancy.length	         #	 9106    4
-# services.to.farrow	       #	 9106    4
-# total.born.litter	         #	 9106    4
-# live.born.litter	         #	 9106    4
-# dead.born.litter	         #	 9106    4
-# perc.dead.born.litter	     #	 9106    4
-# small.born.litter	         #	 9106    4
-# perc.small.born.litter     #	 9106    4
-# weak.born.litter	         #	 9106    4
-# perc.weak.born.litter	     #	 9106    4
-# mummi.born.litter	         #	 9106    4
-# perc.mummi.born.litter     #	 9106    4
+# perc.dead.born.week        #	 NumberOfWeeks x   ParityFrom1   2 (numerator and denominator)
+# perc.small.born.week	     #	 NumberOfWeeks x   ParityFrom1   2 (numerator and denominator)
+# perc.weak.born.week	       #	 NumberOfWeeks x   ParityFrom1   2 (numerator and denominator)
+# perc.mummi.born.week	     #	 NumberOfWeeks x   ParityFrom1   2 (numerator and denominator)
+# pregnancy.length	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# services.to.farrow	       #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# total.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# live.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# dead.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# perc.dead.born.litter	     #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# small.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# perc.small.born.litter     #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# weak.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# perc.weak.born.litter	     #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# mummi.born.litter	         #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# perc.mummi.born.litter     #	 EVENTS x 4 (indicator parity  date sowINDEX)
 # weanings.week              #	 NumberOfWeeks x   ParityFrom1
 # total.wean.week            #	 NumberOfWeeks x   ParityFrom1
 # diff.wean.week	           #	 NumberOfWeeks x   ParityFrom1
 # negdiff.wean.week	         #	 NumberOfWeeks x   ParityFrom1
-# weaning.length	           #	 9613    4
-# total.wean.litter    	     #	 9613    4
-# negdiff.weaned.litter	     #	 9613    4
-# perc.negdiff.weaned.litter #	 9613    4
-# weight.wean.litter	       #	 9613    4
+# weaning.length	           #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# total.wean.litter    	     #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# negdiff.weaned.litter	     #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# perc.negdiff.weaned.litter #	 EVENTS x 4 (indicator parity  date sowINDEX)
+# weight.wean.litter	       #	 EVENTS x 4 (indicator parity  date sowINDEX)
 # number.exits.week	         #	 NumberOfWeeks x   ParityFrom1
 # number.deaths.week	       #	 NumberOfWeeks x   ParityFrom1
-# gilts.deaths.week	         #	 NumberOfWeeks x
-# piglets.deaths.week	       #	 NumberOfWeeks x
-#EXCLUDED# exit.reason.week	         #	 NumberOfWeeks x  614
-# exit.type.week	           #	 NumberOfWeeks x    7
-# exit.after.event.week	     #	 NumberOfWeeks x    6
-# death.after.event.week     #	 NumberOfWeeks x    6
-# empty.long.week	           #	 NumberOfWeeks x   ParityFrom1
-# piglets.deaths.week	       #	 NumberOfWeeks x ,
+# gilts.deaths.week	         #	 NumberOfWeeks 
+# piglets.deaths.week	       #	 NumberOfWeeks 
+# death.after.event.week     #	 NumberOfWeeks x    6 (birth service reservice abortion farrowing weaning)
+# number.exits.week          #	 NumberOfWeeks x   ParityFrom1
+# exit.type.week	           #	 NumberOfWeeks x    7 (Slaughtered Sold Euthanized Dead Sold.Pregnant Missing Exported)
+# exit.after.event.week	     #	 NumberOfWeeks x    6 (birth service reservice abortion farrowing weaning)
 
 
