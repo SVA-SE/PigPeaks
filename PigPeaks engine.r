@@ -4,12 +4,14 @@ install.packages(setdiff(packages, rownames(installed.packages())))
 
 library(RODBC)
 
+
+
+    ###make sure to set farm name, and if needed database connections here
 source("Settings.r")
+
+
 source("R/Functions.r")
 
-server="xxxx" #private information referring to the local computer, see documentation
-database="xxxx" #name of the WinPig database on your computer, see documentation #"WP_Test2" #"WP_farm03"
-farm.name="xxxx" #name will be used to save base files
 
 
 load("data/individual.sows.RData")

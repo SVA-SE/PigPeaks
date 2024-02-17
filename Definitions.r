@@ -15,7 +15,12 @@ min.pregnancy.length <- 110    #(normal minimum pregnancy length)
 
 
 # events ----
-sow.events <- c("birth","service","pregnancyTest","abortion","farrowing","weaning","exit","death")
+
+##ALL events possible
+#sow.events <- c("birth","service","pregnancyTest","abortion","farrowing","weaning","exit","death")
+
+#the most common, which is for farms not to record pregnancy tests
+sow.events <- c("birth","service","abortion","farrowing","weaning","exit","death")
 sow.events.before.exit <- c("birth","service","reservice","abortion","farrowing","weaning")
 
 sow.info <- c("parity","status")

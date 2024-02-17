@@ -9,7 +9,7 @@ source("Definitions.r")
 # database connection settings ----
 # server="XXXX" #private information referring to the local computer, see documentation
 # database="XXXXX" #name of the WinPig database on your computer, see documentation
-# farm.name="farm01" #name will be used to save base files
+farm.name="farmExample" #name will be used to save base files. REPLACE by a real name if installing in a new computer
 
 language=19 #19 is swedish, see documentation for other languages
 

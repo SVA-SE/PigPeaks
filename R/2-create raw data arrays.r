@@ -25,7 +25,7 @@ service$EventDate<-as_date(service$EventDate)
 abortion$EventDate<-as_date(abortion$EventDate)
 farrowing$EventDate<-as_date(farrowing$EventDate)
 weaning$EventDate<-as_date(weaning$EventDate)
-pregnancyTest$EventDate<-as_date(pregnancyTest$EventDate)
+#pregnancyTest$EventDate<-as_date(pregnancyTest$EventDate)
 progeny.dead$EventDate<-as_date(progeny.dead$EventDate)
 
 
@@ -193,17 +193,17 @@ for (d in 1:7){
   }
   #}
 
-  #pregnancyTest
-  if(!is.null(dim(day.events$pregnancyTest))){
-    for (r in 1:dim(day.events$pregnancyTest)[1]){
-
-      sowID <- day.events$pregnancyTest[r,"AnimalId"]
-      sow.dim <- which(colnames(individual.sows[[1]])==sowID)
-
-      individual.sows$pregnancyTest[date.row,sow.dim]<-day.events$pregnancyTest[r,"TestResult"]
-      individual.sows$status[date.row,sow.dim]<-3
-    }
-  }
+  # #pregnancyTest
+  # if(!is.null(dim(day.events$pregnancyTest))){
+  #   for (r in 1:dim(day.events$pregnancyTest)[1]){
+  # 
+  #     sowID <- day.events$pregnancyTest[r,"AnimalId"]
+  #     sow.dim <- which(colnames(individual.sows[[1]])==sowID)
+  # 
+  #     individual.sows$pregnancyTest[date.row,sow.dim]<-day.events$pregnancyTest[r,"TestResult"]
+  #     individual.sows$status[date.row,sow.dim]<-3
+  #   }
+  # }
 
   #abortion
   if(!is.null(dim(day.events$abortion))){
@@ -382,17 +382,17 @@ for (d in 8:total.date.rows){
   }#if(!is.null(dim(day.events$service))){
 
 
-  #pregnancyTest
-  if(!is.null(dim(day.events$pregnancyTest))){
-    for (r in 1:dim(day.events$pregnancyTest)[1]){
-
-      sowID <- day.events$pregnancyTest[r,"AnimalId"]
-      sow.dim <- which(colnames(individual.sows[[1]])==sowID)
-
-      individual.sows$pregnancyTest[date.row,sow.dim]<-day.events$pregnancyTest[r,"TestResult"]
-      individual.sows$status[date.row,sow.dim]<-3
-    }
-  }
+  # #pregnancyTest
+  # if(!is.null(dim(day.events$pregnancyTest))){
+  #   for (r in 1:dim(day.events$pregnancyTest)[1]){
+  # 
+  #     sowID <- day.events$pregnancyTest[r,"AnimalId"]
+  #     sow.dim <- which(colnames(individual.sows[[1]])==sowID)
+  # 
+  #     individual.sows$pregnancyTest[date.row,sow.dim]<-day.events$pregnancyTest[r,"TestResult"]
+  #     individual.sows$status[date.row,sow.dim]<-3
+  #   }
+  # }
 
   #abortion
   if(!is.null(dim(day.events$abortion))){
