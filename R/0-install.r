@@ -24,7 +24,7 @@ start.date <- NULL #leave NULL to start from the latest possible date
 date_filter <- install.date
 date_logical <- "<= "
 
-source("R/1-extract data from database.r")
+# source("R/1-extract data from database.r")
 
 
 
