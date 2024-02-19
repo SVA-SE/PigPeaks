@@ -1,13 +1,9 @@
 packages <- c("ISOweek", "caTools", "lubridate", "abind", "qcc", "dplyr", "tibbletime")
-install.packages(setdiff(packages, rownames(installed.packages())))
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-require(ISOweek)
-require(caTools)
-require(lubridate)
-require(abind)
-require(qcc)
-require(dplyr)
-require(tibbletime)
+invisible(lapply(packages, library, character.only = TRUE))
 
 # background functions ----
 
@@ -23,8 +19,6 @@ dates_df <- function (min.date, max.date,
 
   start <- as.Date(min.date, format = date.format)
   end   <- as.Date(max.date, format = date.format)
-
-  require(ISOweek)
 
   dates.v <- seq(from=start,to=end, by=by)
   date <- strptime (as.character(dates.v), format = "%Y-%m-%d")
@@ -750,7 +744,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
   if (indicator.type=="W") {     # for weekly indicators
                                      #df.indicator=indicators.time.series$`Reservices per week`
 
-      #require(caTools)
+      
 
       #pulling data form the object to work out of the object
       observed.matrix=df.indicator[range,"observed"]
@@ -827,7 +821,7 @@ clean_baseline_perc <- function (df.indicator=df.indicator,
     run.window.continuous <- round((median.days.production.cycles*continuous.window)/
       as.numeric(difftime(as.POSIXct(f.date), as.POSIXct(i.date, tz="UTC"), units="days")),0)
 
-    #require(caTools)
+    
 
     #pulling data form the object to work out of the object
     observed.matrix=df.indicator[range,"observed"]
@@ -932,7 +926,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
     
     if(guard.band.weekly<1)(guard.band.weekly<-1)
 
-        #require(abind)
+        
 
         #number of time points to iterate
         range <- (dim(df.indicator)[1]-evaluate.weekly.window+1):dim(df.indicator)[1]
@@ -948,7 +942,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
 
           for (l in 1:length(limit.sd)){ #l=1
 
-            #require(qcc)
+            
             ewma1 = ewma(to.cc,
                          center=mean(to.cc[1:(length(to.cc)-guard.band.weekly)],na.rm=TRUE),
                          std.dev=sd(to.cc[1:(length(to.cc)-guard.band.weekly)],na.rm=TRUE),
@@ -1028,7 +1022,7 @@ apply_ewma <- function(df.indicator=df.indicator,    #df.indicator=indicators.ti
 
     for (l in 1:length(limit.sd)){ #l=2
 
-      #require(qcc)
+      
       ewma1 <- ewma(data, lambda = lambda, nsigmas = limit.sd[l], plot = FALSE, na.rm=TRUE)
 
       #choose UCL and LCL
@@ -1094,7 +1088,7 @@ shew_apply <- function (df.indicator=df.indicator,
 
     if(guard.band.weekly<1)(guard.band.weekly<-1)
 
-          #require(abind)
+          
 
           #number of time points to iterate
           range <- (dim(df.indicator)[1]-evaluate.weekly.window+1):dim(df.indicator)[1]
@@ -1109,7 +1103,7 @@ shew_apply <- function (df.indicator=df.indicator,
 
             for (l in 1:length(limit.sd)){
 
-              #require(qcc)
+              
               average.series = to.cc[1:(length(to.cc)-guard.band.weekly)]
               average.series = average.series[which(!is.na(average.series))]
               stats <- stats.xbar.one(average.series)
@@ -1177,7 +1171,7 @@ shew_apply <- function (df.indicator=df.indicator,
 
     for (l in 1:length(limit.sd)){ #l=2
 
-      #require(qcc)
+      
       stats <- stats.xbar.one(data)
       sd.xbar <- sd.xbar.one(data,
                              std.dev = "SD", k=2)

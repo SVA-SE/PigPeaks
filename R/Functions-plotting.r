@@ -1,9 +1,9 @@
 packages <- c("plotly", "RColorBrewer", "zoo")
-install.packages(setdiff(packages, rownames(installed.packages())))
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-require(plotly)
-require(RColorBrewer)
-require(zoo)
+invisible(lapply(packages, library, character.only = TRUE))
 
 
 # Without parity ----

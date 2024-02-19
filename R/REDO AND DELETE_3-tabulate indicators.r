@@ -1,6 +1,9 @@
-library(ISOweek)
-library(lubridate)
-library(abind)
+packages <- c("ISOweek", "lubridate", "abind")
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
+
+invisible(lapply(packages, library, character.only = TRUE))
 
 #source('1-RETRO-data.R', echo=TRUE)
 #setwd(paste0(getwd(),"/"))

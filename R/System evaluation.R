@@ -1,12 +1,11 @@
 # packages ----
 
 packages <- c("dplyr", "tibble", "qcc", "abind")
-install.packages(setdiff(packages, rownames(installed.packages())))
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-require(dplyr)
-require(tibble)
-require(qcc)
-require(abind)
+invisible(lapply(packages, library, character.only = TRUE))
 
 load('Data_Example/indicatorsExample.RData')
 source('Settings.r')

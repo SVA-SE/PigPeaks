@@ -1,12 +1,11 @@
 # packages ----
 
 packages <- c("ISOweek","lubridate","abind", "tidyverse")
-install.packages(setdiff(packages, rownames(installed.packages())))
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-require(ISOweek)
-require(lubridate)
-require(abind)
-require(tidyverse)
+invisible(lapply(packages, library, character.only = TRUE))
 
 #source("Definitions.r") #settings already runs definitions
 source("Settings.r")

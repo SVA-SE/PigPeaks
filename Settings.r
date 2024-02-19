@@ -1,15 +1,16 @@
-packages <- c("utils", "RColorBrewer")
-install.packages(setdiff(packages, rownames(installed.packages())))
+packages <- c("utils", "RColorBrewer", "readxl")
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-require(utils)
-require(RColorBrewer)
+invisible(lapply(packages, library, character.only = TRUE))
 
 source("Definitions.r")
 
 # database connection settings ----
 # server="XXXX" #private information referring to the local computer, see documentation
 # database="XXXXX" #name of the WinPig database on your computer, see documentation
-farm.name="farmExample" #name will be used to save base files. REPLACE by a real name if installing in a new computer
+farm.name="farm02_v1" #name will be used to save base files. REPLACE by a real name if installing in a new computer
 
 language=19 #19 is swedish, see documentation for other languages
 

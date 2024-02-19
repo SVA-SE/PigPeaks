@@ -1,9 +1,11 @@
 # packages ----
 
 packages <- c("RODBC")
-install.packages(setdiff(packages, rownames(installed.packages()))) 
+uninstalled <- setdiff(packages, rownames(installed.packages()))
+if (length(uninstalled))
+        install.packages(uninstalled)
 
-library(RODBC)
+invisible(lapply(packages, library, character.only = TRUE))
 
 source("Settings.r")
 
