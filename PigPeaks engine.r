@@ -49,7 +49,7 @@ date_filter <- fetchCDB.start.date
 date_logical <- ">= "
 
 
-source("R/1-extract data from database.r")
+# source("R/1-extract data from database.r")
 
 
 
