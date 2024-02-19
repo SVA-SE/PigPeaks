@@ -17,7 +17,7 @@ language=19 #19 is swedish, see documentation for other languages
 
 # desired indicators from EXCEL ----
 
-indicators.excel <- read_excel("Table_Indicators_CSV.csv")
+indicators.excel <- read_excel("indicators.xlsx")
 indicators.to.keep <- indicators.all %in% indicators.excel$indicators[indicators.excel$indicators.to.keep==TRUE]
         #indicators.to.keep <- rep(TRUE,length(indicators.all))
 indicators.to.keep.numerical <- which(indicators.to.keep==T)
